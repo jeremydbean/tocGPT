@@ -606,21 +606,21 @@ void do_note( CHAR_DATA *ch, char *argument )
         || strstr(ch->pnote->to_list,"immortals")
         || strstr(ch->pnote->to_list,"Immortals"))
 	{
-	    snprintf(buf,, sizeof(buf,), "A note to immortal has been posted by %s",ch->name);
+	    snprintf(buf, sizeof(buf), "A note to immortal has been posted by %s",ch->name);
 	    wizinfo(buf,LEVEL_IMMORTAL);
 	}
 
 	if( strstr(ch->pnote->to_list,"Imp")
         || strstr(ch->pnote->to_list,"Imps"))
 	{
-	    snprintf(buf,, sizeof(buf,), "A note to imp has been posted by %s",ch->name);
+	    snprintf(buf, sizeof(buf), "A note to imp has been posted by %s",ch->name);
 	    wizinfo(buf,MAX_LEVEL);
 	}
 
 	if( !str_cmp(ch->pnote->to_list,"all" )
 	|| !str_cmp(ch->pnote->to_list,"All" ) )
 	{
-	    snprintf(buf,, sizeof(buf,), "The note fairy says 'A note to all has been posted by %s'",ch->name);
+	    snprintf(buf, sizeof(buf), "The note fairy says 'A note to all has been posted by %s'",ch->name);
 	    send_info(buf);
 	}
 
@@ -745,7 +745,7 @@ void do_delete( CHAR_DATA *ch, char *argument)
 	}
 	else
 	{
-	    snprintf(buf,, sizeof(buf,), "%s has deleted.", ch->name);
+	    snprintf(buf, sizeof(buf), "%s has deleted.", ch->name);
 	    wizinfo(buf,LEVEL_IMMORTAL);
 	    snprintf( strsave,, sizeof( strsave,), "%s%s", PLAYER_DIR, capitalize( ch->name ) );
 	    update(wizlist(ch,1);
@@ -962,7 +962,7 @@ void do_channels( CHAR_DATA *ch, char *argument)
 	char buf[100];
 	if (ch->lines)
 	{
-	    snprintf(buf,, sizeof(buf,), "You display %d lines of scroll.\n\r",ch->lines+2);
+	    snprintf(buf, sizeof(buf), "You display %d lines of scroll.\n\r",ch->lines+2);
 	    send_to_char(buf,ch);
 	}
 	else
@@ -1854,7 +1854,7 @@ void do_ignore(CHAR_DATA *ch, char *argument)
 
     if ( arg[0] == '\0' )
     {
-        snprintf(buf,, sizeof(buf,), "You're ignoring %s.",ch->pcdata->ignore);
+        snprintf(buf, sizeof(buf), "You're ignoring %s.",ch->pcdata->ignore);
         send_to_char(buf,ch);
         return;
     }
@@ -1955,7 +1955,7 @@ void do_tell( CHAR_DATA *ch, char *argument )
 
     if (!IS_NPC(victim) && !IS_NPC(ch))
     {
-      snprintf(buf,, sizeof(buf,), "%s",ch->name);
+      snprintf(buf, sizeof(buf), "%s",ch->name);
       snprintf(buf2,, sizeof(buf2,), "%s",victim->pcdata->ignore);
 
       if (is_name(buf,buf2) && !IS_IMMORTAL(ch))
@@ -2027,7 +2027,7 @@ void do_reply( CHAR_DATA *ch, char *argument )
 
     if (!IS_NPC(victim) && !IS_NPC(ch))
     {
-      snprintf(buf,, sizeof(buf,), "%s",ch->name);
+      snprintf(buf, sizeof(buf), "%s",ch->name);
       snprintf(buf2,, sizeof(buf2,), "%s",victim->pcdata->ignore);
 
       if (is_name(buf,buf2) && !IS_IMMORTAL(ch))
@@ -2570,7 +2570,7 @@ void do_quit( CHAR_DATA *ch, char *argument )
       tch = d->original ? d->original : d->character;
       if( tch && tch->pcdata->id == id && ch != tch && get_trust(tch) != MAX_LEVEL)
       {
-	snprintf(buf,, sizeof(buf,), "%s tried to use the clone bug.",tch->name);
+	snprintf(buf, sizeof(buf), "%s tried to use the clone bug.",tch->name);
 	wizinfo(buf,LEVEL_IMMORTAL);
 	log_string(buf);
 	send_to_char("Now THAT was really stupid.\n\r",tch);
@@ -3059,7 +3059,7 @@ void do_split( CHAR_DATA *ch, char *argument )
 	share+extra);
     send_to_char( buf, ch );
 
-    snprintf(buf,, sizeof(buf,), "$n splits %d %s coins."
+    snprintf(buf, sizeof(buf), "$n splits %d %s coins."
 		  " Your share is worth %d coins.",amount,
 	type == TYPE_PLATINUM ? "platinum" :
 	type == TYPE_GOLD     ? "gold" :
@@ -3189,7 +3189,7 @@ void do_alias( CHAR_DATA *ch, char *argument )
 		    first = 0;
 		    send_to_char("Current aliases:\n\r", ch);
 		}
-		snprintf(buf,, sizeof(buf,), "    %7s = %s\n\r", ch->pcdata->alias[i].first,
+		snprintf(buf, sizeof(buf), "    %7s = %s\n\r", ch->pcdata->alias[i].first,
 				ch->pcdata->alias[i].second);
 		send_to_char(buf, ch);
 	    }
@@ -3213,7 +3213,7 @@ void do_alias( CHAR_DATA *ch, char *argument )
 		    first = 0;
 		    send_to_char("Current aliases:\n\r", ch);
 		}
-		snprintf(buf,, sizeof(buf,), "    %7s = %s\n\r", ch->pcdata->alias[i].first,
+		snprintf(buf, sizeof(buf), "    %7s = %s\n\r", ch->pcdata->alias[i].first,
 				ch->pcdata->alias[i].second);
 		send_to_char(buf, ch);
 	    }
@@ -3242,7 +3242,7 @@ void do_alias( CHAR_DATA *ch, char *argument )
 		free_string(ch->pcdata->alias[i].second);
 		ch->pcdata->alias[i].first  = NULL;
 		ch->pcdata->alias[i].second = NULL;
-		snprintf(buf,, sizeof(buf,), "Deleteing alias: %s.\n\r",
+		snprintf(buf, sizeof(buf), "Deleteing alias: %s.\n\r",
 		    argument);
 		send_to_char(buf, ch);
 		return;
@@ -3261,7 +3261,7 @@ void do_alias( CHAR_DATA *ch, char *argument )
 	{
 	    free_string(ch->pcdata->alias[i].second);
 	    ch->pcdata->alias[i].second = str_dup(argument);
-	    snprintf(buf,, sizeof(buf,), "%s is now an alias for %s.\n\r",
+	    snprintf(buf, sizeof(buf), "%s is now an alias for %s.\n\r",
 		ch->pcdata->alias[i].first,
 		ch->pcdata->alias[i].second);
 	    send_to_char(buf, ch);
@@ -3278,7 +3278,7 @@ void do_alias( CHAR_DATA *ch, char *argument )
 	{
 	    ch->pcdata->alias[i].first  = str_dup(arg);
 	    ch->pcdata->alias[i].second = str_dup(argument);
-	    snprintf(buf,, sizeof(buf,), "%s is now an alias for %s.\n\r",
+	    snprintf(buf, sizeof(buf), "%s is now an alias for %s.\n\r",
 		ch->pcdata->alias[i].first,
 		ch->pcdata->alias[i].second);
 	    send_to_char(buf, ch);
@@ -3286,7 +3286,7 @@ void do_alias( CHAR_DATA *ch, char *argument )
 	}
     }
 
-    snprintf(buf,, sizeof(buf,), "You have already used all %d of your aliases.\n\r",
+    snprintf(buf, sizeof(buf), "You have already used all %d of your aliases.\n\r",
 		MAX_ALIASES);
     send_to_char(buf, ch);
 }
@@ -3428,11 +3428,11 @@ void do_beep( CHAR_DATA *ch, char *argument )
         return;
     }
 
-    snprintf(buf,, sizeof(buf,), "You beep %s.\n\r",victim->name);
+    snprintf(buf, sizeof(buf), "You beep %s.\n\r",victim->name);
     send_to_char(buf,ch);
-    snprintf(buf,, sizeof(buf,), "\a\a");
+    snprintf(buf, sizeof(buf), "\a\a");
     send_to_char(buf,victim);
-    snprintf(buf,, sizeof(buf,), "%s has beeped you.\n\r",ch->name);
+    snprintf(buf, sizeof(buf), "%s has beeped you.\n\r",ch->name);
     send_to_char(buf,victim);
 
     return;
