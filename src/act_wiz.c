@@ -6242,4 +6242,39 @@ void do_component_update( CHAR_DATA *ch, char *argument )
   	component_update();
     send_to_char( "New Components Scattered!\n\r", ch );
     return;
+
+void do_resetpwd( CHAR_DATA *ch, char *argument )
+{
+    char arg[MAX_INPUT_LENGTH];
+    CHAR_DATA *victim;
+
+    one_argument(argument, arg);
+    if ( arg[0] == '\0' )
+    {
+        send_to_char( "Syntax: resetpwd <player>\n\r", ch );
+        return;
+    }
+
+    if ( ( victim = get_char_world( ch, arg ) ) == NULL || IS_NPC( victim ) )
+    {
+        send_to_char( "They aren't here.\n\r", ch );
+        return;
+    }
+
+    /* Reset password */
+    free_string( victim->pcdata->pwd );
+    victim->pcdata->pwd = str_dup( "" );
+    save_char_obj( victim );
+    send_to_char( "Password reset.\n\r", ch );
+
+    /* If online, prompt immediately */
+    if ( victim->desc != NULL )
+    {
+        write_to_buffer( victim->desc,
+            "Your password has been reset by an immortal. Please enter a new password now: ",
+            0 );
+        victim->desc->connected = CON_GET_NEW_PASSWORD;
+    }
+}
+
 }
