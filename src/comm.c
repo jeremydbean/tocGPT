@@ -1716,27 +1716,106 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	break;
 
     case CON_GET_OLD_PASSWORD:
-    if ( d->character->pcdata->pwd[0] == ' ' )
-    {
-        write_to_buffer(d,
-            "Your password has been reset by an immortal. Please enter a new password now: ",
-            0 );
-        d->connected = CON_GET_NEW_PASSWORD;
-    }
-    else if ( strcmp(crypt(argument,
-         d->character->pcdata->pwd),
-         d->character->pcdata->pwd) )
-    {
-        write_to_buffer(d, "Wrong password.
-", 0 );
-        close_socket(d);
-    }
-    else
-    {
-        write_to_buffer(d, "New password: ", 0 );
-        d->connected = CON_GET_NEW_PASSWORD;
-    }
-    break;
+    case CON_RETRY_PASSWORD:
+#if defined(unix)
+	write_to_buffer( d, "\n\r", 2 );
+#endif
+
+	if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ))
+	{
+	    if (d->connected == CON_RETRY_PASSWORD)
+	    {
+		write_to_buffer( d, "Wrong password.\n\r", 0 );
+		close_socket( d );
+	    } else
+	    {
+		write_to_buffer( d, "Wrong password. Try again!\n\r", 0);
+		write_to_buffer( d, "Retry Password: ", 0 );
+		write_to_buffer( d, echo_off_str, 0 );
+		d->connected = CON_RETRY_PASSWORD;
+	    }
+	    return;
+	}
+
+	if ( ch->pcdata->pwd[0] == '\0')
+	{
+	    write_to_buffer( d, "Warning! Null password!\n\r",0 );
+	    write_to_buffer( d, "Please report old password with bug.\n\r",0);
+	    write_to_buffer( d,
+		"Type 'password null <new password>' to fix.\n\r",0);
+	}
+
+	write_to_buffer( d, echo_on_str, 0 );
+
+	if ( check_reconnect( d, ch->name, TRUE ) )
+	    return;
+
+	if ( check_playing( d, ch->name ) )
+	    return;
+
+	sprintf( log_buf, "%s@%s has connected. [Room: %d]", ch->name,
+		 d->host, ch->in_room->vnum );
+	log_string( log_buf );
+	if ( IS_SET(ch->act, PLR_WIZINVIS) && ch->invis_level > 63)
+	    wizinfo( log_buf, ch->invis_level );
+	else
+	    wizinfo( log_buf, IMMORTAL );
+
+
+        /* bugfix by blackbird */
+        if ( IS_SET(ch->act, PLR_QUESTOR))  {
+            REMOVE_BIT(ch->act, PLR_QUESTOR);
+            ch->questgiver = NULL;
+            ch->countdown  = 0;
+            ch->questmob   = 0;
+            ch->questobj   = 0;
+            if( ch->level == 50 )
+                ch->nextquest = ch->nextquest + 7;
+            else
+                ch->nextquest = ch->nextquest + 15;
+            write_to_buffer( d, "/n/rYou have quit while you were on a quest.\n\r", 0);
+            write_to_buffer( d, "This quest will now be aborted.\n\r", 0);
+            write_to_buffer( d, "You will get the penalty added for aborting before\n\r", 0);
+            write_to_buffer( d, "you can start a new quest.\n\r", 0);
+        }
+
+   /******* Small bit of code by Ricochet to call attention to multiple players
+            from the same IP address  1/23/98 *****/
+
+
+        samehost = 0;
+        sprintf(deshost,"%s",d->host);
+
+        for ( dch = descriptor_list; dch != NULL; dch = dch->next )
+        {
+          if (dch->character == NULL)
+               continue;
+
+          sprintf(chhost,"%s",dch->host);
+          if (strstr(deshost,chhost) != NULL)
+               samehost++;
+        }
+
+        if (samehost > 1)
+        {
+           sprintf(log_buf,"There are currently %d players on from that IP address.",samehost);
+           wizinfo(log_buf, AVATAR);
+        }
+
+/*****End of section***********************/
+
+
+	if ( IS_IMMORTAL(ch) )
+	{
+	    do_help( ch, "imotd" );
+	    d->connected = CON_READ_IMOTD;
+	}
+	else
+	{
+	    do_help( ch, "motd" );
+	    d->connected = CON_READ_MOTD;
+	}
+	break;
 
 /* RT code for breaking link */
 

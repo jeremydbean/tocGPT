@@ -1224,5 +1224,4 @@ void do_wizhelp( CHAR_DATA *ch, char *argument )
     if ( col % 6 != 0 )
 	send_to_char( "\n\r", ch );
     return;
-}    { "resetpwd", do_resetpwd, POS_DEAD, L_IMM, LOG_ALWAYS, 1 },
-
+}
