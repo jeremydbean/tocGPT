@@ -1,6 +1,7 @@
 # Top-level Makefile for ToC MUD on Ubuntu 24.04+
 CC       := gcc
-CFLAGS   := -std=gnu89 -O2 -Wall -fcommon -DROM
+CFLAGS   := -std=gnu89 -O2 -w -fcommon -DROM
+
 LDFLAGS  := -lcrypt -lm
 
 SRC_DIR  := src
