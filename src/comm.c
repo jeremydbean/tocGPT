@@ -906,12 +906,13 @@ void make_descriptor( DESCRIPTOR_DATA *dnew, int desc )
 void new_descriptor( int control )
 {
     char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
     DESCRIPTOR_DATA *dnew;
     BAN_DATA *pban;
     struct sockaddr_in sock;
     struct hostent *from;
     int desc;
-    int size;
+    socklen_t size;
     int ipaddr[4];
 
     size = sizeof(sock);
@@ -1053,6 +1054,7 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 {
     CHAR_DATA *ch;
     char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
 /*
     if( dclose->ipid > -1 )
     {
@@ -1349,6 +1351,7 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 	    char wound[100];
 	    char wound2[100];
 	    char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
 
 	    if (victim->max_hit > 0)
 		percent = victim->hit * 100 / victim->max_hit;
@@ -1414,7 +1417,7 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 
 	       sprintf(buf,"\n[ %s: [%d/%d hp] <*> You: %s ]",
 		  PERS(victim,ch), victim->hit, victim->max_hit,wound2);
-	      else;
+	      else {}
 		sprintf(buf,"\n[ %s: [%d/%d hp] <*> %s: %s ]",
 		PERS(victim, ch), victim->hit,victim->max_hit,PERS(victim->fighting,ch),wound2);
 				}
@@ -1611,6 +1614,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
     char chhost[MAX_STRING_LENGTH];
     char deshost[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
     char arg[MAX_INPUT_LENGTH];
     CHAR_DATA *ch;
     char *pwdnew;
@@ -2711,6 +2715,7 @@ void stop_idling( CHAR_DATA *ch )
 void send_to_char( const char *txt, CHAR_DATA *ch )
 {
   char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
   int t,len,col;
   PC_DATA *pcdata;
   char *ptr;
@@ -2833,7 +2838,7 @@ void show_string(struct descriptor_data *d, char *input)
 	{
 	    *scan = '\0';
 	    write_to_buffer(d,buffer,strlen(buffer));
-	    	for (chk = d->showstr_point; isspace(*chk); chk++);
+	    	for (chk = d->showstr_point; isspace(*chk); chk++)
 	    		{
 						if (!*chk)
 							{
@@ -2874,6 +2879,7 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
     static char * const his_her [] = { "its", "his", "her" };
 
     char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
     CHAR_DATA *vch = (CHAR_DATA *) arg2;
@@ -3011,6 +3017,7 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
     static char * const his_her [] = { "its", "his", "her" };
 
     char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
     CHAR_DATA *vch = (CHAR_DATA *) arg2;
@@ -3172,6 +3179,7 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
 char *drunk_speak( const char *str )
 {
     static char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
     const char *cp1;
     char *cp2;
     int numb;
@@ -3409,6 +3417,7 @@ char *str_replace_c( char *astr, char *bstr, char *cstr )
 {
     char newstr[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
     bool found = FALSE;
     int sstr1, sstr2;
     int ichar, jchar;
@@ -3461,6 +3470,7 @@ void config_prompt( CHAR_DATA *ch )
 {
     DESCRIPTOR_DATA *d;
     char buf[MAX_STRING_LENGTH];
+    buf[0] = '0';
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
 
@@ -3577,3 +3587,5 @@ void config_prompt( CHAR_DATA *ch )
 
    return;
 }
+
+void do_outfit(CHAR_DATA *ch, char *argument) { send_to_char("Outfit command is not available.\n\r", ch); }

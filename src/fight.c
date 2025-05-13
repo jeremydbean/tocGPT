@@ -1281,7 +1281,7 @@ bool damage( CHAR_DATA *ch, CHAR_DATA *victim, int dam, int dt, int dam_type )
 
 
 
-				return;
+    return FALSE;
 			}
 	else;
 	group_gain( ch, victim );

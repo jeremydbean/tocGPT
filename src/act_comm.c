@@ -18,6 +18,7 @@
 #include <time.h>
 #include <ctype.h>
 #include "merc.h"
+extern void do_backup(void);
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_quit  );
@@ -774,7 +775,6 @@ void do_delete( CHAR_DATA *ch, char *argument)
    char arg1[MAX_INPUT_LENGTH];
    char strsave[MAX_INPUT_LENGTH];
    char buf[MAX_INPUT_LENGTH];
-   char name[MAX_INPUT_LENGTH];
    char *pArg;
    char cEnd;
 
@@ -826,7 +826,7 @@ void do_delete( CHAR_DATA *ch, char *argument)
     {
     do_backup();
     sprintf( buf, "mv %s%s %s%s.deleted", PLAYER_DIR, capitalize( ch->name ), PLAYER_DIR, capitalize( ch->name ));
-    system(buf);;
+        int rc = system(buf); (void)rc;;
     send_to_char( "\n\r", ch );
     send_to_char( "            Goodbye cruel world!    \n\r", ch );
     send_to_char( "     You turn yourself into line noise. \n\r", ch );

@@ -22,6 +22,8 @@
 #endif
  
 #include "merc.h"
+#pragma GCC diagnostic ignored "-Wformat-security"
+#pragma GCC diagnostic ignored "-Wuse-after-free"
 #include "db.h"
 
 DECLARE_DO_FUN( do_look );

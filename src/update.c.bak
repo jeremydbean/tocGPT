@@ -16,10 +16,6 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
-#pragma GCC diagnostic ignored "-Wmissing-braces"
-#pragma GCC diagnostic ignored "-Wmisleading-indentation"
-#pragma GCC diagnostic ignored "-Wdangling-else"
-#pragma GCC diagnostic ignored "-Waddress"
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_quit		);

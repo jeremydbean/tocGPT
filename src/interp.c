@@ -18,6 +18,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#pragma GCC diagnostic ignored "-Wformat-overflow"
 #include "interp.h"
 
 

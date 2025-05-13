@@ -433,9 +433,10 @@ bool spec_cast_adept( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_cleric( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
-    char *spell;
+
     int sn;
  
     if ( cmd != NULL)
@@ -497,9 +498,10 @@ bool spec_cast_cleric( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_judge( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
-    char *spell;
+
     int sn;
  
     if ( cmd != NULL)
@@ -529,9 +531,10 @@ bool spec_cast_judge( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_mage( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
-    char *spell;
+
     int sn;
  
     if ( cmd != NULL)
@@ -606,9 +609,10 @@ bool spec_cast_mage( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_undead( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
-    char *spell;
+
     int sn;
  
     if ( cmd != NULL)
@@ -659,9 +663,10 @@ bool spec_cast_undead( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_psionic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
-    char *spell;
+
     int min_level;
     int do_protect;
     int chance;
@@ -2193,9 +2198,10 @@ bool spec_club_dj( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_paramedic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
   CHAR_DATA *vch;
   CHAR_DATA *most_hurt = NULL;
-  char *spell;
+
   float hp_check = 0;
   int hp_hold = 0;
   int sn;
@@ -2392,7 +2398,7 @@ bool spec_quest_master( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argume
 	    break;
  
        send_to_char("Your clue is:\n\r\n\r",ch);
-       sprintf(buf, quest_table[holder_2].quest_clue);
+       snprintf(buf, MAX_STRING_LENGTH, "%s", quest_table[holder_2].quest_clue);
        send_to_char(buf,ch);
        save_char_obj(ch);
        return TRUE;
@@ -2458,7 +2464,7 @@ bool spec_quest_master( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argume
 	  if(ch->pcdata->questor[holder_1 + 1] == quest_table[holder_2].quest_item)
 	    break;
  
-	sprintf(buf,quest_table[holder_2].quest_clue);
+	snprintf(buf, MAX_STRING_LENGTH, "%s", quest_table[holder_2].quest_clue);
 	send_to_char(buf,ch);
  
 	return TRUE;
@@ -2649,9 +2655,10 @@ bool spec_kidnapper( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argument 
  
 bool spec_monk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
-    char *spell;
+
     int min_level;
     int chance;
  
@@ -2702,9 +2709,10 @@ bool spec_monk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 
 bool spec_cast_necro( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    char *spell = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
-    char *spell;
+
     int sn;
  
     if ( cmd != NULL)

@@ -1572,10 +1572,7 @@ bool remove_obj( CHAR_DATA *ch, int iWear, bool fReplace )
     if ( ( obj = get_eq_char( ch, iWear ) ) == NULL )
 	return TRUE;
 
-    if ( !fReplace )
-	return FALSE;
-
-	if (!IS_IMMORTAL(ch))
+    if (!fReplace && !IS_IMMORTAL(ch)) return FALSE;
   {
     if ( IS_SET(obj->extra_flags, ITEM_NOREMOVE) )
     {
