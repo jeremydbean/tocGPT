@@ -433,7 +433,7 @@ bool spec_cast_adept( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_cleric( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
 
@@ -498,7 +498,7 @@ bool spec_cast_cleric( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_judge( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
 
@@ -531,7 +531,7 @@ bool spec_cast_judge( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_mage( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
 
@@ -609,7 +609,7 @@ bool spec_cast_mage( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_undead( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
 
@@ -663,7 +663,7 @@ bool spec_cast_undead( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_psionic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
 
@@ -2198,7 +2198,7 @@ bool spec_club_dj( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_paramedic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
   CHAR_DATA *vch;
   CHAR_DATA *most_hurt = NULL;
 
@@ -2655,7 +2655,7 @@ bool spec_kidnapper( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argument 
  
 bool spec_monk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
 
@@ -2709,7 +2709,7 @@ bool spec_monk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 
 bool spec_cast_necro( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-    char *spell = NULL;
+    char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
 

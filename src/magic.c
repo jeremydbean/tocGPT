@@ -1222,9 +1222,9 @@ void spell_chain_lightning(int sn, int level, CHAR_DATA *ch, void *vo)
 
 void spell_change_sex( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     AFFECT_DATA af;
-    char buf[MAX_STRING_LENGTH];
 
     if ( is_affected( victim, sn ))
     {

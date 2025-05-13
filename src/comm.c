@@ -911,6 +911,7 @@ void new_descriptor( int control )
     BAN_DATA *pban;
     struct sockaddr_in sock;
     struct hostent *from;
+    /* int ipaddr[4]; moved lower */
     int desc;
     socklen_t size;
     int ipaddr[4];

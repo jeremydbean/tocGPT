@@ -5356,7 +5356,8 @@ void do_iron_skin( CHAR_DATA *ch, char *argument )
 	switch (pick)
 	{
 	 case 1: if(!IS_SET(ch->imm_flags, IMM_BASH) )
-		    SET_BIT(ch->imm_flags, IMM_BASH);    break;
+		    SET_BIT(ch->imm_flags, IMM_BASH); 
+                break;
 	 case 2: if(!IS_SET(ch->imm_flags, IMM_PIERCE) )
 		    SET_BIT(ch->imm_flags, IMM_PIERCE);  break;
 	 case 3: if(!IS_SET(ch->imm_flags, IMM_SLASH) )

@@ -838,7 +838,7 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
     char buf[MAX_STRING_LENGTH];
     char *word;
     bool fMatch;
-    int cur_alias = 0, temp;
+    int cur_alias = 0, __attribute__((unused)) temp;
 
     for ( ; ; )
     {
@@ -1264,7 +1264,7 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 
 	if ( !fMatch )
 	{
-	    bug( "Fread_char: no match. '%s'", (int) word );
+	    bug( "Fread_char: no match. '%s'", (long) word);
 	    fread_to_eol( fp );
 	}
     }
@@ -1871,8 +1871,8 @@ void corpse_back( CHAR_DATA *ch, OBJ_DATA *corpse )
     OBJ_DATA	*obj_nest, *objn_next;
     char	strsave[MAX_INPUT_LENGTH];
     char 	buf[MAX_STRING_LENGTH];
-    int		corpse_cont[5][1024];
-    int		item_level[5][1024];
+    int		corpse_cont[6][1024];
+    int		item_level[6][1024];
     int		c = 1, i;
     int		checksum1 = 0;
     int 	checksum2 = 0;
