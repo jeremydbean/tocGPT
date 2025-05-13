@@ -170,14 +170,14 @@ void do_topten( CHAR_DATA *ch, char *argument )
  
   boundary = UMIN(MAX_PKILL_LIST,UMAX(10,MAX_PKILL_LIST-10));
   send_to_char("The top10 of pkillers:\n\r",ch);
-  snprintf(buf,, sizeof(buf,), "Pos  %-15s%10s%10s%10s\n\r","Player","Received","Given","Total");
+  sprintf(buf,"Pos  %-15s%10s%10s%10s\n\r","Player","Received","Given","Total");
   send_to_char(buf,ch);
   send_to_char("--------------------------------------------------\n\r",ch);
   pkill = pkill_list;
   for (i=0;i<boundary;i++) 
   { if (pkill != NULL)
     {
-     snprintf(buf,, sizeof(buf,), "[%2d] %-14s:%10ld%10ld%10ld\n\r",i+1,pkill->name,
+     sprintf(buf,"[%2d] %-14s:%10ld%10ld%10ld\n\r",i+1,pkill->name,
              pkill->pkills_received,
              pkill->pkills_given,
              pkill->pkills_given - pkill->pkills_received);
@@ -213,14 +213,14 @@ void load_pkills( )
      if (word[0] == '$') break;
      if (strlen(word) != 2) {
         log_string("Error in pkillfile length command word <> 2");
-        snprintf(buf,, sizeof(buf,), "Skipping line with word: %s",word);
+        sprintf(buf,"Skipping line with word: %s",word);
         log_string(buf);
         fread_to_eol( fp );
         continue;
      }
      if ((UPPER(word[0]) != 'P') && (UPPER(word[1]) != 'K')) {
         log_string("Error in read_max_load_file: UPPER(word) <> PK");
-        snprintf(buf,, sizeof(buf,), "Skipping line with word: %s",word);
+        sprintf(buf,"Skipping line with word: %s",word);
         log_string(buf);
         fread_to_eol( fp );
         continue;

@@ -920,7 +920,7 @@ void affect_to_char( CHAR_DATA *ch, AFFECT_DATA *paf )
     paf_new->bitvector      =  paf->bitvector;
     paf_new->bitvector2     =  paf->bitvector2;
     if ((paf_new->bitvector != 0) && (paf_new->bitvector2 != 0)) {
-      snprintf(buf,, sizeof(buf,), "Trying to add: %s AND %s as bitvectors to %s\n\r",
+      sprintf(buf,"Trying to add: %s AND %s as bitvectors to %s\n\r",
                   affect_bit_name(paf_new->bitvector),
                   affect_bit_name(paf_new->bitvector2),
                   ch->name);
@@ -962,7 +962,7 @@ void affect_to_obj(OBJ_DATA *obj, AFFECT_DATA *paf)
     paf_new->bitvector      =  paf->bitvector;
     paf_new->bitvector2     =  paf->bitvector2;
     if ((paf_new->bitvector != 0) && (paf_new->bitvector2 != 0)) {
-      snprintf(buf,, sizeof(buf,), "Trying to add: %s AND %s as bitvectors to object %s\n\r",
+      sprintf(buf,"Trying to add: %s AND %s as bitvectors to object %s\n\r",
                   affect_bit_name(paf_new->bitvector),
                   affect_bit_name(paf_new->bitvector2),
                   obj->name);
@@ -3663,24 +3663,24 @@ void show_obj_condition(OBJ_DATA *obj, CHAR_DATA *ch)
 
     switch(obj->condition/10)
     {
-        case 10: snprintf(buf,, sizeof(buf,), "The %s is in perfect condition.\n\r",
+        case 10: sprintf(buf,"The %s is in perfect condition.\n\r",
                          obj->short_descr);	break;
         case  9:
-        case  8: snprintf(buf,, sizeof(buf,), "The %s is in great condition.\n\r",
+        case  8: sprintf(buf,"The %s is in great condition.\n\r",
                          obj->short_descr);	break;
         case  7:
-        case  6: snprintf(buf,, sizeof(buf,), "The %s is in good condition.\n\r",
+        case  6: sprintf(buf,"The %s is in good condition.\n\r",
                          obj->short_descr);	break;
         case  5:
         case  4:
-        case  3: snprintf(buf,, sizeof(buf,), "The %s is in average condition.\n\r",
+        case  3: sprintf(buf,"The %s is in average condition.\n\r",
                          obj->short_descr);	break;
         case  2:
-        case  1: snprintf(buf,, sizeof(buf,), "The %s is in bad condition.\n\r",
+        case  1: sprintf(buf,"The %s is in bad condition.\n\r",
                          obj->short_descr);	break;
-        case  0: snprintf(buf,, sizeof(buf,), "The %s is falling apart.\n\r",
+        case  0: sprintf(buf,"The %s is falling apart.\n\r",
                          obj->short_descr);	break;
-        default: snprintf(buf,, sizeof(buf,), "The %s is in perfect condition.\n\r",
+        default: sprintf(buf,"The %s is in perfect condition.\n\r",
                          obj->short_descr);	break;
     }
 

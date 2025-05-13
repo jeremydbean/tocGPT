@@ -92,13 +92,13 @@ void do_lore( CHAR_DATA *ch, char *argument )
 
     WAIT_STATE( ch, skill_table[gsn_lore].beats );
 
-    snprintf( buf,, sizeof( buf,), "The %s is a %s of some sort, and weights around %d stone.\n\r",
+    sprintf( buf,"The %s is a %s of some sort, and weights around %d stone.\n\r",
 	obj->name,
 	item_type_name( obj ),
 	number_range(obj->weight/2,obj->weight*2) );
     send_to_char( buf, ch );
 
-    snprintf( buf,, sizeof( buf,), "Looking it over closely, you estimate it's worth about %d gold.\n\r",
+    sprintf( buf,"Looking it over closely, you estimate it's worth about %d gold.\n\r",
 	number_range(obj->cost/2,obj->cost*2) );
 
 
@@ -107,7 +107,7 @@ void do_lore( CHAR_DATA *ch, char *argument )
     case ITEM_SCROLL:
     case ITEM_POTION:
     case ITEM_PILL:
-	snprintf( buf,, sizeof( buf,), "Level %d spells of:",
+	sprintf( buf, "Level %d spells of:",
 	number_range(obj->value[0]/2,obj->value[0]*2) );
 	send_to_char( buf, ch );
 
@@ -149,7 +149,7 @@ void do_lore( CHAR_DATA *ch, char *argument )
 
     case ITEM_WAND:
     case ITEM_STAFF:
-	snprintf( buf,, sizeof( buf,), "The staff has %d(%d) charges of level %d,",
+	sprintf( buf, "The staff has %d(%d) charges of level %d,",
 	    number_range(obj->value[1]/2,obj->value[1]*2),
 	    number_range(obj->value[2]/2,obj->value[2]*2),
 	    number_range(obj->value[0]/2,obj->value[0]*2) );
@@ -192,7 +192,7 @@ void do_lore( CHAR_DATA *ch, char *argument )
 	    stat1 = number_range(obj->value[1]/2, obj->value[1] + 5);
 	    stat2 = number_range(obj->value[2]/2, obj->value[2] + 5);
 	    check += 1;
-	    snprintf(buf,, sizeof(buf,), "Damage is %dd%d (average %d).\n\r",
+	    sprintf(buf,"Damage is %dd%d (average %d).\n\r",
 		stat1,
 		stat2,
 		( (1 + stat1) + stat2 )/2);
@@ -221,7 +221,7 @@ void do_lore( CHAR_DATA *ch, char *argument )
     {
 	if ( paf->location != APPLY_NONE && paf->modifier != 0 )
 	{
-	    snprintf( buf,, sizeof( buf,), "Affects %s by %d.\n\r",
+	    sprintf( buf, "Affects %s by %d.\n\r",
 		affect_loc_name( paf->location ),
 		number_range(paf->modifier/2, paf->modifier*2) );
 	    send_to_char( buf, ch );
@@ -232,7 +232,7 @@ void do_lore( CHAR_DATA *ch, char *argument )
     {
 	if ( paf->location != APPLY_NONE && paf->modifier != 0 )
 	{
-	    snprintf( buf,, sizeof( buf,), "Affects %s by %d.\n\r",
+	    sprintf( buf, "Affects %s by %d.\n\r",
 		affect_loc_name( paf->location ),
 		number_range(paf->modifier/2, paf->modifier*2) );
 	    send_to_char( buf, ch );
@@ -816,7 +816,7 @@ void do_telekinesis( CHAR_DATA *ch, char *argument )
 		else if( obj->in_room != NULL)
 		  {
 		   found = TRUE;
-		   snprintf(buf,, sizeof(buf,), "%s has TK'd %s from room %d",ch->name,
+		   sprintf(buf,"%s has TK'd %s from room %d",ch->name,
 			obj->name,obj->in_room->vnum);
 		   wizinfo(buf, LEVEL_IMMORTAL);
 		   obj_from_room( obj );
@@ -1939,7 +1939,7 @@ void do_shift( CHAR_DATA *ch, char *argument )
 	   send_to_char( "You failed.\n\r", ch );
 	   return;
     }
-    snprintf(buf,, sizeof(buf,), "%s has shifted %s to room %d",ch->name,
+    sprintf(buf,"%s has shifted %s to room %d",ch->name,
 	(IS_NPC(victim) ? victim->short_descr : victim->name), ch->in_room->vnum);
     wizinfo(buf,LEVEL_IMMORTAL);
     act( "$n is pulled into a spatial rift.", victim, NULL, NULL, TO_ROOM );
@@ -2037,7 +2037,7 @@ void spell_earth_travel( int sn, int level, CHAR_DATA *ch, void *vo )
        NULL,NULL,TO_ROOM);
     do_look(ch,"auto");
 
-    snprintf(buf,, sizeof(buf,), "%s traveled to %s via the earth. [Room: %d]",
+    sprintf(buf,"%s traveled to %s via the earth. [Room: %d]",
 	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
 	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
 	  victim->in_room->vnum);
@@ -2238,10 +2238,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("refresh");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a blue container of tea");
+	      sprintf(buf,"a blue container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "blue tea");
+	      sprintf(buf,"blue tea");
 	      tea->name = str_dup( buf );
      break;
      case 35:
@@ -2249,10 +2249,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("cure blindness");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a white container of tea");
+	      sprintf(buf,"a white container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "white tea");
+	      sprintf(buf,"white tea");
 	      tea->name = str_dup( buf );
      break;
      case 36:
@@ -2265,10 +2265,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 		tea->value[2] = skill_lookup("poison");
 		tea->value[3] = skill_lookup("blindness");
 		free_string( tea->short_descr );
-		snprintf(buf,, sizeof(buf,), "a redish-black container of tea");
+		sprintf(buf,"a redish-black container of tea");
 		tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "redish-black tea");
+	      sprintf(buf,"redish-black tea");
 	      tea->name = str_dup( buf );
 	      }
 	      else
@@ -2276,10 +2276,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 		tea->value[1] = skill_lookup("cure light");
 		tea->value[2] = skill_lookup("cure light");
 		free_string( tea->short_descr );
-		snprintf(buf,, sizeof(buf,), "a pink container of tea");
+		sprintf(buf,"a pink container of tea");
 		tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "pink tea");
+	      sprintf(buf,"pink tea");
 	      tea->name = str_dup( buf );
 	      }
      break;
@@ -2288,10 +2288,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("infravision");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a bloodstone container of tea");
+	      sprintf(buf,"a bloodstone container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "bloodstone tea");
+	      sprintf(buf,"bloodstone tea");
 	      tea->name = str_dup( buf );
      break;
      case 38:
@@ -2299,20 +2299,20 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("haste");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a ruby container of tea");
+	      sprintf(buf,"a ruby container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "ruby tea");
+	      sprintf(buf,"ruby tea");
 	      tea->name = str_dup( buf );
      break;
      case 39:
 	      tea->value[0] = ch->level;
 	      tea->value[1] = skill_lookup("cure light");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a plain container of tea");
+	      sprintf(buf,"a plain container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "plain tea");
+	      sprintf(buf,"plain tea");
 	      tea->name = str_dup( buf );
      break;
      case 40:
@@ -2320,10 +2320,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("detect poison");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "an off-white container of tea");
+	      sprintf(buf,"an off-white container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "off-white tea");
+	      sprintf(buf,"off-white tea");
 	      tea->name = str_dup( buf );
      break;
      case 41:
@@ -2332,10 +2332,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[2] = skill_lookup("cure disease");
 	      tea->value[3] = skill_lookup("cure nightmare");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a diamond container of tea");
+	      sprintf(buf,"a diamond container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "diamond tea");
+	      sprintf(buf,"diamond tea");
 	      tea->name = str_dup( buf );
      break;
      case 42:
@@ -2343,20 +2343,20 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure critical");
 	      tea->value[2] = skill_lookup("cure nightmare");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a sapphire container of tea");
+	      sprintf(buf,"a sapphire container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "sapphire tea");
+	      sprintf(buf,"sapphire tea");
 	      tea->name = str_dup( buf );
      break;
      case 43:
 	      tea->value[0] = ch->level;
 	      tea->value[1] = skill_lookup("cure serious");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a green container of tea");
+	      sprintf(buf,"a green container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "green tea");
+	      sprintf(buf,"green tea");
 	      tea->name = str_dup( buf );
      break;
      case 44:
@@ -2364,10 +2364,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("protection");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a golden container of tea");
+	      sprintf(buf,"a golden container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "golden tea");
+	      sprintf(buf,"golden tea");
 	      tea->name = str_dup( buf );
      break;
      case 45:
@@ -2375,10 +2375,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("cure serious");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a silver container of tea");
+	      sprintf(buf,"a silver container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "silver tea");
+	      sprintf(buf,"silver tea");
 	      tea->name = str_dup( buf );
      break;
      case 46:
@@ -2387,10 +2387,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[2] = skill_lookup("cure critical");
 	      tea->value[3] = skill_lookup("cure critical");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a onyx container of tea");
+	      sprintf(buf,"a onyx container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "onyx tea");
+	      sprintf(buf,"onyx tea");
 	      tea->name = str_dup( buf );
      break;
      case 47:
@@ -2398,10 +2398,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure serious");
 	      tea->value[2] = skill_lookup("cure disease");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a lavender colored container of tea");
+	      sprintf(buf,"a lavender colored container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "lavender tea");
+	      sprintf(buf,"lavender tea");
 	      tea->name = str_dup( buf );
      break;
      case 48:
@@ -2409,10 +2409,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("giant strength");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a purple colored container of tea");
+	      sprintf(buf,"a purple colored container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "purple tea");
+	      sprintf(buf,"purple tea");
 	      tea->name = str_dup( buf );
      break;
      case 49:
@@ -2420,20 +2420,20 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[2] = skill_lookup("calm");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a hazel colored container of tea");
+	      sprintf(buf,"a hazel colored container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "hazel tea");
+	      sprintf(buf,"hazel tea");
 	      tea->name = str_dup( buf );
      break;
      case 50:
 	      tea->value[0] = ch->level;
 	      tea->value[1] = skill_lookup("cure light");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a pale green container of tea");
+	      sprintf(buf,"a pale green container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "pale green tea");
+	      sprintf(buf,"pale green tea");
 	      tea->name = str_dup( buf );
      break;
      case 51:
@@ -2441,10 +2441,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure critical");
 	      tea->value[2] = skill_lookup("heal");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a sky blue container of tea");
+	      sprintf(buf,"a sky blue container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "sky blue tea");
+	      sprintf(buf,"sky blue tea");
 	      tea->name = str_dup( buf );
      break;
      case 52:
@@ -2452,10 +2452,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[1] = skill_lookup("cure light");
 	      tea->value[1] = skill_lookup("cure poison");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a sea green container of tea");
+	      sprintf(buf,"a sea green container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "sea green tea");
+	      sprintf(buf,"sea green tea");
 	      tea->name = str_dup( buf );
      break;
      case 53:
@@ -2464,10 +2464,10 @@ void do_brew( CHAR_DATA *ch, char *argument )
 	      tea->value[2] = skill_lookup("refresh");
 	      tea->value[3] = skill_lookup("restore mana");
 	      free_string( tea->short_descr );
-	      snprintf(buf,, sizeof(buf,), "a rainbow colored container of tea");
+	      sprintf(buf,"a rainbow colored container of tea");
 	      tea->short_descr = str_dup( buf );
 	      free_string( tea->name );
-	      snprintf(buf,, sizeof(buf,), "rainbow tea");
+	      sprintf(buf,"rainbow tea");
 	      tea->name = str_dup( buf );
      break;
 
@@ -2546,10 +2546,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      potion = create_object(get_obj_index(75), ch->level);
      slot_one = skill_lookup("fire shield");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a flaming red potion");
+     sprintf(buf,"a flaming red potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "flaming red potion");
+     sprintf(buf,"flaming red potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2562,10 +2562,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_two = skill_lookup("heal");
      slot_three = skill_lookup("restore mana");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a colorless potion");
+     sprintf(buf,"a colorless potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "colorless potion");
+     sprintf(buf,"colorless potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2578,10 +2578,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_two = skill_lookup("restore mana");
      slot_three = skill_lookup("restore mana");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a pinkish potion ");
+     sprintf(buf,"a pinkish potion ");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "pinkish potion");
+     sprintf(buf,"pinkish potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2593,10 +2593,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_one = skill_lookup("sanctuary");
      slot_two = skill_lookup("heal");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a white potion");
+     sprintf(buf,"a white potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "white potion");
+     sprintf(buf,"white potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2608,10 +2608,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_one = skill_lookup("heal");
      slot_two = skill_lookup("pass door");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a clear potion");
+     sprintf(buf,"a clear potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "clear potion");
+     sprintf(buf,"clear potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2623,10 +2623,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_one = skill_lookup("heal");
      slot_two = skill_lookup("heal");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a yellowish potion");
+     sprintf(buf,"a yellowish potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "yellowish potion");
+     sprintf(buf,"yellowish potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2639,10 +2639,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_two = skill_lookup("heal");
      slot_three = skill_lookup("sanctuary");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a pale potion");
+     sprintf(buf,"a pale potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "pale potion");
+     sprintf(buf,"pale potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2655,10 +2655,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_two = skill_lookup("heal");
      slot_three = skill_lookup("sanctuary");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a blue potion");
+     sprintf(buf,"a blue potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "blue potion");
+     sprintf(buf,"blue potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2671,10 +2671,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_two = skill_lookup("heal");
      slot_three = skill_lookup("heal");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a bright white potion");
+     sprintf(buf,"a bright white potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "bright white potion");
+     sprintf(buf,"bright white potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2687,10 +2687,10 @@ void do_concoct( CHAR_DATA *ch, char *argument )
      slot_two = skill_lookup("mass sanctuary");
      slot_three = skill_lookup("power gloves");
      free_string( potion->short_descr );
-     snprintf(buf,, sizeof(buf,), "a softly glowing potion");
+     sprintf(buf,"a softly glowing potion");
      potion->short_descr = str_dup( buf );
      free_string( potion->name );
-     snprintf(buf,, sizeof(buf,), "softly glowing potion");
+     sprintf(buf,"softly glowing potion");
      potion->name = str_dup( buf );
      found = TRUE;
    }
@@ -2702,7 +2702,7 @@ void do_concoct( CHAR_DATA *ch, char *argument )
 	  ch,NULL,NULL,TO_ROOM);
      act("As the water begins to bubble and boil, $n then adds",ch,
 	  NULL,NULL,TO_ROOM);
-     snprintf(buf,, sizeof(buf,), "%s and %s to the mixture.",pObj_one->short_descr,
+     sprintf(buf,"%s and %s to the mixture.",pObj_one->short_descr,
 	    pObj_two->short_descr);
      act(buf,ch,NULL,NULL,TO_ROOM);
      act("$n then says a few arcane words over it as the contents begin to",ch,
@@ -2817,13 +2817,13 @@ void do_scribe( CHAR_DATA *ch, char *argument )
      scroll = create_object(get_obj_index(90), ch->level);
      spell_one = skill_lookup("remove align");
      free_string( scroll->short_descr );
-     snprintf(buf,, sizeof(buf,), "a blank scroll");
+     sprintf(buf,"a blank scroll");
      scroll->short_descr = str_dup( buf );
      free_string( scroll->name );
-     snprintf(buf,, sizeof(buf,), "blank scroll");
+     sprintf(buf,"blank scroll");
      scroll->name = str_dup( buf );
      found = TRUE;
-     snprintf(buf,, sizeof(buf,), "A remove align scroll may have been created by %s",ch->name);
+     sprintf(buf,"A remove align scroll may have been created by %s",ch->name);
      log_string(buf);
      wizinfo(buf,LEVEL_IMMORTAL);
    }
@@ -2837,10 +2837,10 @@ void do_scribe( CHAR_DATA *ch, char *argument )
      spell_two = skill_lookup("sanctuary");
      spell_three = skill_lookup("restore mana");
      free_string( scroll->short_descr );
-     snprintf(buf,, sizeof(buf,), "a redish-white scroll");
+     sprintf(buf,"a redish-white scroll");
      scroll->short_descr = str_dup( buf );
      free_string( scroll->name );
-     snprintf(buf,, sizeof(buf,), "redish-white scroll");
+     sprintf(buf,"redish-white scroll");
      scroll->name = str_dup( buf );
      found = TRUE;
    }
@@ -2854,10 +2854,10 @@ void do_scribe( CHAR_DATA *ch, char *argument )
      spell_two = skill_lookup("sanctuary");
      spell_three = skill_lookup("heal");
      free_string( scroll->short_descr );
-     snprintf(buf,, sizeof(buf,), "a blinding white scroll");
+     sprintf(buf,"a blinding white scroll");
      scroll->short_descr = str_dup( buf );
      free_string( scroll->name );
-     snprintf(buf,, sizeof(buf,), "blinding white scroll");
+     sprintf(buf,"blinding white scroll");
      scroll->name = str_dup( buf );
      found = TRUE;
    }
@@ -2871,10 +2871,10 @@ void do_scribe( CHAR_DATA *ch, char *argument )
      spell_two = skill_lookup("mass sanctuary");
      spell_three = skill_lookup("restore mana");
      free_string( scroll->short_descr );
-     snprintf(buf,, sizeof(buf,), "a yellow scroll");
+     sprintf(buf,"a yellow scroll");
      scroll->short_descr = str_dup( buf );
      free_string( scroll->name );
-     snprintf(buf,, sizeof(buf,), "yellow scroll");
+     sprintf(buf,"yellow scroll");
      scroll->name = str_dup( buf );
      found = TRUE;
    }
@@ -2887,13 +2887,13 @@ void do_scribe( CHAR_DATA *ch, char *argument )
         scroll = create_object(get_obj_index(90), ch->level);
         spell_one = skill_lookup("csst");
         free_string( scroll->short_descr );
-        snprintf(buf,, sizeof(buf,), "a deadly black scroll");
+        sprintf(buf,"a deadly black scroll");
         scroll->short_descr = str_dup( buf );
         free_string( scroll->name );
-        snprintf(buf,, sizeof(buf,), "deadly black scroll");
+        sprintf(buf,"deadly black scroll");
         scroll->name = str_dup( buf );
         found = TRUE;
-        snprintf(buf,, sizeof(buf,), "Vengence may soon fall upon you from %s!", ch->name);
+        sprintf(buf,"Vengence may soon fall upon you from %s!", ch->name);
         log_string(buf);
         wizinfo(buf,LEVEL_IMMORTAL);
       }
@@ -3054,7 +3054,7 @@ void spell_vengence( int sn, int level, CHAR_DATA *ch, void *vo )
     victim->hit = 1;
     victim->mana = 1;
     victim->move = 1;
-    snprintf(buf,, sizeof(buf,), "%s got farslayed by %s.",victim->name,ch->name);
+    sprintf(buf,"%s got farslayed by %s.",victim->name,ch->name);
     wizinfo(buf, LEVEL_IMMORTAL);
     log_string(buf);
     SET_BIT(ch->act, PLR_WANTED);
@@ -3070,7 +3070,7 @@ void spell_vengence( int sn, int level, CHAR_DATA *ch, void *vo )
     ch->hit = 1;
     ch->mana = 1;
     ch->move = 1;
-    snprintf(buf,, sizeof(buf,), "%s got hit by their own farslay *tee-hee*",ch->name);
+    sprintf(buf,"%s got hit by their own farslay *tee-hee*",ch->name);
     wizinfo(buf,LEVEL_IMMORTAL);
     log_string(buf);
     SET_BIT(ch->act, PLR_WANTED);
@@ -3441,13 +3441,13 @@ void spell_create_skeleton( int sn, int level, CHAR_DATA *ch, void *vo )
     victim->damroll          = 10;
     victim->damage[DICE_NUMBER] = 10;
     victim->damage[DICE_TYPE]   = 10;
-    snprintf(buf,, sizeof(buf,), "skeleton");
+    sprintf(buf,"skeleton");
     free_string(victim->name);
     victim->name = str_dup(buf);
-    snprintf(buf,, sizeof(buf,), "a skeleton");
+    sprintf(buf,"a skeleton");
     free_string(victim->short_descr);
     victim->short_descr = str_dup(buf);
-    snprintf(buf,, sizeof(buf,), "A skeleton is here serving %s.\n\r",ch->name);
+    sprintf(buf,"A skeleton is here serving %s.\n\r",ch->name);
     free_string(victim->long_descr);
     victim->long_descr = str_dup(buf);
     victim->timer = 50;
@@ -3517,13 +3517,13 @@ void spell_create_wraith( int sn, int level, CHAR_DATA *ch, void *vo )
     victim->damroll             = GET_DAMROLL(ch)/2;
     victim->damage[DICE_NUMBER] = ch->damage[DICE_NUMBER] + 1;
     victim->damage[DICE_TYPE]   =  ch->damage[DICE_TYPE] + 1;
-    snprintf(buf,, sizeof(buf,), "wraith");
+    sprintf(buf,"wraith");
     free_string(victim->name);
     victim->name = str_dup(buf);
-    snprintf(buf,, sizeof(buf,), "a wraith");
+    sprintf(buf,"a wraith");
     free_string(victim->short_descr);
     victim->short_descr = str_dup(buf);
-    snprintf(buf,, sizeof(buf,), "A wraith is here serving %s.\n\r",ch->name);
+    sprintf(buf,"A wraith is here serving %s.\n\r",ch->name);
     free_string(victim->long_descr);
     victim->long_descr = str_dup(buf);
     victim->timer = 150;
@@ -3592,16 +3592,16 @@ void spell_create_vampire( int sn, int level, CHAR_DATA *ch, void *vo )
     victim->damroll             = GET_DAMROLL(ch);
     victim->damage[DICE_NUMBER] = ch->damage[DICE_NUMBER] + 1;
     victim->damage[DICE_TYPE]   = ch->damage[DICE_TYPE] + 1;
-    snprintf(buf,, sizeof(buf,), "vampire");
+    sprintf(buf,"vampire");
     free_string(victim->name);
     victim->name = str_dup(buf);
-    snprintf(buf,, sizeof(buf,), "a vampire");
+    sprintf(buf,"a vampire");
     free_string(victim->short_descr);
     victim->short_descr = str_dup(buf);
-    snprintf(buf,, sizeof(buf,), "A vampire is here serving %s.\n\r",ch->name);
+    sprintf(buf,"A vampire is here serving %s.\n\r",ch->name);
     free_string(victim->long_descr);
     victim->long_descr = str_dup(buf);
-    snprintf(buf,, sizeof(buf,), "spec_cast_mage");
+    sprintf(buf,"spec_cast_mage");
     victim->spec_fun = spec_lookup ( buf );
     extract_obj(corpse);
     act("Flesh rejuvenates itself, and a vampire stands up.",ch,NULL,NULL,TO_ROOM);
@@ -3804,14 +3804,14 @@ void spell_embalm( int sn, int level, CHAR_DATA *ch, void *vo )
 
   if(obj->timer > 0 && obj->timer < 30)
   {
-    snprintf(buf,, sizeof(buf,), "%s throws a strange powder on the %s.",
+    sprintf(buf,"%s throws a strange powder on the %s.",
 	   ch->name,obj->short_descr ? obj->short_descr : obj->name);
     act( buf, ch, NULL, NULL, TO_ROOM );
-    snprintf(buf,, sizeof(buf,), "The powder is quickly absorbed by the %s.",
+    sprintf(buf,"The powder is quickly absorbed by the %s.",
 	   obj->short_descr ? obj->short_descr : obj->name);
     act( buf, ch, NULL, NULL, TO_ROOM );
 
-    snprintf(buf,, sizeof(buf,), "You throw a preservative powder on the %s, which is quickly absorbed.",
+    sprintf(buf,"You throw a preservative powder on the %s, which is quickly absorbed.",
 	   obj->short_descr ? obj->short_descr : obj->name);
     act( buf, ch, NULL, NULL, TO_CHAR );
     obj->timer += 5;
@@ -3943,10 +3943,10 @@ void spell_trap_the_soul_fixed(int sn,int level, CHAR_DATA *ch, void *vo)
       act("You scream as you are sucked into $p!",ch,obj,victim,TO_VICT);
       obj->value[3] = victim->pIndexData->vnum;
       free_string(obj->short_descr);
-      snprintf(buf,, sizeof(buf,), "a bottle containing essence of %s",victim->name);
+      sprintf(buf,"a bottle containing essence of %s",victim->name);
       obj->short_descr = str_dup(buf);
       free_string(obj->description);
-      snprintf(buf,, sizeof(buf,), "A bottle containing essence of %s is here.",victim->name);
+      sprintf(buf,"A bottle containing essence of %s is here.",victim->name);
       obj->description = str_dup(buf);
       extract_char(victim, TRUE);
      }
@@ -3997,10 +3997,10 @@ void spell_trap_the_soul_fixed(int sn,int level, CHAR_DATA *ch, void *vo)
 	obj->timer = 1;
       char_to_obj(victim,obj);
       free_string(obj->short_descr);
-      snprintf(buf,, sizeof(buf,), "a bottle containing essence of %s",victim->name);
+      sprintf(buf,"a bottle containing essence of %s",victim->name);
       obj->short_descr = str_dup(buf);
       free_string(obj->description);
-      snprintf(buf,, sizeof(buf,), "A bottle containing essence of %s is here.",victim->name);
+      sprintf(buf,"A bottle containing essence of %s is here.",victim->name);
       obj->description = str_dup(buf);
     }
     else
@@ -4120,25 +4120,25 @@ void spell_detect_traps( int sn, int level, CHAR_DATA *ch, void *vo )
      {
        switch ( door )
        {
-	case 0:  snprintf( direction,, sizeof( direction,), "north");
+	case 0:  sprintf( direction, "north");
 	break;
-	case 1:  snprintf( direction,, sizeof( direction,), "east");
+	case 1:  sprintf( direction, "east");
 	break;
-	case 2:  snprintf( direction,, sizeof( direction,), "south");
+	case 2:  sprintf( direction, "south");
 	break;
-	case 3:  snprintf( direction,, sizeof( direction,), "west");
+	case 3:  sprintf( direction, "west");
 	break;
-	case 4:  snprintf( direction,, sizeof( direction,), "up");
+	case 4:  sprintf( direction, "up");
 	break;
-	case 5:  snprintf( direction,, sizeof( direction,), "down");
+	case 5:  sprintf( direction, "down");
 	break;
-	case 6:  snprintf( direction,, sizeof( direction,), "northeast");
+	case 6:  sprintf( direction, "northeast");
 	break;
-	case 7:  snprintf( direction,, sizeof( direction,), "northwest");
+	case 7:  sprintf( direction, "northwest");
 	break;
-	case 8:  snprintf( direction,, sizeof( direction,), "southeast");
+	case 8:  sprintf( direction, "southeast");
 	break;
-	case 9:  snprintf( direction,, sizeof( direction,), "southwest");
+	case 9:  sprintf( direction, "southwest");
 	break;
        }
 
@@ -4146,7 +4146,7 @@ void spell_detect_traps( int sn, int level, CHAR_DATA *ch, void *vo )
 	   && IS_SET(pexit->exit_info, EX_ISDOOR)
 	   && IS_SET(pexit->exit_info, EX_TRAPPED) )
 	   {
-	     snprintf(buf,, sizeof(buf,), "There is a trap on the %s to the %s!\n\r",pexit->keyword,
+	     sprintf(buf,"There is a trap on the %s to the %s!\n\r",pexit->keyword,
 		   direction);
 	     send_to_char(buf,ch);
 	     found = TRUE;
@@ -4433,46 +4433,46 @@ void spell_butcher( int sn, int level, CHAR_DATA *ch, void *vo )
 
 
     arm1 = create_object( get_obj_index( OBJ_VNUM_SLICED_ARM ), 0 );
-    snprintf( buf,, sizeof( buf,), "A surgically removed arm" );
+    sprintf( buf,"A surgically removed arm" );
     free_string( arm1->short_descr );
     arm1->short_descr = str_dup( buf );
-    snprintf( buf,, sizeof( buf,), "A surgically removed arm waits to serve %s", ch->name );
+    sprintf( buf,"A surgically removed arm waits to serve %s", ch->name );
     free_string( arm1->description );
     arm1->description = str_dup( buf );
     obj_to_room( arm1, ch->in_room );
     arm1->timer = 250;
     arm2 = create_object( get_obj_index( OBJ_VNUM_SLICED_ARM ), 0 );
-    snprintf( buf,, sizeof( buf,), "A surgically removed arm" );
+    sprintf( buf,"A surgically removed arm" );
     free_string( arm2->short_descr );
     arm2->short_descr = str_dup( buf );
-    snprintf( buf,, sizeof( buf,), "A surgically removed arm waits to serve %s", ch->name );
+    sprintf( buf,"A surgically removed arm waits to serve %s", ch->name );
     free_string( arm2->description );
     arm2->description = str_dup( buf );
     obj_to_room( arm2, ch->in_room );
     arm2->timer = 250;
     leg1 = create_object( get_obj_index( OBJ_VNUM_SLICED_LEG ), 0 );
-    snprintf( buf,, sizeof( buf,), "A surgically removed leg" );
+    sprintf( buf,"A surgically removed leg" );
     free_string( leg1->short_descr );
     leg1->short_descr = str_dup( buf );
-    snprintf( buf,, sizeof( buf,), "A surgically removed leg waits to serve %s", ch->name );
+    sprintf( buf,"A surgically removed leg waits to serve %s", ch->name );
     free_string( leg1->description );
     leg1->description = str_dup( buf );
     obj_to_room( leg1, ch->in_room );
     leg1->timer = 250;
     leg2 = create_object( get_obj_index( OBJ_VNUM_SLICED_LEG ), 0 );
-    snprintf(buf,, sizeof(buf,), "A surgically removed leg" );
+    sprintf(buf,"A surgically removed leg" );
     free_string( leg2->short_descr );
     leg2->short_descr = str_dup( buf );
-    snprintf(buf,, sizeof(buf,), "A surgically removed leg waits to serve %s", ch->name );
+    sprintf(buf,"A surgically removed leg waits to serve %s", ch->name );
     free_string( leg2->description );
     leg2->description = str_dup( buf );
     obj_to_room( leg2, ch->in_room );
     leg2->timer = 250;
     head = create_object( get_obj_index( OBJ_VNUM_SEVERED_HEAD ), 0 );
-    snprintf( buf,, sizeof( buf,), "A surgically removed head" );
+    sprintf( buf,"A surgically removed head" );
     free_string( head->short_descr );
     head->short_descr = str_dup( buf );
-    snprintf( buf,, sizeof( buf,), "A surgically removed head grins at %s", ch->name );
+    sprintf( buf,"A surgically removed head grins at %s", ch->name );
     free_string( head->description );
     head->description = str_dup( buf );
     obj_to_room( head, ch->in_room );
@@ -4669,7 +4669,7 @@ void spell_death_ray( int sn, int level, CHAR_DATA *ch, void *vo )
     }
 
     if(victim->level == MAX_LEVEL) {
-	snprintf(buf,, sizeof(buf,), " %s",ch->name);
+	sprintf(buf," %s",ch->name);
 	do_slay(victim,buf);
 	return;
     }

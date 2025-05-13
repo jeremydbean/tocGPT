@@ -1918,7 +1918,7 @@ void reset_area( AREA_DATA *pArea )
            if ( get_maxload_index( pReset->arg1 ) != NULL )
             {
               if (!do_maxload_item( pReset->arg1 ) ) {
-                snprintf(buf,, sizeof(buf,), "MAXLOAD: vnum %d maxed out.",pReset->arg1);
+                sprintf(buf,"MAXLOAD: vnum %d maxed out.",pReset->arg1);
                 log_string(buf);
                 break;
               }
@@ -1960,7 +1960,7 @@ void reset_area( AREA_DATA *pArea )
            if ( get_maxload_index( pReset->arg1 ) != NULL )
             {
               if (!do_maxload_item( pReset->arg1 ) ) {
-                snprintf(buf,, sizeof(buf,), "MAXLOAD: vnum %d maxed out.",pReset->arg1);
+                sprintf(buf,"MAXLOAD: vnum %d maxed out.",pReset->arg1);
                 log_string(buf);
                 break;
               }
@@ -2029,7 +2029,7 @@ void reset_area( AREA_DATA *pArea )
                   if ( get_maxload_index( pReset->arg1 ) != NULL )
                   {
                     if (!do_maxload_item( pReset->arg1 ) ) {
-                      snprintf(buf,, sizeof(buf,), "MAXLOAD: vnum %d maxed out.",pReset->arg1);
+                      sprintf(buf,"MAXLOAD: vnum %d maxed out.",pReset->arg1);
                       log_string(buf);
                       break;
                     }
@@ -2111,7 +2111,7 @@ void reset_area( AREA_DATA *pArea )
                  REMOVE_BIT(pexit->exit_info, EX_PICKPROOF);
                SET_BIT( pexit->exit_info, EX_TRAPPED);
                pexit->trap = dice(1,10);
-               snprintf(buf,, sizeof(buf,), "New Trap: [Room: %d]",pRoomIndex->vnum);
+               sprintf(buf,"New Trap: [Room: %d]",pRoomIndex->vnum);
                wizinfo(buf,LEVEL_IMMORTAL);
              }
             last = TRUE;
@@ -3702,7 +3702,7 @@ void do_areas( CHAR_DATA *ch, char *argument )
  
     for ( iArea = 0; iArea < iAreaHalf; iArea++ )
     {
-        snprintf( buf,, sizeof( buf,), "%-39s%-39s\n\r",
+        sprintf( buf, "%-39s%-39s\n\r",
             pArea1->name, (pArea2 != NULL) ? pArea2->name : "" );
         send_to_char( buf, ch );
         pArea1 = pArea1->next;
@@ -3719,26 +3719,26 @@ void do_memory( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
  
-    snprintf( buf,, sizeof( buf,), "Affects %5d\n\r", top_affect    ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Areas   %5d\n\r", top_area      ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "ExDes   %5d\n\r", top_ed        ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Exits   %5d\n\r", top_exit      ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Helps   %5d\n\r", top_help      ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Socials %5d\n\r", social_count  ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Mobs    %5d(%d new format)\n\r", top_mob_index,newmobs ); 
+    sprintf( buf, "Affects %5d\n\r", top_affect    ); send_to_char( buf, ch );
+    sprintf( buf, "Areas   %5d\n\r", top_area      ); send_to_char( buf, ch );
+    sprintf( buf, "ExDes   %5d\n\r", top_ed        ); send_to_char( buf, ch );
+    sprintf( buf, "Exits   %5d\n\r", top_exit      ); send_to_char( buf, ch );
+    sprintf( buf, "Helps   %5d\n\r", top_help      ); send_to_char( buf, ch );
+    sprintf( buf, "Socials %5d\n\r", social_count  ); send_to_char( buf, ch );
+    sprintf( buf, "Mobs    %5d(%d new format)\n\r", top_mob_index,newmobs ); 
     send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "(in use)%5d\n\r", mobile_count  ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Objs    %5d(%d new format)\n\r", top_obj_index,newobjs ); 
+    sprintf( buf, "(in use)%5d\n\r", mobile_count  ); send_to_char( buf, ch );
+    sprintf( buf, "Objs    %5d(%d new format)\n\r", top_obj_index,newobjs ); 
     send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Resets  %5d\n\r", top_reset     ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Rooms   %5d\n\r", top_room      ); send_to_char( buf, ch );
-    snprintf( buf,, sizeof( buf,), "Shops   %5d\n\r", top_shop      ); send_to_char( buf, ch );
+    sprintf( buf, "Resets  %5d\n\r", top_reset     ); send_to_char( buf, ch );
+    sprintf( buf, "Rooms   %5d\n\r", top_room      ); send_to_char( buf, ch );
+    sprintf( buf, "Shops   %5d\n\r", top_shop      ); send_to_char( buf, ch );
  
-    snprintf( buf,, sizeof( buf,), "Strings %5d strings of %7d bytes (max %d).\n\r",
+    sprintf( buf, "Strings %5d strings of %7d bytes (max %d).\n\r",
         nAllocString, sAllocString, MAX_STRING );
     send_to_char( buf, ch );
 
-    snprintf( buf,, sizeof( buf,), "Perms   %5d blocks  of %7d bytes.\n\r",
+    sprintf( buf, "Perms   %5d blocks  of %7d bytes.\n\r",
         nAllocPerm, sAllocPerm );
     send_to_char( buf, ch );
  
@@ -3768,13 +3768,13 @@ char* identify_obj(OBJ_DATA *obj)
         );
     strcat(bigbuf, buf);
  
-    snprintf( buf,, sizeof( buf,), "Number: %d   Weight: %d/%d\n",
+    sprintf( buf, "Number: %d   Weight: %d/%d\n",
         get_obj_number( obj ),
         obj->weight, get_obj_weight( obj )
     );
     strcat(bigbuf, buf);
  
-    snprintf( buf,, sizeof( buf,), "Level: %d  Value: %d  Condition: %d  Timer: %d\n",
+    sprintf( buf, "Level: %d  Value: %d  Condition: %d  Timer: %d\n",
         obj->level, obj->cost, obj->condition, obj->timer );
     strcat(bigbuf, buf);
 
@@ -3794,7 +3794,7 @@ char* identify_obj(OBJ_DATA *obj)
     case ITEM_SCUBA_GEAR:
     case ITEM_PORTAL:
     case ITEM_PILL:
-        snprintf( buf,, sizeof( buf,), "Level %d spells of:", obj->value[0] );
+        sprintf( buf, "Level %d spells of:", obj->value[0] );
         strcat(bigbuf, buf);
  
 	if ( obj->value[1] >= 0 && obj->value[1] < MAX_SKILL )
@@ -3823,7 +3823,7 @@ char* identify_obj(OBJ_DATA *obj)
  
     case ITEM_WAND:
     case ITEM_STAFF:
-        snprintf( buf,, sizeof( buf,), "Has %d(%d) charges of level %d",
+        sprintf( buf, "Has %d(%d) charges of level %d",
             obj->value[1], obj->value[2], obj->value[0] );
         strcat(bigbuf, buf);
  
@@ -3854,11 +3854,11 @@ char* identify_obj(OBJ_DATA *obj)
             default             : strcat(bigbuf,"unknown.\n");      break;
         }
         if (obj->pIndexData->new_format)
-            snprintf(buf,, sizeof(buf,), "Damage is %dd%d (average %d).\n",
+            sprintf(buf,"Damage is %dd%d (average %d).\n",
                 obj->value[1],obj->value[2],
                 (1 + obj->value[2]) * obj->value[1] / 2);
 	else
-            snprintf( buf,, sizeof( buf,), "Damage is %d to %d (average %d).\n",
+            sprintf( buf, "Damage is %d to %d (average %d).\n",
                 obj->value[1], obj->value[2],
                 ( obj->value[1] + obj->value[2] ) / 2 );
         strcat(bigbuf, buf);
@@ -3878,7 +3878,7 @@ char* identify_obj(OBJ_DATA *obj)
     {
         if ( paf->location != APPLY_NONE && paf->modifier != 0 )
         {
-	    snprintf( buf,, sizeof( buf,), "Affects %s by %d.\n",
+	    sprintf( buf, "Affects %s by %d.\n",
                 affect_loc_name( paf->location ), paf->modifier );
             strcat(bigbuf, buf);
         }
@@ -3888,7 +3888,7 @@ char* identify_obj(OBJ_DATA *obj)
     {
         if ( paf->location != APPLY_NONE && paf->modifier != 0 )
         {
-            snprintf( buf,, sizeof( buf,), "Affects %s by %d.\n",
+            sprintf( buf, "Affects %s by %d.\n",
                 affect_loc_name( paf->location ), paf->modifier );
             strcat(bigbuf, buf); 
         }
@@ -3927,16 +3927,16 @@ char* stat_mob(CHAR_DATA *victim)
     char buf[MAX_STRING_LENGTH];
     AFFECT_DATA *paf;
  
-    snprintf( bigbuf,, sizeof( bigbuf,), "Name: %s.\n",
+    sprintf( bigbuf, "Name: %s.\n",
         victim->name );
  
-    snprintf( buf,, sizeof( buf,), "Short description: %s\nLong  description: %s",
+    sprintf( buf, "Short description: %s\nLong  description: %s",
         victim->short_descr,
         victim->long_descr[0] != '\0' ? victim->long_descr : "(none)\n" );
     buf[strlen(buf)]='\0';   /* get rid of the \r */
     strcat(bigbuf, buf);
  
-    snprintf( buf,, sizeof( buf,), "Vnum: %d  Format: %s  Race: %s  Sex: %s  Room: %d\n",
+    sprintf( buf, "Vnum: %d  Format: %s  Race: %s  Sex: %s  Room: %d\n",
         IS_NPC(victim) ? victim->pIndexData->vnum : 0,
 	IS_NPC(victim) ? victim->pIndexData->new_format ? "new" : "old" : "pc",
         race_table[victim->race].name,
@@ -3948,7 +3948,7 @@ char* stat_mob(CHAR_DATA *victim)
  
     if (IS_NPC(victim))
     {
-        snprintf(buf,, sizeof(buf,), "Count: %d  Killed: %d\n",
+        sprintf(buf,"Count: %d  Killed: %d\n",
             victim->pIndexData->count,victim->pIndexData->killed);
         strcat(bigbuf, buf);
     }
@@ -3967,7 +3967,7 @@ char* stat_mob(CHAR_DATA *victim)
         get_curr_stat(victim,STAT_CON) );
     strcat(bigbuf, buf);
  
-    snprintf( buf,, sizeof( buf,), "Hp: %d/%d  Mana: %d/%d  Move: %d/%d  Practices: %d\n",
+    sprintf( buf, "Hp: %d/%d  Mana: %d/%d  Move: %d/%d  Practices: %d\n",
         victim->hit,         victim->max_hit,
         victim->mana,        victim->max_mana,
         victim->move,        victim->max_move,
@@ -3983,28 +3983,28 @@ char* stat_mob(CHAR_DATA *victim)
         victim->exp );
     strcat(bigbuf, buf);
 
-    snprintf(buf,, sizeof(buf,), "Money: Platinum: %ld , Gold: %ld, Silver: %ld, Copper: %ld\n",
+    sprintf(buf,"Money: Platinum: %ld , Gold: %ld, Silver: %ld, Copper: %ld\n",
             victim->new_platinum, victim->new_gold, victim->new_silver, victim->new_copper);
     strcat(bigbuf, buf);
     
-    snprintf(buf,, sizeof(buf,), "Armor: pierce: %d  bash: %d  slash: %d  magic: %d\n",
+    sprintf(buf,"Armor: pierce: %d  bash: %d  slash: %d  magic: %d\n",
             GET_AC(victim,AC_PIERCE), GET_AC(victim,AC_BASH),
             GET_AC(victim,AC_SLASH),  GET_AC(victim,AC_EXOTIC));
     strcat(bigbuf, buf);
  
-    snprintf( buf,, sizeof( buf,), "Hit: %d  Dam: %d  Saves: %d  Position: %d  Wimpy: %d\n",
+    sprintf( buf, "Hit: %d  Dam: %d  Saves: %d  Position: %d  Wimpy: %d\n",
         GET_HITROLL(victim), GET_DAMROLL(victim), victim->saving_throw,
         victim->position,    victim->wimpy );
     strcat(bigbuf, buf);
  
     if (IS_NPC(victim) && victim->pIndexData->new_format)
     {
-        snprintf(buf,, sizeof(buf,), "Damage: %dd%d  Message:  %s\n",
+        sprintf(buf, "Damage: %dd%d  Message:  %s\n",
             victim->damage[DICE_NUMBER],victim->damage[DICE_TYPE],
             attack_table[victim->dam_type].name);
 	strcat(bigbuf, buf);
     }
-    snprintf( buf,, sizeof( buf,), "Fighting: %s\n",
+    sprintf( buf, "Fighting: %s\n",
         victim->fighting ? victim->fighting->name : "(none)" );
     strcat(bigbuf, buf);
  
@@ -4018,7 +4018,7 @@ char* stat_mob(CHAR_DATA *victim)
         strcat(bigbuf, buf);
     }
  
-    snprintf( buf,, sizeof( buf,), "Carry number: %d  Carry weight: %d\n",
+    sprintf( buf, "Carry number: %d  Carry weight: %d\n",
         victim->carry_number, query_carry_weight(victim) );
     strcat(bigbuf, buf);
  
@@ -4034,51 +4034,51 @@ char* stat_mob(CHAR_DATA *victim)
         strcat(bigbuf, buf);
     }
  
-    snprintf(buf,, sizeof(buf,), "Act: %s\n",act_bit_name(victim->act));
+    sprintf(buf, "Act: %s\n",act_bit_name(victim->act));
     strcat(bigbuf, buf);
  
     if (victim->comm)
     {
-        snprintf(buf,, sizeof(buf,), "Comm: %s\n",comm_bit_name(victim->comm));
+        sprintf(buf,"Comm: %s\n",comm_bit_name(victim->comm));
         strcat(bigbuf, buf);
     }
 
     if (IS_NPC(victim) && victim->off_flags)
     {
-        snprintf(buf,, sizeof(buf,), "Offense: %s\n",off_bit_name(victim->off_flags));
+        sprintf(buf, "Offense: %s\n",off_bit_name(victim->off_flags));
         strcat(bigbuf, buf);
     }
  
     if (victim->imm_flags)
     {
-        snprintf(buf,, sizeof(buf,), "Immune: %s\n",imm_bit_name(victim->imm_flags));
+        sprintf(buf, "Immune: %s\n",imm_bit_name(victim->imm_flags));
         strcat(bigbuf, buf);
     }
  
     if (victim->res_flags)
     {
-        snprintf(buf,, sizeof(buf,), "Resist: %s\n", imm_bit_name(victim->res_flags));
+        sprintf(buf, "Resist: %s\n", imm_bit_name(victim->res_flags));
         strcat(bigbuf, buf);
     }
  
     if (victim->vuln_flags)
     {
-        snprintf(buf,, sizeof(buf,), "Vulnerable: %s\n", imm_bit_name(victim->vuln_flags));
+        sprintf(buf, "Vulnerable: %s\n", imm_bit_name(victim->vuln_flags));
         strcat(bigbuf, buf);
     }
  
-    snprintf(buf,, sizeof(buf,), "Form: %s\nParts: %s\n",
+    sprintf(buf, "Form: %s\nParts: %s\n",
         form_bit_name(victim->form), part_bit_name(victim->parts));
     strcat(bigbuf, buf);
  
     if (victim->affected_by)
     {
-        snprintf(buf,, sizeof(buf,), "Affected by %s\n",
+        sprintf(buf, "Affected by %s\n",
             affect_bit_name(victim->affected_by));
         strcat(bigbuf, buf);
     }
  
-    snprintf( buf,, sizeof( buf,), "Master: %s  Leader: %s  Pet: %s\n",
+    sprintf( buf, "Master: %s  Leader: %s  Pet: %s\n",
         victim->master      ? victim->master->name   : "(none)",
         victim->leader      ? victim->leader->name   : "(none)",
         victim->pet         ? victim->pet->name      : "(none)");
@@ -4137,7 +4137,7 @@ void do_dump( CHAR_DATA *ch, char *argument )
         }
         start = atoi(arg1);
         finish = atoi(arg2);
-        snprintf(buf,, sizeof(buf,), "Dumping mobs and objs from vnums %d to %d.\n\r", 
+        sprintf(buf, "Dumping mobs and objs from vnums %d to %d.\n\r", 
                 start, finish);
         send_to_char(buf, ch);
     }
@@ -4327,7 +4327,7 @@ void do_dump( CHAR_DATA *ch, char *argument )
                 if (firstone)
                 {
                     firstone = 0;
-                    snprintf(filename,, sizeof(filename,), "objdmp.%d", objnum);
+                    sprintf(filename,"objdmp.%d", objnum);
                     fp = fopen(filename,"w");
  
                     fprintf(fp,"\n%d Object Stats\n", objnum);
@@ -4742,7 +4742,7 @@ void bug( const char *str, int param )
             fseek( fpArea, iChar, 0 );
         }
  
-        snprintf( buf,, sizeof( buf,), "[*****] FILE: %s LINE: %d", strArea, iLine );
+        sprintf( buf, "[*****] FILE: %s LINE: %d", strArea, iLine );
         log_string( buf );
  
 	if ( ( fp = fopen( "shutdown.txt", "a" ) ) != NULL )

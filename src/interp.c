@@ -522,7 +522,7 @@ void interpret( CHAR_DATA *ch, char *argument )
 	    if (  ptr != NULL )
 		if ( !str_cmp(command, ptr) )
 		{
-		    snprintf(buf,, sizeof(buf,), "%s %s", ch->pcdata->alias[counter].second,
+		    sprintf(buf, "%s %s", ch->pcdata->alias[counter].second,
 		            argument);
 		    argument = one_argument( buf, command );
 		    break;
@@ -560,7 +560,7 @@ void interpret( CHAR_DATA *ch, char *argument )
     ||   fLogAll
     ||   cmd_table[cmd].log == LOG_ALWAYS )
     {
-	snprintf( log_buf,, sizeof( log_buf,), "Log %s: %s", ch->name, logline );
+	sprintf( log_buf, "Log %s: %s", ch->name, logline );
 	log_string( log_buf );
     }
 
@@ -798,14 +798,14 @@ char buf[1000];
  /* log_string(" INIT OK ");*/
 /* Loop through the cmd_table and build the index */
   for ( i = 0; cmd_table[i].name[0] != '\0'; i++ ) {
-/*    snprintf(buf,, sizeof(buf,), "For i: %d, handling command: %s", i, cmd_table[i].name);
+/*    sprintf(buf, "For i: %d, handling command: %s", i, cmd_table[i].name);
     log_string(buf);*/
 
     index_char = LOWER(cmd_table[i].name[0]);
     if (isalpha(index_char)) {
       j = (int) (index_char - 'a');
       if ((j < 0) || (j > CMDTABLE_FIRST_HASH - 1)) {
-         snprintf(buf,, sizeof(buf,), "Building index on command_table\n"
+         sprintf(buf,"Building index on command_table\n"
                      "Oops, a logic error accured for command: %s\n",
                  cmd_table[i].name);
          bug(" INITIALIZE COMMAND TABLE, INDEX OUT OF RANGE %d", j);
@@ -897,7 +897,7 @@ char buf[1000];
     if (isalpha(index_char)) {
       j = (int) (index_char - 'a');
       if ((j < 0) || (j > SOCIALTABLE_FIRST_HASH - 1)) {
-         snprintf(buf,, sizeof(buf,), "Building index on social_table\n"
+         sprintf(buf,"Building index on social_table\n"
                      "Oops, a logic error accured for command: %s\n",
                  social_table[i].name);
          bug(" INITIALIZE SOCIAL TABLE, INDEX OUT OF RANGE %d", j);
@@ -1032,9 +1032,9 @@ bool check_social( CHAR_DATA *ch, char *command, char *argument )
     victim = NULL;
     if ( arg[0] == '\0' )
     {
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].others_no_arg);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].others_no_arg);
 	act( buf, ch, NULL, victim, TO_ROOM    );
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].char_no_arg);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].char_no_arg);
 	act( buf,   ch, NULL, victim, TO_CHAR    );
     }
     else if ( ( victim = get_char_room( ch, arg ) ) == NULL )
@@ -1043,18 +1043,18 @@ bool check_social( CHAR_DATA *ch, char *command, char *argument )
     }
     else if ( victim == ch )
     {
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].others_auto);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].others_auto);
 	act( buf,   ch, NULL, victim, TO_ROOM    );
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].char_auto);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].char_auto);
 	act( buf, ch, NULL, victim, TO_CHAR    );
     }
     else
     {
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].others_found);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].others_found);
         act( buf, ch, NULL, victim, TO_NOTVICT );
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].char_found);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].char_found);
 	act( buf, ch, NULL, victim, TO_CHAR    );
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].vict_found);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].vict_found);
 	act( buf, ch, NULL, victim, TO_VICT    );
 
 	if ( !IS_NPC(ch) && IS_NPC(victim)
@@ -1068,11 +1068,11 @@ bool check_social( CHAR_DATA *ch, char *command, char *argument )
 
 	    case 1: case 2: case 3: case 4:
 	    case 5: case 6: case 7: case 8:
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].others_found);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].others_found);
 		act( buf,    victim, NULL, ch, TO_NOTVICT );
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].char_found);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].char_found);
 		act( buf,    victim, NULL, ch, TO_CHAR    );
-	snprintf(buf,, sizeof(buf,), "\x02\x08%s\x02\x01",social_table[cmd].vict_found);
+	sprintf(buf,"\x02\x08%s\x02\x01",social_table[cmd].vict_found);
 		act( buf,    victim, NULL, ch, TO_VICT    );
 		break;
 
@@ -1189,7 +1189,7 @@ void do_commands( CHAR_DATA *ch, char *argument )
         &&   cmd_table[cmd].level <= get_trust( ch )
 	&&   cmd_table[cmd].show)
 	{
-	    snprintf( buf,, sizeof( buf,), "%-13s", cmd_table[cmd].name );
+	    sprintf( buf, "%-13s", cmd_table[cmd].name );
 	    send_to_char( buf, ch );
 	    if ( ++col % 6 == 0 )
 		send_to_char( "\n\r", ch );
@@ -1214,7 +1214,7 @@ void do_wizhelp( CHAR_DATA *ch, char *argument )
 	&&   cmd_table[cmd].level <= get_trust( ch )
 	&&   cmd_table[cmd].show)
 	{
-	    snprintf( buf,, sizeof( buf,), "[%d] %-12s", cmd_table[cmd].level, cmd_table[cmd].name );
+	    sprintf( buf, "[%d] %-12s", cmd_table[cmd].level, cmd_table[cmd].name );
 	    send_to_char( buf, ch );
 	    if ( ++col % 4 == 0 )   /*6*/
 		send_to_char( "\n\r", ch );

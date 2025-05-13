@@ -155,7 +155,7 @@ void do_wizlost(CHAR_DATA *ch, char *argument)
 	send_to_char("No immortals listed at this time.\n\r",ch);
 	return;
     }
-    snprintf(buf,, sizeof(buf,), "Gods        (%2d)         "
+    sprintf(buf, "Gods        (%2d)         "
                  "Deities     (%2d)         "
                  "Demi-Gods   (%2d)       \n\r",
                  MAX_LEVEL-1,
@@ -190,19 +190,19 @@ void do_wizlost(CHAR_DATA *ch, char *argument)
           }
         }
         if (pass==0) 
-          snprintf(buf,, sizeof(buf,), "%-25s%-25s%-25s\n\r",
+          sprintf(buf,"%-25s%-25s%-25s\n\r",
                   (name1 == NULL ? "- None -" : name1),
                   (name2 == NULL ? "- None -" : name2),
                   (name3 == NULL ? "- None -" : name3));
         else 
-          snprintf(buf,, sizeof(buf,), "%-25s%-25s%-25s\n\r",
+          sprintf(buf,"%-25s%-25s%-25s\n\r",
                   ( name1 == NULL ? "" : name1),
                   ( name2 == NULL ? "" : name2),
                   ( name3 == NULL ? "" : name3));
         send_to_char(buf,ch);
     }
     send_to_char("\n\r",ch);
-    snprintf(buf,, sizeof(buf,), "Arch-Angels (%2d)         "
+    sprintf(buf, "Arch-Angels (%2d)         "
                  "Angels      (%2d)         "
                  "Avatars     (%2d)       \n\r",
                  MAX_LEVEL-4,
@@ -237,19 +237,19 @@ void do_wizlost(CHAR_DATA *ch, char *argument)
           }
         }
         if (pass==0) 
-          snprintf(buf,, sizeof(buf,), "%-25s%-25s%-25s\n\r",
+          sprintf(buf,"%-25s%-25s%-25s\n\r",
                   (name1 == NULL ? "- None -" : name1),
                   (name2 == NULL ? "- None -" : name2),
                   (name3 == NULL ? "- None -" : name3));
         else 
-          snprintf(buf,, sizeof(buf,), "%-25s%-25s%-25s\n\r",
+          sprintf(buf,"%-25s%-25s%-25s\n\r",
                   ( name1 == NULL ? "" : name1),
                   ( name2 == NULL ? "" : name2),
                   ( name3 == NULL ? "" : name3));
         send_to_char(buf,ch);
     }
     send_to_char("\n\r",ch);
-    snprintf(buf,, sizeof(buf,), "Immortals   (%2d)         "
+    sprintf(buf, "Immortals   (%2d)         "
                  "Martyrs     (%2d)         "
                  "Saints      (%2d)       \n\r",
                  MAX_LEVEL-7,
@@ -284,12 +284,12 @@ void do_wizlost(CHAR_DATA *ch, char *argument)
           }
         }
         if (pass==0) 
-          snprintf(buf,, sizeof(buf,), "%-25s%-25s%-25s\n\r",
+          sprintf(buf,"%-25s%-25s%-25s\n\r",
                   (name1 == NULL ? "- None -" : name1),
                   (name2 == NULL ? "- None -" : name2),
                   (name3 == NULL ? "- None -" : name3));
         else 
-          snprintf(buf,, sizeof(buf,), "%-25s%-25s%-25s\n\r",
+          sprintf(buf,"%-25s%-25s%-25s\n\r",
                   ( name1 == NULL ? "" : name1),
                   ( name2 == NULL ? "" : name2),
                   ( name3 == NULL ? "" : name3));
@@ -318,16 +318,16 @@ void do_wizlost(CHAR_DATA *ch, char *argument)
     send_to_char("             |       |   Implementors   |       |\n\r",ch);
     send_to_char("             |  (*)  |_   _   _   _   _ |  \\^/  |\n\r",ch);
     send_to_char("             | _<->_ | `-' `-' `-' `-' `| _(#)_ |\n\r",ch);
-    snprintf(buf,, sizeof(buf,), "            o+o \\ / \\0   %-15s0/ \\ / (=)\n\r",
+    sprintf(buf, "            o+o \\ / \\0   %-15s0/ \\ / (=)\n\r",
       name1==NULL?"- None -":name1);
     send_to_char(buf,ch);
-    snprintf(buf,, sizeof(buf,), "             0'\\ ^ /\\/   %-15s\\/\\ ^ /`0\n\r",
+    sprintf(buf, "             0'\\ ^ /\\/   %-15s\\/\\ ^ /`0\n\r",
       name2==NULL?"":name2);
     send_to_char(buf,ch);
-    snprintf(buf,, sizeof(buf,), "               /_^_\\ |   %-15s| /_^_\\\n\r",
+    sprintf(buf, "               /_^_\\ |   %-15s| /_^_\\\n\r",
       name3==NULL?"":name3);
     send_to_char(buf,ch);
-    snprintf(buf,, sizeof(buf,), "               || || |   %-15s| || ||\n\r",
+    sprintf(buf, "               || || |   %-15s| || ||\n\r",
       name4==NULL?"":name4);
     send_to_char(buf,ch);
     send_to_char("               d|_|b_T__________________T_d|_|b\n\r",ch);
