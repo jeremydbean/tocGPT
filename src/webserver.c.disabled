@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "merc.h"
+#include "webserver.h"
+
+#define ENDREQUEST "\r\n\r\n"
+
+/* ------------------------------------------------------------------------
+ *  handle_web_who_request -- build and send the WHO list as HTML
+ * ------------------------------------------------------------------------ */
+void handle_web_who_request(void *wdesc, char *arg) {
+    // send the header
+    send_buf(wdesc->fd,
+        "<HTML><HEAD><TITLE>Times Of Chaos Who List</TITLE></HEAD>\n"
+        "<FRAMESET COLS=\"10%,90%\">\n"
+        "  <FRAME SRC=\"/who?who\" NAME=\"who\">\n"
+        "  <FRAMESET ROWS=\"15%,85%\">\n"
+        "  <FRAME SRC=\"/who?who&amp;q=%s&amp;p=%d&amp;count=%d\" NAME=\"who\">\n"
+        "<NOFRAMES><BODY>\n",
+        arg, 1, 0
+    );
+
+    // build and send list entries (omitted: actual implementation)
+    // ...
+
+    // finish
+    send_buf(wdesc->fd, "</BODY></HTML>\n");
+}
+
+/* ------------------------------------------------------------------------
+ *  new_web_desc -- allocate & initialize a WWW_DESC
+ * ------------------------------------------------------------------------ */
+WEB_DESCRIPTOR *new_web_desc(void) {
+    WEB_DESCRIPTOR *desc = malloc(sizeof(WEB_DESCRIPTOR));
+    if (!desc) return NULL;
+    memset(desc, 0, sizeof(*desc));
+    return desc;
+}
+
+/* ------------------------------------------------------------------------
+ *  free_web_desc -- free a WWW_DESC
+ * ------------------------------------------------------------------------ */
+void free_web_desc(WEB_DESCRIPTOR *desc) {
+    if (!desc) return;
+    free(desc);
+}

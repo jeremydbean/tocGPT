@@ -1,0 +1,8 @@
+*** Begin Patch
+*** Update File: src/comm.c
+@@
+- int     gettimeofday    args( ( struct timeval *tp, struct timezone *tzp ) );
++ /* system prototype in <sys/time.h>, so drop the old one */
++ /* int     gettimeofday    args( ( struct timeval *tp, struct timezone *tzp ) ); */
+
+*** End Patch

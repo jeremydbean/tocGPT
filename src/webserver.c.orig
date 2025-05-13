@@ -1,0 +1,4 @@
+/* webserver.c stub - original implementation disabled */
+#include "merc.h"
+/* Empty stub to satisfy linker */
+void handle_web(void *wdesc, char *arg) {}
