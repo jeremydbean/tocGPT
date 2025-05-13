@@ -86,7 +86,7 @@ void do_quest(CHAR_DATA *ch, char *argument)
 	{
 	    if (ch->questmob == -1 && ch->questgiver->short_descr != NULL)
 	    {
-		sprintf(buf, "Your quest is ALMOST complete!\n\rGet back to %s before your time runs out!\n\r",ch->questgiver->short_descr);
+		snprintf(buf,, sizeof(buf,), "Your quest is ALMOST complete!\n\rGet back to %s before your time runs out!\n\r",ch->questgiver->short_descr);
 		send_to_char(buf, ch);
                 return;
 	    }
@@ -95,7 +95,7 @@ void do_quest(CHAR_DATA *ch, char *argument)
                 questinfoobj = get_obj_index(ch->questobj);
 		if (questinfoobj != NULL)
 		{
-		    sprintf(buf, "You are on a quest to recover the %s!\n\r",questinfoobj->name);
+		    snprintf(buf,, sizeof(buf,), "You are on a quest to recover the %s!\n\r",questinfoobj->name);
 		    send_to_char(buf, ch);
                     return;
 		}
@@ -105,7 +105,7 @@ void do_quest(CHAR_DATA *ch, char *argument)
                 questinfo = get_mob_index(ch->questmob);
 		if (questinfo != NULL)
 		{
-	            sprintf(buf, "You are on a quest to slay the dreaded %s!\n\r",questinfo->short_descr);
+	            snprintf(buf,, sizeof(buf,), "You are on a quest to slay the dreaded %s!\n\r",questinfo->short_descr);
 		    send_to_char(buf, ch);
                     return;
 		}
@@ -113,13 +113,13 @@ void do_quest(CHAR_DATA *ch, char *argument)
 	}
         if (ch->nextquest > 1)
         {
-           sprintf(buf, "There are %d minutes remaining until you can go on another quest.\n\r",ch->nextquest);
+           snprintf(buf,, sizeof(buf,), "There are %d minutes remaining until you can go on another quest.\n\r",ch->nextquest);
            send_to_char(buf, ch);
            return;
         }
         else if (ch->nextquest == 1)
         {
-           sprintf(buf, "There is less than a minute remaining until you can go on another quest.\n\r");
+           snprintf(buf,, sizeof(buf,), "There is less than a minute remaining until you can go on another quest.\n\r");
            send_to_char(buf, ch);
            return;
         }
@@ -128,7 +128,7 @@ void do_quest(CHAR_DATA *ch, char *argument)
     }
     if (!strcmp(arg1, "points"))
     {
-	sprintf(buf, "You have %d quest points.\n\r",ch->questpoints);
+	snprintf(buf,, sizeof(buf,), "You have %d quest points.\n\r",ch->questpoints);
 	send_to_char(buf, ch);
 	return;
     }
@@ -139,27 +139,27 @@ void do_quest(CHAR_DATA *ch, char *argument)
 	    send_to_char("You aren't currently on a quest.\n\r",ch);
 	    if (ch->nextquest > 1)
 	    {
-		sprintf(buf, "There are %d minutes remaining until you can go on another quest.\n\r",ch->nextquest);
+		snprintf(buf,, sizeof(buf,), "There are %d minutes remaining until you can go on another quest.\n\r",ch->nextquest);
 		send_to_char(buf, ch);
 	    }
 	    else if (ch->nextquest == 1)
 	    {
-		sprintf(buf, "There is less than a minute remaining until you can go on another quest.\n\r");
+		snprintf(buf,, sizeof(buf,), "There is less than a minute remaining until you can go on another quest.\n\r");
 		send_to_char(buf, ch);
 	    }
 	}
         else if (ch->countdown > 0)
         {
-	    sprintf(buf, "Time left for current quest: %d\n\r",ch->countdown);
+	    snprintf(buf,, sizeof(buf,), "Time left for current quest: %d\n\r",ch->countdown);
 	    send_to_char(buf, ch);
 	}
         else
         {   if (ch->nextquest > 0)
-            { sprintf(buf, "Time left before you can start a next quest: %d\n\r",ch->nextquest);
+            { snprintf(buf,, sizeof(buf,), "Time left before you can start a next quest: %d\n\r",ch->nextquest);
               send_to_char(buf,ch);
             }
             else
-            { sprintf(buf,"You can start a new quest if you want.\n\r");
+            { snprintf(buf,, sizeof(buf,), "You can start a new quest if you want.\n\r");
               send_to_char(buf,ch);
             }
         }
@@ -200,7 +200,7 @@ void do_quest(CHAR_DATA *ch, char *argument)
     {
         act( "$n asks $N for a list of quest items.", ch, NULL, questman, TO_ROOM);
 	act ("You ask $N for a list of quest items.",ch, NULL, questman, TO_CHAR);
-	sprintf(buf, "Current Quest Items available for Purchase:\n\r\
+	snprintf(buf,, sizeof(buf,), "Current Quest Items available for Purchase:\n\r\
 	Potion of Sanctuary		150qp\n\r
 	1-3 Practices:			500qp\n\r
 	Potion of Extra Heal		450qp\n\r
@@ -238,7 +238,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	if (is_name(arg2, "hero"))
 	{
 	    if( ch->level != 50 ) {
-		sprintf(buf,"Sorry %s you need to be level 50 to buy that.",ch->name);
+		snprintf(buf,, sizeof(buf,), "Sorry %s you need to be level 50 to buy that.",ch->name);
 		do_say( questman,buf );
 	    }
 	    if (( ch->level == 50 && ch->questpoints >= 500) ||
@@ -255,7 +255,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	    }
 	    else
 	    {
-		sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+		snprintf(buf,, sizeof(buf,), "Sorry, %s, but you don't have enough quest points for that.",ch->name);
 		do_say(questman,buf);
 		return;
 	    }
@@ -269,7 +269,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	    }
 	    else
 	    {
-		sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+		snprintf(buf,, sizeof(buf,), "Sorry, %s, but you don't have enough quest points for that.",ch->name);
 		do_say(questman,buf);
 		return;
 	    }
@@ -283,7 +283,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	    }
 	    else
 	    {
-		sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+		snprintf(buf,, sizeof(buf,), "Sorry, %s, but you don't have enough quest points for that.",ch->name);
 		do_say(questman,buf);
 		return;
 	    }
@@ -297,7 +297,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	    }
 	    else
 	    {
-		sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+		snprintf(buf,, sizeof(buf,), "Sorry, %s, but you don't have enough quest points for that.",ch->name);
 		do_say(questman,buf);
 		return;
 	    }
@@ -310,20 +310,20 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	        ch->practice += dice(1,2) + 1;
     	        act( "$N gives some practices to $n.", ch, NULL, questman, TO_ROOM );
     	        act( "$N gives you some practices.",   ch, NULL, questman, TO_CHAR );
-		sprintf(log_buf,"%s gained pracs from quest.",ch->name);
+		snprintf(log_buf,, sizeof(log_buf,), "%s gained pracs from quest.",ch->name);
 		log_string(log_buf);
 	        return;
 	    }
 	    else
 	    {
-		sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+		snprintf(buf,, sizeof(buf,), "Sorry, %s, but you don't have enough quest points for that.",ch->name);
 		do_say(questman,buf);
 		return;
 	    }
 	}
 	else
 	{
-	    sprintf(buf, "I don't have that item, %s.",ch->name);
+	    snprintf(buf,, sizeof(buf,), "I don't have that item, %s.",ch->name);
 	    do_say(questman, buf);
 	}
 	if (obj != NULL)
@@ -340,20 +340,20 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	act ("You ask $N for a quest.",ch, NULL, questman, TO_CHAR);
 	if (IS_SET(ch->act, PLR_QUESTOR))
 	{
-	    sprintf(buf, "But you're already on a quest!");
+	    snprintf(buf,, sizeof(buf,), "But you're already on a quest!");
 	    do_say(questman, buf);
 	    return;
 	}
 	if (ch->nextquest > 0)
 	{
-	    sprintf(buf, "You're very brave, %s, but let someone else have a chance.",ch->name);
+	    snprintf(buf,, sizeof(buf,), "You're very brave, %s, but let someone else have a chance.",ch->name);
 	    do_say(questman, buf);
-	    sprintf(buf, "Come back later.");
+	    snprintf(buf,, sizeof(buf,), "Come back later.");
 	    do_say(questman, buf);
 	    return;
 	}
 
-	sprintf(buf, "Thank you, brave %s!",ch->name);
+	snprintf(buf,, sizeof(buf,), "Thank you, brave %s!",ch->name);
 	do_say(questman, buf);
 
 	generate_quest(ch, questman);
@@ -362,9 +362,9 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	{
             ch->countdown = number_range(10,30);
 	    SET_BIT(ch->act, PLR_QUESTOR);
-	    sprintf(buf, "You have %d minutes to complete this quest.",ch->countdown);
+	    snprintf(buf,, sizeof(buf,), "You have %d minutes to complete this quest.",ch->countdown);
 	    do_say(questman, buf);
-	    sprintf(buf, "May the gods go with you!");
+	    snprintf(buf,, sizeof(buf,), "May the gods go with you!");
 	    do_say(questman, buf);
 	}
 	return;
@@ -375,7 +375,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	act ("You inform $N you have completed $s quest.",ch, NULL, questman, TO_CHAR);
 	if (ch->questgiver != questman)
 	{
-	    sprintf(buf, "I never sent you on a quest! Perhaps you're thinking of someone else.");
+	    snprintf(buf,, sizeof(buf,), "I never sent you on a quest! Perhaps you're thinking of someone else.");
 	    do_say(questman,buf);
 	    return;
 	}
@@ -389,9 +389,9 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 		reward = number_range(1,30);
 		pointreward = number_range(10,40);
 
-		sprintf(buf, "Congratulations on completing your quest!");
+		snprintf(buf,, sizeof(buf,), "Congratulations on completing your quest!");
 		do_say(questman,buf);
-		sprintf(buf,"As a reward, I am giving you %d quest points, and %d gold.",pointreward,reward);
+		snprintf(buf,, sizeof(buf,), "As a reward, I am giving you %d quest points, and %d gold.",pointreward,reward);
 		do_say(questman,buf);
 
 	        REMOVE_BIT(ch->act, PLR_QUESTOR);
@@ -431,9 +431,9 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 		    act("You hand $p to $N.",ch, obj, questman, TO_CHAR);
 		    act("$n hands $p to $N.",ch, obj, questman, TO_ROOM);
 
-	    	    sprintf(buf, "Congratulations on completing your quest!");
+	    	    snprintf(buf,, sizeof(buf,), "Congratulations on completing your quest!");
 		    do_say(questman,buf);
-		    sprintf(buf,"As a reward, I am giving you %d quest points, and %d gold.",pointreward,reward);
+		    snprintf(buf,, sizeof(buf,), "As a reward, I am giving you %d quest points, and %d gold.",pointreward,reward);
 		    do_say(questman,buf);
 
 	            REMOVE_BIT(ch->act, PLR_QUESTOR);
@@ -452,7 +452,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 		}
 		else
 		{
-		    sprintf(buf, "You haven't completed the quest yet, but there is still time!");
+		    snprintf(buf,, sizeof(buf,), "You haven't completed the quest yet, but there is still time!");
 		    do_say(questman, buf);
 		    return;
 		}
@@ -460,14 +460,14 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	    }
 	    else if ((ch->questmob > 0 || ch->questobj > 0) && ch->countdown > 0)
 	    {
-		sprintf(buf, "You haven't completed the quest yet, but there is still time!");
+		snprintf(buf,, sizeof(buf,), "You haven't completed the quest yet, but there is still time!");
 		do_say(questman, buf);
 		return;
 	    }
 	}
 	if (ch->nextquest > 0)
-	    sprintf(buf,"But you didn't complete your quest in time!");
-	else sprintf(buf, "You have to REQUEST a quest first, %s.",ch->name);
+	    snprintf(buf,, sizeof(buf,), "But you didn't complete your quest in time!");
+	else snprintf(buf,, sizeof(buf,), "You have to REQUEST a quest first, %s.",ch->name);
 	do_say(questman, buf);
 	return;
     }
@@ -475,28 +475,28 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
     {
 	act( "$n informs $N that $e is quitting for now.",ch,NULL,questman,TO_ROOM );
 	act( "You inform $N that you are quitting for now.",ch,NULL,questman,TO_CHAR);
-/*        sprintf(test_buf,"%s is aborting a quest.",ch->name);
+/*        snprintf(test_buf,, sizeof(test_buf,), "%s is aborting a quest.",ch->name);
         log_string(test_buf);*/
 
 	if( ch->questgiver != questman )
 	{
-	    sprintf(buf,"I never sent you on a quest!.");
+	    snprintf(buf,, sizeof(buf,), "I never sent you on a quest!.");
 	    do_say(questman,buf);
 	    return;
 	}
 
         if (ch -> level >= 50)
         {
-            sprintf(buf,"HERO's are not allowed to abort quests!.");
+            snprintf(buf,, sizeof(buf,), "HERO's are not allowed to abort quests!.");
             do_say(questman,buf);
             return;
         }
 
 	if( IS_SET(ch->act, PLR_QUESTOR) )
 	{
-	    sprintf(buf,"You are removed from your quest obligation %s.",ch->name );
+	    snprintf(buf,, sizeof(buf,), "You are removed from your quest obligation %s.",ch->name );
 	    do_say(questman,buf);
-	    sprintf(buf,"Better luck next time!");
+	    snprintf(buf,, sizeof(buf,), "Better luck next time!");
 	    do_say(questman,buf);
 
 	    REMOVE_BIT(ch->act, PLR_QUESTOR);
@@ -557,9 +557,9 @@ void generate_quest(CHAR_DATA *ch, CHAR_DATA *questman)
 
     if ( vsearch == NULL || ( victim = get_char_world( ch, vsearch->player_name ) ) == NULL )
     {
-	sprintf(buf, "I'm sorry, but I don't have any quests for you at this time.");
+	snprintf(buf,, sizeof(buf,), "I'm sorry, but I don't have any quests for you at this time.");
 	do_say(questman, buf);
-	sprintf(buf, "Try again later.");
+	snprintf(buf,, sizeof(buf,), "Try again later.");
 	do_say(questman, buf);
 	ch->nextquest = 5;
         return;
@@ -567,9 +567,9 @@ void generate_quest(CHAR_DATA *ch, CHAR_DATA *questman)
 
     if ( ( room = find_location( ch, victim->name ) ) == NULL )
     {
-	sprintf(buf, "I'm sorry, but I don't have any quests for you at this time.");
+	snprintf(buf,, sizeof(buf,), "I'm sorry, but I don't have any quests for you at this time.");
 	do_say(questman, buf);
-	sprintf(buf, "Try again later.");
+	snprintf(buf,, sizeof(buf,), "Try again later.");
 	do_say(questman, buf);
 	ch->nextquest = 5;
         return;
@@ -608,7 +608,7 @@ void generate_quest(CHAR_DATA *ch, CHAR_DATA *questman)
 	obj_to_room(questitem, room);
 	ch->questobj = questitem->pIndexData->vnum;
 
-	sprintf(buf, "Robbers have stolen %s!",questitem->short_descr);
+	snprintf(buf,, sizeof(buf,), "Robbers have stolen %s!",questitem->short_descr);
 	do_say(questman,buf);
 	do_say(questman, "A bounty of questpoints for you if you recover it!");
 
@@ -616,7 +616,7 @@ void generate_quest(CHAR_DATA *ch, CHAR_DATA *questman)
 	   and none of the level stuff. You may want to comment these next two
 	   lines. - Vassago */
 
-	sprintf(buf, "Look in the general area of %s for %s!",room->area->name, room->name);
+	snprintf(buf,, sizeof(buf,), "Look in the general area of %s for %s!",room->area->name, room->name);
 	do_say(questman,buf);
 	return;
     }
@@ -628,16 +628,16 @@ void generate_quest(CHAR_DATA *ch, CHAR_DATA *questman)
     switch(number_range(0,1))
     {
 	case 0:
-        sprintf(buf, "%s has been declared a outlaw!",victim->short_descr);
+        snprintf(buf,, sizeof(buf,), "%s has been declared a outlaw!",victim->short_descr);
 	do_say(questman,buf);
-        sprintf(buf, "They must be found and killed!");
+        snprintf(buf,, sizeof(buf,), "They must be found and killed!");
 	do_say(questman,buf);
 	break;
 
 	case 1:
-	sprintf(buf, "Soulcrusher accidentally left %s escape from jail!",victim->short_descr);
+	snprintf(buf,, sizeof(buf,), "Soulcrusher accidentally left %s escape from jail!",victim->short_descr);
 	do_say(questman,buf);
-	sprintf(buf, "Since the escape, %s has murdered %d civillians!",victim->short_descr, number_range(2,20));
+	snprintf(buf,, sizeof(buf,), "Since the escape, %s has murdered %d civillians!",victim->short_descr, number_range(2,20));
 	do_say(questman,buf);
 	do_say(questman,"You must find and kill them!");
 	break;
@@ -645,14 +645,14 @@ void generate_quest(CHAR_DATA *ch, CHAR_DATA *questman)
 
     if (room->name != NULL)
     {
-        sprintf(buf, "Seek %s out somewhere in the vicinity of %s!",victim->short_descr,room->name);
+        snprintf(buf,, sizeof(buf,), "Seek %s out somewhere in the vicinity of %s!",victim->short_descr,room->name);
 	do_say(questman,buf);
 
 	/* I changed my area names so that they have just the name of the area
 	   and none of the level stuff. You may want to comment these next two
 	   lines. - Vassago */
 
-	sprintf(buf, "That location is in the general area of %s.",room->area->name);
+	snprintf(buf,, sizeof(buf,), "That location is in the general area of %s.",room->area->name);
 	do_say(questman,buf);
     }
 
@@ -704,7 +704,7 @@ void quest_update(void)
 		    ch->nextquest = 5;
 		else
 		    ch->nextquest = 15;
-	        sprintf(buf, "You have run out of time for your quest!\n\rYou may quest again in %d minutes.\n\r",ch->nextquest);
+	        snprintf(buf,, sizeof(buf,), "You have run out of time for your quest!\n\rYou may quest again in %d minutes.\n\r",ch->nextquest);
 	        send_to_char(buf, ch);
 	        REMOVE_BIT(ch->act, PLR_QUESTOR);
                 ch->questgiver = NULL;

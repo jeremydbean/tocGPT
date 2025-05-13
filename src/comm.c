@@ -429,7 +429,7 @@ int main( int argc, char **argv )
     control = init_socket( port );
     boot_db();
     /*init_web(port+2);*/
-    sprintf( log_buf, "TOC is ready to rock on port %d.", port );
+    snprintf( log_buf,, sizeof( log_buf,), "TOC is ready to rock on port %d.", port );
     log_string( log_buf );
     game_loop_unix( control );
    /* shutdown_web();*/
@@ -905,13 +905,13 @@ void make_descriptor( DESCRIPTOR_DATA *dnew, int desc )
 #if defined(unix)
 void new_descriptor( int control )
 {
-    char buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH] = {0};
     DESCRIPTOR_DATA *dnew;
     BAN_DATA *pban;
     struct sockaddr_in sock;
     struct hostent *from;
     int desc;
-    int size;
+    socklen_t size;
     int ipaddr[4];
 
     size = sizeof(sock);
@@ -967,11 +967,11 @@ void new_descriptor( int control )
 	ipaddr[1] = ( addr >> 16 ) & 0xFF;
 	ipaddr[2] = ( addr >> 8 ) & 0xFF;
 	ipaddr[3] = ( addr ) & 0xFF;
-	sprintf( buf, "%d.%d.%d.%d",
+	snprintf( buf,, sizeof( buf,), "%d.%d.%d.%d",
 	    ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF,
 	    ( addr >>  8 ) & 0xFF, ( addr       ) & 0xFF
 	    );
-	sprintf( log_buf, "Sock.sinaddr:  %s", buf );
+	snprintf( log_buf,, sizeof( log_buf,), "Sock.sinaddr:  %s", buf );
 	log_string( log_buf );
 
         if (dns == 0)
@@ -1052,7 +1052,7 @@ EC: What the hell is this for?
 void close_socket( DESCRIPTOR_DATA *dclose )
 {
     CHAR_DATA *ch;
-    char buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH] = {0};
 /*
     if( dclose->ipid > -1 )
     {
@@ -1089,7 +1089,7 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 
     if ( ( ch = dclose->character ) != NULL )
     {
-	sprintf( log_buf, "Closing link to %s.", ch->name );
+	snprintf( log_buf,, sizeof( log_buf,), "Closing link to %s.", ch->name );
 	log_string( log_buf );
 	if ( dclose->connected == CON_PLAYING
       /*  || dclose->connected == CON_INPUT_BOARD */)
@@ -1098,7 +1098,7 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 	  if(!IS_SET(ch->act, PLR_WIZINVIS) )
 		{
 	    act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
-	    sprintf(buf, "%s has lost %s link. [Room: %d]", ch->name,
+	    snprintf(buf,, sizeof(buf,), "%s has lost %s link. [Room: %d]", ch->name,
 			ch->sex == 0 ? "its" : ch->sex == 1 ? "his" : "her",
 			ch->in_room->vnum);
 	    	if ( IS_SET(ch->act, PLR_WIZINVIS))
@@ -1161,7 +1161,7 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
     iStart = strlen(d->inbuf);
     if ( iStart >= sizeof(d->inbuf) - 10 )
     {
-	sprintf( log_buf, "%s input overflow!", d->host );
+	snprintf( log_buf,, sizeof( log_buf,), "%s input overflow!", d->host );
 	log_string( log_buf );
 	write_to_descriptor( d->descriptor,
 	    "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
@@ -1291,7 +1291,7 @@ void read_from_buffer( DESCRIPTOR_DATA *d )
 	{
 	    if ( ++d->repeat >= 50 )
 	    {
-		sprintf( log_buf, "%s input spamming!", d->host );
+		snprintf( log_buf,, sizeof( log_buf,), "%s input spamming!", d->host );
 		log_string( log_buf );
 		write_to_descriptor( d->descriptor,
 		    "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
@@ -1348,7 +1348,7 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 	    int percent;
 	    char wound[100];
 	    char wound2[100];
-	    char buf[MAX_STRING_LENGTH];
+	    char buf[MAX_STRING_LENGTH] = {0};
 
 	    if (victim->max_hit > 0)
 		percent = victim->hit * 100 / victim->max_hit;
@@ -1356,27 +1356,27 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 		percent = -1;
 
 	    if (percent >= 100)
-		sprintf(wound,"excellent");
+		snprintf(wound,, sizeof(wound,), "excellent");
 	    else if (percent >= 90)
-		sprintf(wound,"bruised");
+		snprintf(wound,, sizeof(wound,), "bruised");
 	    else if (percent >= 80)
-		sprintf(wound,"battered");
+		snprintf(wound,, sizeof(wound,), "battered");
 	    else if (percent >= 70)
-		sprintf(wound,"injured");
+		snprintf(wound,, sizeof(wound,), "injured");
 	    else if (percent >= 60)
-		sprintf(wound,"wounded");
+		snprintf(wound,, sizeof(wound,), "wounded");
 	    else if (percent >= 50)
-		sprintf(wound,"nasty wounds");
+		snprintf(wound,, sizeof(wound,), "nasty wounds");
 	    else if (percent >= 40)
-		sprintf(wound,"bleeding");
+		snprintf(wound,, sizeof(wound,), "bleeding");
 	    else if (percent >= 30)
-		sprintf(wound,"pretty hurt");
+		snprintf(wound,, sizeof(wound,), "pretty hurt");
 	    else if (percent >= 20)
-		sprintf(wound,"bloody mess");
+		snprintf(wound,, sizeof(wound,), "bloody mess");
 	    else if (percent >= 10)
-		sprintf(wound,"critical condition");
+		snprintf(wound,, sizeof(wound,), "critical condition");
 	    else
-		sprintf(wound,"DYING");
+		snprintf(wound,, sizeof(wound,), "DYING");
 
 	    if (victim->fighting != NULL && victim->fighting->max_hit > 0 )
 		percent = victim->fighting->hit * 100 / victim->fighting->max_hit;
@@ -1384,27 +1384,27 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 		percent = -1;
 
 	    if (percent >= 100)
-		sprintf(wound2,"excellent");
+		snprintf(wound2,, sizeof(wound2,), "excellent");
 	    else if (percent >= 90)
-		sprintf(wound2,"bruised");
+		snprintf(wound2,, sizeof(wound2,), "bruised");
 	    else if (percent >= 80)
-		sprintf(wound2,"battered");
+		snprintf(wound2,, sizeof(wound2,), "battered");
 	    else if (percent >= 70)
-		sprintf(wound2,"injured");
+		snprintf(wound2,, sizeof(wound2,), "injured");
 	    else if (percent >= 60)
-		sprintf(wound2,"wounded");
+		snprintf(wound2,, sizeof(wound2,), "wounded");
 	    else if (percent >= 50)
-		sprintf(wound2,"nasty wounds");
+		snprintf(wound2,, sizeof(wound2,), "nasty wounds");
 	    else if (percent >= 40)
-		sprintf(wound2,"bleeding");
+		snprintf(wound2,, sizeof(wound2,), "bleeding");
 	    else if (percent >= 30)
-		sprintf(wound2,"pretty hurt");
+		snprintf(wound2,, sizeof(wound2,), "pretty hurt");
 	    else if (percent >= 20)
-		sprintf(wound2,"bloody mess");
+		snprintf(wound2,, sizeof(wound2,), "bloody mess");
 	    else if (percent >= 10)
-		sprintf(wound2,"critical condition");
+		snprintf(wound2,, sizeof(wound2,), "critical condition");
 	    else
-		sprintf(wound2,"DYING");
+		snprintf(wound2,, sizeof(wound2,), "DYING");
 
 	  if (victim->fighting != NULL)
 	    {
@@ -1412,10 +1412,10 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 			{
 	      if(victim->fighting == ch)
 
-	       sprintf(buf,"\n[ %s: [%d/%d hp] <*> You: %s ]",
+	       snprintf(buf,, sizeof(buf,), "\n[ %s: [%d/%d hp] <*> You: %s ]",
 		  PERS(victim,ch), victim->hit, victim->max_hit,wound2);
 	      else;
-		sprintf(buf,"\n[ %s: [%d/%d hp] <*> %s: %s ]",
+		snprintf(buf,, sizeof(buf,), "\n[ %s: [%d/%d hp] <*> %s: %s ]",
 		PERS(victim, ch), victim->hit,victim->max_hit,PERS(victim->fighting,ch),wound2);
 				}
 			}
@@ -1424,10 +1424,10 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 			if (!IS_SET(ch->act,PLR_DAMAGE_NUMBERS))
 			{
 				if(victim->fighting == ch)
-				 sprintf(buf,"\n[ %s: %s <*> You: %s ]",
+				 snprintf(buf,, sizeof(buf,), "\n[ %s: %s <*> You: %s ]",
 			PERS(victim,ch), wound,wound2);
 				else
-		sprintf(buf,"\n[ %s: %s <*> %s: %s ]",
+		snprintf(buf,, sizeof(buf,), "\n[ %s: %s <*> %s: %s ]",
 		  PERS(victim,ch), wound,wound2);
 			}
 
@@ -1453,22 +1453,22 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 	    buf[0]='\0';
 	    if (ch->level >= LEVEL_IMMORTAL)
 	    {
-		sprintf( temp, "R:%d ", ch->in_room->vnum);
+		snprintf( temp,, sizeof( temp,), "R:%d ", ch->in_room->vnum);
 		strcat( buf, temp);
 	    }
 	    if (ch->hit < ch->max_hit)
 	    {
-		sprintf( temp, "%dhp ", ch->hit);
+		snprintf( temp,, sizeof( temp,), "%dhp ", ch->hit);
 		strcat( buf, temp);
 	    }
 	    if (ch->mana < ch->max_mana)
 	    {
-		sprintf( temp, "%dm ", ch->mana);
+		snprintf( temp,, sizeof( temp,), "%dm ", ch->mana);
 		strcat( buf, temp);
 	    }
 	    if (ch->move < ch->max_move)
 	    {
-		sprintf( temp, "%dend ", ch->move);
+		snprintf( temp,, sizeof( temp,), "%dend ", ch->move);
 		strcat( buf, temp);
 	    }
 	    if (buf[0] != '\0')
@@ -1610,7 +1610,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
     char deshost[MAX_STRING_LENGTH];
-    char buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH] = {0};
     char arg[MAX_INPUT_LENGTH];
     CHAR_DATA *ch;
     char *pwdnew;
@@ -1655,7 +1655,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 
 	if ( IS_SET(ch->act, PLR_DENY) )
 	{
-	    sprintf( log_buf, "Denying access to %s@%s.", argument, d->host );
+	    snprintf( log_buf,, sizeof( log_buf,), "Denying access to %s@%s.", argument, d->host );
 	    log_string( log_buf );
 	    wizinfo( log_buf, LEVEL_IMMORTAL );
 	    write_to_buffer( d, "You are denied access.\n\r", 0 );
@@ -1708,7 +1708,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	    }
 
 
-	    sprintf( buf, "Did I get that right, %s (Y/N)? ", argument );
+	    snprintf( buf,, sizeof( buf,), "Did I get that right, %s (Y/N)? ", argument );
 	    write_to_buffer( d, buf, 0 );
 	    d->connected = CON_CONFIRM_NEW_NAME;
 	    return;
@@ -1753,7 +1753,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	if ( check_playing( d, ch->name ) )
 	    return;
 
-	sprintf( log_buf, "%s@%s has connected. [Room: %d]", ch->name,
+	snprintf( log_buf,, sizeof( log_buf,), "%s@%s has connected. [Room: %d]", ch->name,
 		 d->host, ch->in_room->vnum );
 	log_string( log_buf );
 	if ( IS_SET(ch->act, PLR_WIZINVIS) && ch->invis_level > 63)
@@ -1784,21 +1784,21 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 
 
         samehost = 0;
-        sprintf(deshost,"%s",d->host);
+        snprintf(deshost,, sizeof(deshost,), "%s",d->host);
 
         for ( dch = descriptor_list; dch != NULL; dch = dch->next )
         {
           if (dch->character == NULL)
                continue;
 
-          sprintf(chhost,"%s",dch->host);
+          snprintf(chhost,, sizeof(chhost,), "%s",dch->host);
           if (strstr(deshost,chhost) != NULL)
                samehost++;
         }
 
         if (samehost > 1)
         {
-           sprintf(log_buf,"There are currently %d players on from that IP address.",samehost);
+           snprintf(log_buf,, sizeof(log_buf,), "There are currently %d players on from that IP address.",samehost);
            wizinfo(log_buf, AVATAR);
         }
 
@@ -1865,7 +1865,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	switch ( *argument )
 	{
 	case 'y': case 'Y':
-	    sprintf( buf, "New character.\n\rGive me a password for %s: %s",
+	    snprintf( buf,, sizeof( buf,), "New character.\n\rGive me a password for %s: %s",
 		ch->name, echo_off_str );
 	    write_to_buffer( d, buf, 0 );
 	    d->connected = CON_GET_NEW_PASSWORD;
@@ -2072,7 +2072,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	else if( ch->class == CLASS_NECRO)
 	   ch->pcdata->guild = GUILD_NECRO;
 
-	sprintf( log_buf, "%s@%s new player.", ch->name, d->host );
+	snprintf( log_buf,, sizeof( log_buf,), "%s@%s new player.", ch->name, d->host );
 	log_string( log_buf );
 	if ( IS_SET(ch->act, PLR_WIZINVIS))
 	    wizinfo( log_buf, ch->invis_level );
@@ -2156,7 +2156,7 @@ case CON_GET_ALIGNMENT:
 	    ch->train    = 3;
 	    ch->practice = 5;
 	    ch->pcdata->psionic = 0;
-	    sprintf( buf, "the %s",
+	    snprintf( buf,, sizeof( buf,), "the %s",
 		title_table [ch->class] [ch->level]
 		[ch->sex == SEX_FEMALE ? 1 : 0] );
 	    set_title( ch, buf );
@@ -2297,7 +2297,7 @@ case CON_GET_ALIGNMENT:
 
 	else if (notes > 1)
 	{
-	    sprintf(buf,"\n\rYou have %d new notes waiting.\n\r",notes);
+	    snprintf(buf,, sizeof(buf,), "\n\rYou have %d new notes waiting.\n\r",notes);
 	    send_to_char(buf,ch);
 	}
 
@@ -2311,7 +2311,7 @@ case CON_GET_ALIGNMENT:
 
 	if (ch->pcdata->pk_state == 0 && ch->level > 25) {
 	    send_to_char("You've joined the ranks of the PKILLERS!\n\r",ch);
-	    sprintf(log_buf,"%s turned into a PKILLER.",ch->name);
+	    snprintf(log_buf,, sizeof(log_buf,), "%s turned into a PKILLER.",ch->name);
 	    log_string(log_buf);
 	    ch->pcdata->pk_state = 1;
 	}
@@ -2368,7 +2368,7 @@ void do_check_psi ( CHAR_DATA *ch, char *argument )
   	chance = number_percent( );
 
 
-	sprintf( log_buf, "%s psionic check complete! [Chance: %d]", ch->name, chance);
+	snprintf( log_buf,, sizeof( log_buf,), "%s psionic check complete! [Chance: %d]", ch->name, chance);
 	log_string( log_buf );
 	wizinfo( log_buf, MAX_LEVEL-1);
 
@@ -2381,7 +2381,7 @@ void do_check_psi ( CHAR_DATA *ch, char *argument )
 	 if(ch->pcdata->last_level == 3 && chance < 95)
 		{
 		ch->pcdata->psionic = 2;
-		sprintf( log_buf, "Psionics are forever out of the reach of %s.", ch->name);
+		snprintf( log_buf,, sizeof( log_buf,), "Psionics are forever out of the reach of %s.", ch->name);
 		log_string( log_buf );
 		wizinfo( log_buf, LEVEL_IMMORTAL);
 send_to_char("* You feel as though you've lost something... *\n\r\n\r",ch);
@@ -2408,9 +2408,9 @@ send_to_char("\n\r",ch);
 send_to_char("\n\r",ch);
 ch->position = POS_RESTING;
 
-sprintf( log_buf, "%s has been granted psionics!\n\r", ch->name);
+snprintf( log_buf,, sizeof( log_buf,), "%s has been granted psionics!\n\r", ch->name);
 send_info( log_buf );
-sprintf( log_buf, "%s has been granted psionics! [Chance: %d]\n\r", ch->name, chance);
+snprintf( log_buf,, sizeof( log_buf,), "%s has been granted psionics! [Chance: %d]\n\r", ch->name, chance);
 log_string( log_buf );
 wizinfo( log_buf, LEVEL_IMMORTAL);
 
@@ -2420,7 +2420,7 @@ if (ch->pcdata->num_remorts >= 4)
 	  group_add(ch,"project",0);
 	  group_add(ch,"nightmare",0);
 	  group_add(ch,"mindblast",0);
-		sprintf( log_buf, "%s remort psi granted: | [shift, project, nightmare, mindblast]", ch->name);
+		snprintf( log_buf,, sizeof( log_buf,), "%s remort psi granted: | [shift, project, nightmare, mindblast]", ch->name);
 		log_string( log_buf );
 		wizinfo( log_buf, MAX_LEVEL);
 	}
@@ -2431,7 +2431,7 @@ if (ch->pcdata->num_remorts >= 3)
 		group_add(ch,"telekinesis",0);
 		group_add(ch,"clairvoyance",0);
 		group_add(ch,"astral walk",0);
-		sprintf( log_buf, "%s remort psi granted: | [confuse, telekinesis, clairvoyance, astral walk]", ch->name);
+		snprintf( log_buf,, sizeof( log_buf,), "%s remort psi granted: | [confuse, telekinesis, clairvoyance, astral walk]", ch->name);
 		log_string( log_buf );
 		wizinfo( log_buf, MAX_LEVEL);
 		ch->pcdata->last_level = 3;
@@ -2440,7 +2440,7 @@ if (ch->pcdata->num_remorts >= 3)
 else
 {
     add = number_percent();
-		sprintf( log_buf, "%s psi roll 1: [%d] | [psionic armor (1-40), psychic shield (41-70), mindbar (71+)]", ch->name, add);
+		snprintf( log_buf,, sizeof( log_buf,), "%s psi roll 1: [%d] | [psionic armor (1-40), psychic shield (41-70), mindbar (71+)]", ch->name, add);
 		log_string( log_buf );
 		wizinfo( log_buf, MAX_LEVEL);
     if( add <= 40)
@@ -2451,7 +2451,7 @@ else
 	 group_add(ch,"mindbar",0);
 
     add2 = number_percent();
-		sprintf( log_buf, "%s psi roll 2: [%d] | [torment (1-35), ego whip (36-60), pyrotechnics (61-85), mindblast (86+)]", ch->name, add2);
+		snprintf( log_buf,, sizeof( log_buf,), "%s psi roll 2: [%d] | [torment (1-35), ego whip (36-60), pyrotechnics (61-85), mindblast (86+)]", ch->name, add2);
 		log_string( log_buf );
 		wizinfo( log_buf, MAX_LEVEL);
     if( add2 <= 35)
@@ -2464,7 +2464,7 @@ else
 	 group_add(ch,"mindblast",0);
 
     add3 = number_percent();
-		sprintf( log_buf, "%s psi roll 3: [%d] | [clairvoyance (1-25), astral walk (26-50), shift (51-75), project (76+)]", ch->name, add3);
+		snprintf( log_buf,, sizeof( log_buf,), "%s psi roll 3: [%d] | [clairvoyance (1-25), astral walk (26-50), shift (51-75), project (76+)]", ch->name, add3);
 		log_string( log_buf );
 		wizinfo( log_buf, MAX_LEVEL);
     if( add3 <= 25)
@@ -2477,7 +2477,7 @@ else
 	 group_add(ch,"project",0);
 
     add4 = number_percent();
-		sprintf( log_buf, "%s psi roll 4: [%d] | [telekinesis (1-20), transfusion (21-45), confuse (46-60), nightmare (61+)]\n\r", ch->name, add4);
+		snprintf( log_buf,, sizeof( log_buf,), "%s psi roll 4: [%d] | [telekinesis (1-20), transfusion (21-45), confuse (46-60), nightmare (61+)]\n\r", ch->name, add4);
 		log_string( log_buf );
 		wizinfo( log_buf, MAX_LEVEL);
     if( add4 <= 20)
@@ -2605,7 +2605,7 @@ bool check_reconnect( DESCRIPTOR_DATA *d, char *name, bool fConn )
 	     if(!IS_SET(ch->act, PLR_WIZINVIS) )
 			 	{
 					act( "$n has reconnected.", ch, NULL, NULL, TO_ROOM );
-					sprintf( log_buf, "%s@%s reconnected. [Room: %d]", ch->name,
+					snprintf( log_buf,, sizeof( log_buf,), "%s@%s reconnected. [Room: %d]", ch->name,
 			 		d->host, ch->in_room->vnum );
 					log_string( log_buf );
 				}
@@ -2618,21 +2618,21 @@ bool check_reconnect( DESCRIPTOR_DATA *d, char *name, bool fConn )
 	    from the same IP address  1/23/98 *****/
 
         samehost = 0;
-        sprintf(deshost,"%s",d->host);
+        snprintf(deshost,, sizeof(deshost,), "%s",d->host);
 
         for ( dch = descriptor_list; dch != NULL; dch = dch->next )
         {
           if (dch->character == NULL)
                continue;
 
-          sprintf(chhost,"%s",dch->host);
+          snprintf(chhost,, sizeof(chhost,), "%s",dch->host);
           if (strstr(deshost,chhost) != NULL)
                samehost++;
         }
 
 	if (samehost > 1)
 	{
-	   sprintf(log_buf,"There are now %d players playing from that IP address.",samehost);
+	   snprintf(log_buf,, sizeof(log_buf,), "There are now %d players playing from that IP address.",samehost);
 	   wizinfo(log_buf, AVATAR);
 	}
 
@@ -2710,7 +2710,7 @@ void stop_idling( CHAR_DATA *ch )
  */
 void send_to_char( const char *txt, CHAR_DATA *ch )
 {
-  char buf[MAX_STRING_LENGTH];
+  char buf[MAX_STRING_LENGTH] = {0};
   int t,len,col;
   PC_DATA *pcdata;
   char *ptr;
@@ -2873,7 +2873,7 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
     static char * const him_her [] = { "it",  "him", "her" };
     static char * const his_her [] = { "its", "his", "her" };
 
-    char buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH] = {0};
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
     CHAR_DATA *vch = (CHAR_DATA *) arg2;
@@ -3010,7 +3010,7 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
     static char * const him_her [] = { "it",  "him", "her" };
     static char * const his_her [] = { "its", "his", "her" };
 
-    char buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH] = {0};
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
     CHAR_DATA *vch = (CHAR_DATA *) arg2;
@@ -3046,7 +3046,7 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
 	send_to_char("foul or abusive language on a public channel.\n\r",ch);
 	send_to_char("You have lost your channel usage for 3 days.\n\r",ch);
 	send_to_char("Please in the future, follow the rules as best you can.\n\r",ch);
-	sprintf(buf,"The game has nochanneled %s for using foul language.",ch->name);
+	snprintf(buf,, sizeof(buf,), "The game has nochanneled %s for using foul language.",ch->name);
 	wizinfo(buf,LEVEL_IMMORTAL);
 	SET_BIT(ch->comm, COMM_NOCHANNELS|COMM_NOSHOUT|COMM_NOTELL);
 	ch->pcdata->jw_timer = current_time;
@@ -3171,7 +3171,7 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
 
 char *drunk_speak( const char *str )
 {
-    static char buf[MAX_STRING_LENGTH];
+    static char buf[MAX_STRING_LENGTH] = {0};
     const char *cp1;
     char *cp2;
     int numb;
@@ -3408,7 +3408,7 @@ bool str_infix_c( const char *astr, const char *bstr )
 char *str_replace_c( char *astr, char *bstr, char *cstr )
 {
     char newstr[MAX_STRING_LENGTH];
-    char buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH] = {0};
     bool found = FALSE;
     int sstr1, sstr2;
     int ichar, jchar;
@@ -3442,15 +3442,15 @@ char *str_replace_c( char *astr, char *bstr, char *cstr )
     } if (found) {
         buf[0] = '\0';
         for ( ichar = 0; ichar < jchar; ichar++ ) {
-            sprintf(newstr, "%c", astr[ichar]);
+            snprintf(newstr,, sizeof(newstr,), "%c", astr[ichar]);
             strcat(buf, newstr);
         }
         strcat(buf, cstr);
         for ( ichar = jchar + sstr2; ichar < sstr1; ichar++ ) {
-            sprintf(newstr, "%c", astr[ichar]);
+            snprintf(newstr,, sizeof(newstr,), "%c", astr[ichar]);
             strcat(buf, newstr);
         }
-        sprintf(astr, "%s", str_replace_c(buf, bstr, cstr) );
+        snprintf(astr,, sizeof(astr,), "%s", str_replace_c(buf, bstr, cstr) );
         return astr;
     }
     return astr;
@@ -3460,7 +3460,7 @@ char *str_replace_c( char *astr, char *bstr, char *cstr )
 void config_prompt( CHAR_DATA *ch )
 {
     DESCRIPTOR_DATA *d;
-    char buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH] = {0};
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
 
@@ -3477,96 +3477,96 @@ void config_prompt( CHAR_DATA *ch )
       return;
     }
 
-    sprintf(buf2, "%s", ch->prompt);
-    if (buf2 == NULL || buf2[0] == '\0') {
+    snprintf(buf2,, sizeof(buf2,), "%s", ch->prompt);
+    if (buf2[0] == '\0') {
         if( IS_IMMORTAL( ch ) && ch->in_room ) {
             incl++;
-            sprintf( buf, "<Room:%d", ch->in_room->vnum );
+            snprintf( buf,, sizeof( buf,), "<Room:%d", ch->in_room->vnum );
         }
 
         if (ch->hit < ch->max_hit) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<%dhp", ch->hit);
+                snprintf(buf,, sizeof(buf,), "<%dhp", ch->hit);
             else
-                sprintf(buf,"%s %dhp", buf, ch->hit);
+                snprintf(buf,, sizeof(buf,), "%s %dhp", buf, ch->hit);
         }
 
         if (ch->mana < ch->max_mana) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<%dm", ch->mana);
+                snprintf(buf,, sizeof(buf,), "<%dm", ch->mana);
             else
-                sprintf(buf,"%s %dm", buf, ch->mana);
+                snprintf(buf,, sizeof(buf,), "%s %dm", buf, ch->mana);
         }
 
         if (ch->move < ch->max_move) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<%dmv", ch->move);
+                snprintf(buf,, sizeof(buf,), "<%dmv", ch->move);
             else
-                sprintf(buf,"%s %dmv", buf, ch->move);
+                snprintf(buf,, sizeof(buf,), "%s %dmv", buf, ch->move);
         }
 
         if (IS_IMMORTAL(ch) && IS_SET(ch->act, PLR_WIZINVIS)) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<(WIZI:%d)", ch->invis_level);
+                snprintf(buf,, sizeof(buf,), "<(WIZI:%d)", ch->invis_level);
             else
-                sprintf(buf,"%s (WIZI:%d)", buf, ch->invis_level);
+                snprintf(buf,, sizeof(buf,), "%s (WIZI:%d)", buf, ch->invis_level);
         }
 
-        sprintf(buf2,"%s> ",buf);
+        snprintf(buf2,, sizeof(buf2,), "%s> ",buf);
     } else {
-        sprintf(buf,"%d",ch->hit);
+        snprintf(buf,, sizeof(buf,), "%d",ch->hit);
         str_replace_c(buf2, "%h", buf);
 
-        sprintf(buf,"%d",ch->max_hit);
+        snprintf(buf,, sizeof(buf,), "%d",ch->max_hit);
         str_replace_c(buf2, "%H", buf);
 
-        sprintf(buf,"%d",ch->mana);
+        snprintf(buf,, sizeof(buf,), "%d",ch->mana);
         str_replace_c(buf2, "%m", buf);
 
-        sprintf(buf,"%d",ch->max_mana);
+        snprintf(buf,, sizeof(buf,), "%d",ch->max_mana);
         str_replace_c(buf2, "%M", buf);
 
-        sprintf(buf,"%d",ch->move);
+        snprintf(buf,, sizeof(buf,), "%d",ch->move);
         str_replace_c(buf2, "%v", buf);
 
-        sprintf(buf,"%d",ch->max_move);
+        snprintf(buf,, sizeof(buf,), "%d",ch->max_move);
         str_replace_c(buf2, "%V", buf);
 
-        sprintf(buf,"%ld",ch->exp);
+        snprintf(buf,, sizeof(buf,), "%ld",ch->exp);
         str_replace_c(buf2, "%x", buf);
 
         if (!IS_NPC(ch) && (ch->level < 59) )
-            sprintf(buf,"%ld", next_xp_level(ch)-ch->exp);
+            snprintf(buf,, sizeof(buf,), "%ld", next_xp_level(ch)-ch->exp);
         else
-            sprintf(buf,"none");
+            snprintf(buf,, sizeof(buf,), "none");
         str_replace_c(buf2, "%X", buf);
 
-        sprintf(buf,"%ld",query_gold(ch));
+        snprintf(buf,, sizeof(buf,), "%ld",query_gold(ch));
         str_replace_c(buf2, "%g", buf);
 
-        sprintf(buf,"%d",ch->alignment);
+        snprintf(buf,, sizeof(buf,), "%d",ch->alignment);
         str_replace_c(buf2, "%a", buf);
 
         if( IS_IMMORTAL( ch ) && ch->in_room )
-            sprintf( buf, "%d", ch->in_room->vnum );
+            snprintf( buf,, sizeof( buf,), "%d", ch->in_room->vnum );
         else
-            sprintf( buf, " " );
+            snprintf( buf,, sizeof( buf,), " " );
         str_replace_c(buf2, "%R", buf);
 
         if( IS_IMMORTAL( ch ) && ch->in_room )
-            sprintf( buf, "%s", ch->in_room->area->name );
+            snprintf( buf,, sizeof( buf,), "%s", ch->in_room->area->name );
         else
-            sprintf( buf, " " );
+            snprintf( buf,, sizeof( buf,), " " );
         str_replace_c(buf2, "%z", buf);
 
         if( IS_IMMORTAL( ch ) && IS_SET(ch->act, PLR_WIZINVIS) )
-            sprintf( buf, " (WIZI:%d)", ch->invis_level);
+            snprintf( buf,, sizeof( buf,), " (WIZI:%d)", ch->invis_level);
         else
-            sprintf( buf, " ");
+            snprintf( buf,, sizeof( buf,), " ");
         str_replace_c(buf2, "%W", buf);
     }
 

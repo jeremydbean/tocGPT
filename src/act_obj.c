@@ -159,7 +159,7 @@ void get_obj( CHAR_DATA *ch, OBJ_DATA *obj, OBJ_DATA *container )
 	            members++;
 
  	    if(members > 1 && obj->value[0] > 1) {
-	        sprintf(buffer,"%d platinum",obj->value[0]);
+	        snprintf(buffer,, sizeof(buffer,), "%d platinum",obj->value[0]);
 	        do_split(ch,buffer);
 	    }
 	  }
@@ -175,7 +175,7 @@ void get_obj( CHAR_DATA *ch, OBJ_DATA *obj, OBJ_DATA *container )
 	            members++;
 
  	    if(members > 1 && obj->value[0] > 1) {
-	        sprintf(buffer,"%d gold",obj->value[0]);
+	        snprintf(buffer,, sizeof(buffer,), "%d gold",obj->value[0]);
 	        do_split(ch,buffer);
 	    }
 	  }
@@ -191,7 +191,7 @@ void get_obj( CHAR_DATA *ch, OBJ_DATA *obj, OBJ_DATA *container )
 	            members++;
 
  	    if(members > 1 && obj->value[0] > 1) {
-	        sprintf(buffer,"%d silver",obj->value[0]);
+	        snprintf(buffer,, sizeof(buffer,), "%d silver",obj->value[0]);
 	        do_split(ch,buffer);
 	    }
 	  }
@@ -207,7 +207,7 @@ void get_obj( CHAR_DATA *ch, OBJ_DATA *obj, OBJ_DATA *container )
 	            members++;
 
  	    if(members > 1 && obj->value[0] > 1) {
-	        sprintf(buffer,"%d copper",obj->value[0]);
+	        snprintf(buffer,, sizeof(buffer,), "%d copper",obj->value[0]);
 	        do_split(ch,buffer);
 	    }
 	  }
@@ -452,22 +452,22 @@ void do_get( CHAR_DATA *ch, char *argument )
           switch(container->value[1]) {
              case TYPE_PLATINUM:
                 ch->new_platinum += amount;
-                sprintf(buf,"You get %d platinum coins.\n\r",amount);
+                snprintf(buf,, sizeof(buf,), "You get %d platinum coins.\n\r",amount);
                 break;
              case TYPE_GOLD:
                 ch->new_gold += amount;
-                sprintf(buf,"You get %d gold coins.\n\r",amount);
+                snprintf(buf,, sizeof(buf,), "You get %d gold coins.\n\r",amount);
                 break;
              case TYPE_SILVER:
                 ch->new_silver += amount;
-                sprintf(buf,"You get %d silver coins.\n\r",amount);
+                snprintf(buf,, sizeof(buf,), "You get %d silver coins.\n\r",amount);
                 break;
              case TYPE_COPPER:
                 ch->new_copper += amount;
-                sprintf(buf,"You get %d copper coins.\n\r",amount);
+                snprintf(buf,, sizeof(buf,), "You get %d copper coins.\n\r",amount);
                 break;
              default:
-                sprintf(buf,"You get zippo.\n\r");
+                snprintf(buf,, sizeof(buf,), "You get zippo.\n\r");
           }
           send_to_char(buf,ch);
           container->value[0] -= amount;
@@ -747,7 +747,7 @@ void do_drop( CHAR_DATA *ch, char *argument )
 		ch->new_platinum -= amount;
 
 		if(amount >= 5000) {
-		    sprintf( buf, "%s dropped %d platinum. [Room: %d]",
+		    snprintf( buf,, sizeof( buf,), "%s dropped %d platinum. [Room: %d]",
 			ch->name, amount, ch->in_room->vnum);
 	            wizinfo(buf,LEVEL_IMMORTAL);
 		}
@@ -785,7 +785,7 @@ void do_drop( CHAR_DATA *ch, char *argument )
 		ch->new_gold -= amount;
 
 		if(amount >= 25000) {
-		    sprintf( buf, "%s dropped %d gold. [Room: %d]",
+		    snprintf( buf,, sizeof( buf,), "%s dropped %d gold. [Room: %d]",
 			ch->name, amount, ch->in_room->vnum);
 	            wizinfo(buf,LEVEL_IMMORTAL);
 		}
@@ -1018,15 +1018,15 @@ void do_give( CHAR_DATA *ch, char *argument )
 	    } else {
 		ch->new_platinum     -= amount;
 		victim->new_platinum += amount;
-		sprintf(buf,"$n gives you %d platinum.",amount);
+		snprintf(buf,, sizeof(buf,), "$n gives you %d platinum.",amount);
 		act(buf,ch,NULL,victim,TO_VICT);
 		act("$n gives $N some platinum.",
 			ch,NULL,victim,TO_NOTVICT);
-		sprintf(buf,"You give $N %d platinum.",amount);
+		snprintf(buf,, sizeof(buf,), "You give $N %d platinum.",amount);
 		act(buf,ch,NULL,victim,TO_CHAR);
 
 		if(amount >= 5000) {
-	  	    sprintf(buf,"%s gave %s %d platinum",
+	  	    snprintf(buf,, sizeof(buf,), "%s gave %s %d platinum",
 			ch->name,victim->name,amount);
 		    wizinfo(buf, LEVEL_IMMORTAL);
 		}
@@ -1038,15 +1038,15 @@ void do_give( CHAR_DATA *ch, char *argument )
 	    } else {
 		ch->new_gold     -= amount;
 		victim->new_gold += amount;
-		sprintf(buf,"$n gives you %d gold.",amount);
+		snprintf(buf,, sizeof(buf,), "$n gives you %d gold.",amount);
 		act(buf,ch,NULL,victim,TO_VICT);
 		act("$n gives $N some gold.",
 			ch,NULL,victim,TO_NOTVICT);
-		sprintf(buf,"You give $N %d gold.",amount);
+		snprintf(buf,, sizeof(buf,), "You give $N %d gold.",amount);
 		act(buf,ch,NULL,victim,TO_CHAR);
 
 		if(amount >= 25000) {
-	  	    sprintf(buf,"%s gave %s %d gold",
+	  	    snprintf(buf,, sizeof(buf,), "%s gave %s %d gold",
 			ch->name,victim->name,amount);
 		    wizinfo(buf, LEVEL_IMMORTAL);
 		}
@@ -1058,11 +1058,11 @@ void do_give( CHAR_DATA *ch, char *argument )
 	    } else {
 		ch->new_silver     -= amount;
 		victim->new_silver += amount;
-		sprintf(buf,"$n gives you %d silver.",amount);
+		snprintf(buf,, sizeof(buf,), "$n gives you %d silver.",amount);
 		act(buf,ch,NULL,victim,TO_VICT);
 		act("$n gives $N some silver.",
 			ch,NULL,victim,TO_NOTVICT);
-		sprintf(buf,"You give $N %d silver.",amount);
+		snprintf(buf,, sizeof(buf,), "You give $N %d silver.",amount);
 		act(buf,ch,NULL,victim,TO_CHAR);
 	    } break;
 	case TYPE_COPPER:
@@ -1072,11 +1072,11 @@ void do_give( CHAR_DATA *ch, char *argument )
 	    } else {
 		ch->new_copper     -= amount;
 		victim->new_copper += amount;
-		sprintf(buf,"$n gives you %d copper.",amount);
+		snprintf(buf,, sizeof(buf,), "$n gives you %d copper.",amount);
 		act(buf,ch,NULL,victim,TO_VICT);
 		act("$n gives $N some copper.",
 			ch,NULL,victim,TO_NOTVICT);
-		sprintf(buf,"You give $N %d copper.",amount);
+		snprintf(buf,, sizeof(buf,), "You give $N %d copper.",amount);
 		act(buf,ch,NULL,victim,TO_CHAR);
 	    } break;
 	}
@@ -1168,9 +1168,9 @@ void do_deposit( CHAR_DATA *ch, char *argument )
 
     ch->new_platinum -= amount;
     ch->pcdata->bank += amount;
-    sprintf(buf,"You have deposited %d platinum in the bank.\n\r",amount);
+    snprintf(buf,, sizeof(buf,), "You have deposited %d platinum in the bank.\n\r",amount);
     send_to_char(buf,ch);
-    sprintf(buf,"Your new balance is %d platinum.\n\r",ch->pcdata->bank);
+    snprintf(buf,, sizeof(buf,), "Your new balance is %d platinum.\n\r",ch->pcdata->bank);
     send_to_char(buf,ch);
 }
 
@@ -1210,9 +1210,9 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 
     ch->pcdata->bank -= amount;
     ch->new_platinum += amount;
-    sprintf( buf,"You withdrew %d platinum from your account.\n\r",amount);
+    snprintf( buf,, sizeof( buf,), "You withdrew %d platinum from your account.\n\r",amount);
     send_to_char(buf,ch);
-    sprintf( buf,"Your new balance is %d platinum.\n\r", ch->pcdata->bank);
+    snprintf( buf,, sizeof( buf,), "Your new balance is %d platinum.\n\r", ch->pcdata->bank);
     send_to_char( buf, ch );
 }
 
@@ -1268,7 +1268,7 @@ void do_balance( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    sprintf(buf,"Your current balance is %d.\n\r",ch->pcdata->bank);
+    snprintf(buf,, sizeof(buf,), "Your current balance is %d.\n\r",ch->pcdata->bank);
     send_to_char(buf,ch);
     return;
 }
@@ -1631,7 +1631,7 @@ void do_secondary( CHAR_DATA *ch, char *argument )
 
     if ( ch->level < obj->level )
     {
-	sprintf( buf, "You must be level %d to use this object.\n\r",
+	snprintf( buf,, sizeof( buf,), "You must be level %d to use this object.\n\r",
 	    obj->level );
 	send_to_char( buf, ch );
 	act( "$n tries to use $p, but is too inexperienced.",
@@ -1734,7 +1734,7 @@ void wear_obj( CHAR_DATA *ch, OBJ_DATA *obj, bool fReplace )
 
     if ( ch->level < obj->level )
     {
-	sprintf( buf, "You must be level %d to use this object.\n\r",
+	snprintf( buf,, sizeof( buf,), "You must be level %d to use this object.\n\r",
 	    obj->level );
 	send_to_char( buf, ch );
 	act( "$n tries to use $p, but is too inexperienced.",
@@ -1749,7 +1749,7 @@ void wear_obj( CHAR_DATA *ch, OBJ_DATA *obj, bool fReplace )
        {
 	   if(ch->race != 1)
 	   {
-	     sprintf(buf,"The %s can only be worn by the %s race.\n\r",
+	     snprintf(buf,, sizeof(buf,), "The %s can only be worn by the %s race.\n\r",
 		     obj->short_descr, race_table[1].name);
 	     send_to_char(buf,ch);
 	     return;
@@ -1759,7 +1759,7 @@ void wear_obj( CHAR_DATA *ch, OBJ_DATA *obj, bool fReplace )
        {
 	   if(ch->race != 2)
 	   {
-	     sprintf(buf,"%s can only be worn by the %sen race.\n\r",
+	     snprintf(buf,, sizeof(buf,), "%s can only be worn by the %sen race.\n\r",
 		     obj->short_descr, race_table[2].name);
 	     send_to_char(buf,ch);
 	     return;
@@ -1769,7 +1769,7 @@ void wear_obj( CHAR_DATA *ch, OBJ_DATA *obj, bool fReplace )
        {
 	   if(ch->race != 3)
 	   {
-	     sprintf(buf,"Only %s's can wear %s.\n\r",
+	     snprintf(buf,, sizeof(buf,), "Only %s's can wear %s.\n\r",
 		     race_table[3].name, obj->short_descr );
 	     send_to_char(buf,ch);
 	     return;
@@ -1779,7 +1779,7 @@ void wear_obj( CHAR_DATA *ch, OBJ_DATA *obj, bool fReplace )
        {
 	   if(ch->race != 4)
 	   {
-	     sprintf(buf,"%s can only be worn by %s's.\n\r",
+	     snprintf(buf,, sizeof(buf,), "%s can only be worn by %s's.\n\r",
 		     obj->short_descr, race_table[4].name);
 	     send_to_char(buf,ch);
 	     return;
@@ -1789,7 +1789,7 @@ void wear_obj( CHAR_DATA *ch, OBJ_DATA *obj, bool fReplace )
        {
            if(ch->race != 5)
            {
-             sprintf(buf,"%s can only be worn by Saurians.\n\r", obj->short_descr);
+             snprintf(buf,, sizeof(buf,), "%s can only be worn by Saurians.\n\r", obj->short_descr);
              send_to_char(buf,ch);
              return;
            }
@@ -2161,7 +2161,7 @@ void do_remove( CHAR_DATA *ch, char *argument )
     OBJ_DATA *obj;
 
     if(ch->position == POS_FIGHTING) {
-	sprintf(log_buf,"Do_remove: %s : %s",ch->name,argument);
+	snprintf(log_buf,, sizeof(log_buf,), "Do_remove: %s : %s",ch->name,argument);
 	log_string(log_buf);
     }
 
@@ -2176,7 +2176,7 @@ void do_remove( CHAR_DATA *ch, char *argument )
     if ( !str_cmp( arg, "all" ) )
     {
 	OBJ_DATA *obj_next;
-	sprintf(log_buf,"%s did a remove all.",ch->name);
+	snprintf(log_buf,, sizeof(log_buf,), "%s did a remove all.",ch->name);
 	log_string(log_buf);
 
 	for ( obj = ch->carrying; obj != NULL; obj = obj_next )
@@ -2245,7 +2245,7 @@ void do_sacrifice( CHAR_DATA *ch, char *argument )
         send_to_char("The Gods give you one "
 		"copper coin for your sacrifice.\n\r",ch);
     else {
-	sprintf(buf,"The Gods give you %d "
+	snprintf(buf,, sizeof(buf,), "The Gods give you %d "
 		"copper coins for your sacrifice.\n\r",copper);
 	send_to_char(buf,ch);
     }
@@ -2259,7 +2259,7 @@ void do_sacrifice( CHAR_DATA *ch, char *argument )
                 members++;
 
 	if ( members > 1 && copper > 1) {
-	    sprintf(buffer,"%d copper",copper);
+	    snprintf(buffer,, sizeof(buffer,), "%d copper",copper);
 	    do_split(ch,buffer);
 	}
     }
@@ -2656,17 +2656,17 @@ void do_steal( CHAR_DATA *ch, char *argument )
 	switch(number_range(0,3))
 	{
 	case 0 :
-	   sprintf( buf, "%s is a lousy thief!", ch->name );
+	   snprintf( buf,, sizeof( buf,), "%s is a lousy thief!", ch->name );
 	   break;
         case 1 :
-	   sprintf( buf, "%s couldn't rob %s way out of a paper bag!",
+	   snprintf( buf,, sizeof( buf,), "%s couldn't rob %s way out of a paper bag!",
 		    ch->name,(ch->sex == 2) ? "her" : "his");
 	   break;
 	case 2 :
-	    sprintf( buf,"%s tried to rob me!",ch->name );
+	    snprintf( buf,, sizeof( buf,), "%s tried to rob me!",ch->name );
 	    break;
 	case 3 :
-	    sprintf(buf,"Keep your hands out of there, %s!",ch->name);
+	    snprintf(buf,, sizeof(buf,), "Keep your hands out of there, %s!",ch->name);
 	    break;
 	}
 	do_yell( victim, buf );
@@ -2704,7 +2704,7 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_platinum     += amount;
 	victim->new_platinum -= amount;
-	sprintf(buf,"Bingo! You got %d platinum coins.\n\r",amount);
+	snprintf(buf,, sizeof(buf,), "Bingo! You got %d platinum coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
@@ -2722,7 +2722,7 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_gold     += amount;
 	victim->new_gold -= amount;
-	sprintf(buf,"Bingo! You got %d gold coins.\n\r",amount);
+	snprintf(buf,, sizeof(buf,), "Bingo! You got %d gold coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
@@ -2740,7 +2740,7 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_silver     += amount;
 	victim->new_silver -= amount;
-	sprintf(buf,"Bingo! You got %d silver coins.\n\r",amount);
+	snprintf(buf,, sizeof(buf,), "Bingo! You got %d silver coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
@@ -2758,7 +2758,7 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_copper     += amount;
 	victim->new_copper -= amount;
-	sprintf(buf,"Bingo! You got %d copper coins.\n\r",amount);
+	snprintf(buf,, sizeof(buf,), "Bingo! You got %d copper coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
@@ -2833,7 +2833,7 @@ CHAR_DATA *find_keeper( CHAR_DATA *ch )
     if ( !IS_NPC(ch) && IS_SET(ch->act, PLR_WANTED) )
     {
 	do_say( keeper, "Wanted ones are not welcome!" );
-	sprintf( buf, "%s is over here!\n\r", ch->name );
+	snprintf( buf,, sizeof( buf,), "%s is over here!\n\r", ch->name );
 	do_yell( keeper, buf );
 	return NULL;
     }
@@ -2966,7 +2966,7 @@ void do_buy( CHAR_DATA *ch, char *argument )
     roll = number_percent();
     if (!IS_NPC(ch) && roll < ch->pcdata->learned[gsn_haggle]) {
 	cost -= obj->cost / 2 * roll / 100;
-	sprintf(buf,"You haggle the price down to %d coins.\n\r",cost);
+	snprintf(buf,, sizeof(buf,), "You haggle the price down to %d coins.\n\r",cost);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_haggle,TRUE,4);
     }
@@ -3022,7 +3022,7 @@ void do_list( CHAR_DATA *ch, char *argument )
 		    send_to_char( "[Lv Price] Item\n\r", ch );
 		}
 
-		sprintf( buf, "[%2d %5d] %s.\n\r",
+		snprintf( buf,, sizeof( buf,), "[%2d %5d] %s.\n\r",
 		    obj->level, cost, obj->short_descr);
 		send_to_char( buf, ch );
 	    }
@@ -3100,7 +3100,7 @@ void do_sell( CHAR_DATA *ch, char *argument )
 	cost = UMIN(cost,keeper->new_gold);
         check_improve(ch,gsn_haggle,TRUE,4);
     }
-    sprintf( buf, "You sell $p for %d gold piece%s.",
+    snprintf( buf,, sizeof( buf,), "You sell $p for %d gold piece%s.",
 	cost, cost == 1 ? "" : "s" );
     act( buf, ch, obj, NULL, TO_CHAR );
     ch->new_gold     += cost;
@@ -3169,7 +3169,7 @@ void do_value( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    sprintf( buf, "$n tells you 'I'll give you %d gold coins for $p'.", cost );
+    snprintf( buf,, sizeof( buf,), "$n tells you 'I'll give you %d gold coins for $p'.", cost );
     act( buf, keeper, obj, ch, TO_VICT );
     ch->reply = keeper;
 
@@ -3267,7 +3267,7 @@ void do_bounce( OBJ_DATA *obj )
 		obj_from_room( obj );
 		obj_to_room( obj, pRoomIndex );
 		}
-	   sprintf(buf,"A %s materializes from out of nowhere!",obj->short_descr);
+	   snprintf(buf,, sizeof(buf,), "A %s materializes from out of nowhere!",obj->short_descr);
 	   send_to_room(buf,pRoomIndex->vnum);
 	   obj->level = 0;
 	 }
@@ -3556,7 +3556,7 @@ void do_manipulate( CHAR_DATA *ch, char *argument )
 	 if(find_obj->value[4] > 0)
 	    find_obj->value[4] = 0;
 
-	 sprintf(buf,"%s mysteriously opens.\n\r",capitalize(find_obj->short_descr) );
+	 snprintf(buf,, sizeof(buf,), "%s mysteriously opens.\n\r",capitalize(find_obj->short_descr) );
 	 send_to_room(buf,find_obj->in_room->vnum);
      break;
      case 2:    /* let the genie out of the bottle */
@@ -3649,7 +3649,7 @@ void do_repair( CHAR_DATA *ch, char *argument )
     }
 
     if(obj->condition >= 100) {
-        sprintf(buf,"But %s is already in perfect condition!\n\r",
+        snprintf(buf,, sizeof(buf,), "But %s is already in perfect condition!\n\r",
                 obj->short_descr);
         send_to_char(buf,ch);
         return;
@@ -3668,7 +3668,7 @@ void do_repair( CHAR_DATA *ch, char *argument )
     cost = ((100 - obj->condition) * obj->level) * 5;
 
     if(query_gold(ch) < cost) {
-      sprintf(buf,"It will cost you %d to repair %s.  This has been repaired %d times now...\n\r",cost,
+      snprintf(buf,, sizeof(buf,), "It will cost you %d to repair %s.  This has been repaired %d times now...\n\r",cost,
               obj->short_descr, obj->number_repair);
       send_to_char(buf,ch);
       return;
@@ -3687,7 +3687,7 @@ void do_repair( CHAR_DATA *ch, char *argument )
         obj->condition = 100;
         act( "$N repairs your $p.", ch, obj, rpr, TO_CHAR );
         act( "$N repairs $n's $p.", ch, obj, rpr, TO_ROOM );
-        sprintf(buf,"It cost ya %d to repair %s.  It's been repaired %d times now.\n\r",cost,
+        snprintf(buf,, sizeof(buf,), "It cost ya %d to repair %s.  It's been repaired %d times now.\n\r",cost,
                 obj->short_descr, obj->number_repair);
         send_to_char(buf,ch);
         if (IS_OBJ_STAT(obj,ITEM_DAMAGED))
@@ -3736,7 +3736,7 @@ void add_money(CHAR_DATA *ch, long amount)
   amount *= -1;
   has_money = query_gold(ch);
   if (has_money < amount)
-  { sprintf(buf,"[ADD_MONEY] Trying to substract %ld money while char %s has only %ld.\n\r",
+  { snprintf(buf,, sizeof(buf,), "[ADD_MONEY] Trying to substract %ld money while char %s has only %ld.\n\r",
             amount,ch->name,has_money);
     log_string(buf);
     ch->new_gold = 0;
@@ -3795,7 +3795,7 @@ void add_money(CHAR_DATA *ch, long amount)
     ch->new_gold += 5 - amount;
     return;
   }
-  sprintf(buf,"[ADD_MONEY] Trying to substract %ld money while char %s has no money left.\n\r",
+  snprintf(buf,, sizeof(buf,), "[ADD_MONEY] Trying to substract %ld money while char %s has no money left.\n\r",
           amount,ch->name);
   log_string(buf);
 }
@@ -3874,7 +3874,7 @@ void add_platinum(CHAR_DATA *ch, long amount)
 	act( "$n drops some gold.", ch, NULL, NULL, TO_ROOM );
 	if(amount >= 5000)
 	{
-	  sprintf( buf, "%s dropped %d gold. [Room: %d]",ch->name, amount,
+	  snprintf( buf,, sizeof( buf,), "%s dropped %d gold. [Room: %d]",ch->name, amount,
 		    ch->in_room->vnum);
 
 	  if(IS_SET(ch->act, PLR_WIZINVIS) )
@@ -3922,14 +3922,14 @@ void add_platinum(CHAR_DATA *ch, long amount)
 
 	ch->gold     -= amount;
 	victim->gold += amount;
-	sprintf(buf,"$n gives you %d gold.",amount);
+	snprintf(buf,, sizeof(buf,), "$n gives you %d gold.",amount);
 	act( buf, ch, NULL, victim, TO_VICT    );
 	act( "$n gives $N some gold.",  ch, NULL, victim, TO_NOTVICT );
-	sprintf(buf,"You give $N %d gold.",amount);
+	snprintf(buf,, sizeof(buf,), "You give $N %d gold.",amount);
 	act( buf, ch, NULL, victim, TO_CHAR    );
 	if(amount >= 10000)
 	{
-	  sprintf(buf, "%s gave %s %d gold", ch->name, victim->name, amount);
+	  snprintf(buf,, sizeof(buf,), "%s gave %s %d gold", ch->name, victim->name, amount);
 
 	  if( IS_SET(ch->act, PLR_WIZINVIS) )
 	    wizinfo(buf, ch->invis_level);

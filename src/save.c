@@ -72,7 +72,7 @@ void save_char_obj( CHAR_DATA *ch )
     if (get_trust(ch) > 59 || IS_IMMORTAL(ch))
     {
 	fclose(fpReserve);
-	sprintf(strsave, "%s%s",GOD_DIR, capitalize(ch->name));
+	snprintf(strsave,, sizeof(strsave,), "%s%s",GOD_DIR, capitalize(ch->name));
 	if ((fp = fopen(strsave,"w")) == NULL)
 	{
 	    bug("Save_char_obj: fopen",0);
@@ -83,7 +83,7 @@ void save_char_obj( CHAR_DATA *ch )
 	    ch->level, get_trust(ch), ch->name, ch->pcdata->title);
 	fclose( fp );
 #ifdef CHGRP_TO
-        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+        snprintf(buf,, sizeof(buf,), "chgrp %s %s", CHGRP_TO, strsave);
         system(buf);
 #endif
 	fpReserve = fopen( NULL_FILE, "r" );
@@ -95,7 +95,7 @@ void save_char_obj( CHAR_DATA *ch )
     if (IS_HERO(ch) && get_trust(ch) < 60)
     {
         fclose(fpReserve);
-        sprintf(strsave, "%s%s",HERO_DIR, capitalize(ch->name));
+        snprintf(strsave,, sizeof(strsave,), "%s%s",HERO_DIR, capitalize(ch->name));
         if ((fp = fopen(strsave,"w")) == NULL)
         {
             bug("Save_char_obj: fopen",0);
@@ -106,7 +106,7 @@ void save_char_obj( CHAR_DATA *ch )
             ch->level, get_trust(ch), ch->name, ch->pcdata->title);
         fclose( fp );
 #ifdef CHGRP_TO
-        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+        snprintf(buf,, sizeof(buf,), "chgrp %s %s", CHGRP_TO, strsave);
         system(buf);
 #endif
         fpReserve = fopen( NULL_FILE, "r" );
@@ -116,7 +116,7 @@ void save_char_obj( CHAR_DATA *ch )
 
 
     fclose( fpReserve );
-    sprintf( strsave, "%s%s", PLAYER_DIR, capitalize( ch->name ) );
+    snprintf( strsave,, sizeof( strsave,), "%s%s", PLAYER_DIR, capitalize( ch->name ) );
     if ( ( fp = fopen( PLAYER_TEMP, "w" ) ) == NULL )
     {
 	bug( "Save_char_obj: fopen", 0 );
@@ -136,9 +136,9 @@ void save_char_obj( CHAR_DATA *ch )
     fclose( fp );
     /* move the file */
 #ifdef CHGRP_TO
-    sprintf(buf,"mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
+    snprintf(buf,, sizeof(buf,), "mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
 #else
-    sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
+    snprintf(buf,, sizeof(buf,), "mv %s %s",PLAYER_TEMP,strsave);
 #endif
     system(buf);
     fpReserve = fopen( NULL_FILE, "r" );
@@ -637,7 +637,7 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     int stat;
     int i;
 
-    sprintf(buf, "Loading %s's playerfile", name);
+    snprintf(buf,, sizeof(buf,), "Loading %s's playerfile", name);
     log_string(buf);
 
     if ( char_free == NULL )
@@ -728,16 +728,16 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
 
     #if defined(unix)
     /* decompress if .gz file exists */
-    sprintf( strsave, "%s%s%s", PLAYER_DIR, capitalize(name),".gz");
+    snprintf( strsave,, sizeof( strsave,), "%s%s%s", PLAYER_DIR, capitalize(name),".gz");
     if ( ( fp = fopen( strsave, "r" ) ) != NULL )
     {
 	fclose(fp);
-/*	sprintf(buf,"gzip -dfq %s",strsave); */
+/*	snprintf(buf,, sizeof(buf,), "gzip -dfq %s",strsave); */
 	system(buf);
     }
     #endif
 
-    sprintf( strsave, "%s%s", PLAYER_DIR, capitalize( name ) );
+    snprintf( strsave,, sizeof( strsave,), "%s%s", PLAYER_DIR, capitalize( name ) );
     if ( ( fp = fopen( strsave, "r" ) ) != NULL )
     {
 	int iNest;
@@ -1207,7 +1207,7 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 		if (ch->pcdata->title[0] != '.' && ch->pcdata->title[0] != ','
 		&&  ch->pcdata->title[0] != '!' && ch->pcdata->title[0] != '?')
 		{
-		    sprintf( buf, " %s", ch->pcdata->title );
+		    snprintf( buf,, sizeof( buf,), " %s", ch->pcdata->title );
 		    free_string( ch->pcdata->title );
 		    ch->pcdata->title = str_dup( buf );
 		}
@@ -1820,7 +1820,7 @@ void fread_obj( CHAR_DATA *ch, FILE *fp )
 		{
 		  char buf[MAX_STRING_LENGTH];
 
-		  sprintf(buf,"BOGUS! %s has bad weapon %s",ch->name,obj->name);
+		  snprintf(buf,, sizeof(buf,), "BOGUS! %s has bad weapon %s",ch->name,obj->name);
 		  wizinfo(buf,LEVEL_IMMORTAL);
 		  log_string(buf);
 		}
@@ -1927,16 +1927,16 @@ void corpse_back( CHAR_DATA *ch, OBJ_DATA *corpse )
     fclose( fpReserve );
 
 #if !defined( machintosh) && !defined( MSDOS )
-    sprintf( strsave, "%s%s.cps", CORPSE_DIR, ch->name );
+    snprintf( strsave,, sizeof( strsave,), "%s%s.cps", CORPSE_DIR, ch->name );
 #else
-    sprintf( strsave, "%s%s.cps", PLAYER_DIR, ( ch->name ) );
+    snprintf( strsave,, sizeof( strsave,), "%s%s.cps", PLAYER_DIR, ( ch->name ) );
 #endif
 
     if( first )
     {
 	if( !( fp = fopen( strsave, "w" ) ) )
 	{
-	    sprintf( buf, "Corpses back: fopen %s: ", ch->name );
+	    snprintf( buf,, sizeof( buf,), "Corpses back: fopen %s: ", ch->name );
 	    bug( buf, 0 );
 	    perror( strsave );
    	}
@@ -1960,7 +1960,7 @@ void corpse_back( CHAR_DATA *ch, OBJ_DATA *corpse )
 
     if( !(fp = fopen( strsave, "r" ) ) )
     {
-	sprintf( buf, "Corpse back: fopen %s: ", ch->name );
+	snprintf( buf,, sizeof( buf,), "Corpse back: fopen %s: ", ch->name );
 	bug( buf, 0 );
 	perror( strsave );
     }
@@ -1985,7 +1985,7 @@ void corpse_back( CHAR_DATA *ch, OBJ_DATA *corpse )
 
     if( !( fp = fopen( strsave, "w" ) ) )
     {
-	sprintf( buf, "Corpse back: fopen %s: ", ch->name );
+	snprintf( buf,, sizeof( buf,), "Corpse back: fopen %s: ", ch->name );
 	bug( buf, 0 );
 	perror( strsave );
     }

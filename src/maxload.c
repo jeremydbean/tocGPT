@@ -74,7 +74,7 @@ int  get_maxload_with_players(int vnum)
 
  amount = 0;
 
- sprintf(buf,"grep \"Vnum %d\\b\" ../player/* | grep -c :",vnum);
+ snprintf(buf,, sizeof(buf,), "grep \"Vnum %d\\b\" ../player/* | grep -c :",vnum);
  
  fclose(fpReserve);
  if ((fp = popen(buf,"r")) == NULL ) {
@@ -133,9 +133,9 @@ void add_maxload_index( int vnum, int signval, int game_load )
     char          buf[1000];
     
     if (game_load) 
-      sprintf(buf,"Called for vnum: %d to modify as: %d as gameload.",vnum,signval);
+      snprintf(buf,, sizeof(buf,), "Called for vnum: %d to modify as: %d as gameload.",vnum,signval);
     else
-      sprintf(buf,"Called for vnum: %d to modify as: %d as playerload.",vnum,signval);
+      snprintf(buf,, sizeof(buf,), "Called for vnum: %d to modify as: %d as playerload.",vnum,signval);
     log_string(buf);
 
     modified = 0;
@@ -147,7 +147,7 @@ void add_maxload_index( int vnum, int signval, int game_load )
           if (signval > 0) {
             if (game_load) {
               pLoad->item_game_load += 1;
-	      sprintf(log_buf,"Vnum %d|Signval: %d|Gameload|Total: %d",
+	      snprintf(log_buf,, sizeof(log_buf,), "Vnum %d|Signval: %d|Gameload|Total: %d",
 		vnum,signval,pLoad->item_game_load);
 	      log_string(log_buf);
               break;
@@ -157,7 +157,7 @@ void add_maxload_index( int vnum, int signval, int game_load )
               pLoad->item_game_load = UMAX(0,pLoad->item_game_load); 
               pLoad->item_curr_load += 1;
               modified = 1;
-	      sprintf(log_buf,"Vnum %d|Signval: %d|!Gameload|Total: %d",
+	      snprintf(log_buf,, sizeof(log_buf,), "Vnum %d|Signval: %d|!Gameload|Total: %d",
 		vnum,signval,pLoad->item_game_load);
 	      log_string(log_buf);
               break;
@@ -167,7 +167,7 @@ void add_maxload_index( int vnum, int signval, int game_load )
             if (game_load) {
               pLoad->item_game_load -= 1;
               pLoad->item_game_load = UMAX(0,pLoad->item_game_load);
-	      sprintf(log_buf,"Vnum %d|Signval: %d|Gameload|Total: %d",
+	      snprintf(log_buf,, sizeof(log_buf,), "Vnum %d|Signval: %d|Gameload|Total: %d",
 		vnum,signval,pLoad->item_game_load);
 	      log_string(log_buf);
               break;
@@ -177,7 +177,7 @@ void add_maxload_index( int vnum, int signval, int game_load )
               pLoad->item_curr_load = UMAX(0,pLoad->item_curr_load); 
               pLoad->item_game_load += 1;
               modified = 1;
-	      sprintf(log_buf,"Vnum %d|Signval: %d|!Gameload|Total: %d",
+	      snprintf(log_buf,, sizeof(log_buf,), "Vnum %d|Signval: %d|!Gameload|Total: %d",
 		vnum,signval,pLoad->item_game_load);
 	      log_string(log_buf);
               break;
@@ -217,7 +217,7 @@ void do_get_maxload_with_players( CHAR_DATA *ch, char *argument)
    }
   vnum = atoi(arg1);
   amnt = get_maxload_with_players(vnum);
-  sprintf(buf,"With players: %d\n\r",amnt);
+  snprintf(buf,, sizeof(buf,), "With players: %d\n\r",amnt);
   send_to_char(buf,ch);
   return;
 } 
@@ -325,7 +325,7 @@ void do_set_maxload( CHAR_DATA *ch, char *argument )
     { if (obj->pIndexData->vnum == vnum) in_game++;
     } 
     if ((modify != 0) && (with_pla + in_game > modify)) 
-    { sprintf(buf,"Current in game:  %d\n\r"
+    { snprintf(buf,, sizeof(buf,), "Current in game:  %d\n\r"
                   "Current with pla: %d\n\r"
                   "Minimum modi:     %d\n\r",
                  in_game,with_pla,in_game+with_pla);
@@ -345,7 +345,7 @@ void do_set_maxload( CHAR_DATA *ch, char *argument )
   }
   else {
     if (pLoad ->item_game_load + pLoad->item_curr_load > modify) {
-      sprintf(buf,"Minimum value for modifcation is: %d\n\r",pLoad->item_game_load + pLoad->item_curr_load);
+      snprintf(buf,, sizeof(buf,), "Minimum value for modifcation is: %d\n\r",pLoad->item_game_load + pLoad->item_curr_load);
       send_to_char(buf,ch);
       return;
     }
@@ -389,10 +389,10 @@ void do_lst_maxload( CHAR_DATA *ch, char *argument )
     return;
   }
 
-  sprintf(buf,"Listing of all items which have a %s set.\n\r","maxload");
-  sprintf(buf+strlen(buf),"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\r");
-  sprintf(buf+strlen(buf),"       %-8s %-8s %-8s %-8s %-40s\n\r","VNUM","IN_GAME","WITH_PLA","MAX","DESCRIPTION");
-  sprintf(buf+strlen(buf),"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\r");
+  snprintf(buf,, sizeof(buf,), "Listing of all items which have a %s set.\n\r","maxload");
+  snprintf(buf+strlen(buf),, sizeof(buf+strlen(buf),), "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\r");
+  snprintf(buf+strlen(buf),, sizeof(buf+strlen(buf),), "       %-8s %-8s %-8s %-8s %-40s\n\r","VNUM","IN_GAME","WITH_PLA","MAX","DESCRIPTION");
+  snprintf(buf+strlen(buf),, sizeof(buf+strlen(buf),), "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\r");
 
   for (i=0;i<MAXLOAD_KEY_HASH;i++) {
      for (pLoad = maxload_index_hash[i];
@@ -400,7 +400,7 @@ void do_lst_maxload( CHAR_DATA *ch, char *argument )
           pLoad = pLoad->next) {
         
         if (strlen(buf) < 4000)
-          sprintf(buf+strlen(buf),"ML     %-8d %-8d %-8d %-8d %-40s\n\r",
+          snprintf(buf+strlen(buf),, sizeof(buf+strlen(buf),), "ML     %-8d %-8d %-8d %-8d %-40s\n\r",
                   pLoad->vnum,
                   pLoad->item_game_load,
                   pLoad->item_curr_load,
@@ -414,7 +414,7 @@ void do_lst_maxload( CHAR_DATA *ch, char *argument )
   }
   if (prevent_overflow)
     send_to_char("TRUNCATED INFORMATION\n\r",ch);
-  sprintf(buf+strlen(buf),"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\r");
+  snprintf(buf+strlen(buf),, sizeof(buf+strlen(buf),), "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\r");
   page_to_char(buf,ch);
 
   return;
@@ -464,14 +464,14 @@ void read_maxload_file( )
        if (word[0] == '$') break;
        if (strlen(word) != 2) {
          log_string("Error in read_max_load_file: Length command word <> 2");
-         sprintf(buf,"Skipping line with word: %s",word);
+         snprintf(buf,, sizeof(buf,), "Skipping line with word: %s",word);
          log_string(buf);
          fread_to_eol( fp );
          continue;
        }
        if ((UPPER(word[0]) != 'M') && (UPPER(word[1]) != 'L')) {
          log_string("Error in read_max_load_file: UPPER(word) <> ML");
-         sprintf(buf,"Skipping line with word: %s",word);
+         snprintf(buf,, sizeof(buf,), "Skipping line with word: %s",word);
          log_string(buf);
          fread_to_eol( fp );
          continue;
@@ -481,13 +481,13 @@ void read_maxload_file( )
        max_load  = fread_number( fp );
        if ( (temp_load  = get_maxload_index( vnum )) != NULL ) {
          log_string("Error in read_max_load_file: Double entry");
-         sprintf(buf,"For vnum %d",vnum);
+         snprintf(buf,, sizeof(buf,), "For vnum %d",vnum);
          log_string(buf);
          continue;
        }
        if (max_load < 1) {
          log_string("Error in read_max_load_file:");
-         sprintf(buf,"Maxload for vnum %d < 1",vnum);
+         snprintf(buf,, sizeof(buf,), "Maxload for vnum %d < 1",vnum);
          log_string(buf);
          continue;
        }

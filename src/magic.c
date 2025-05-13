@@ -147,8 +147,8 @@ void say_spell( CHAR_DATA *ch, int sn )
 	       length = 1;
     }
 
-    sprintf( buf2, "$n utters the words, '%s'.", buf );
-    sprintf( buf,  "$n utters the words, '%s'.", skill_table[sn].name );
+    snprintf( buf2,, sizeof( buf2,), "$n utters the words, '%s'.", buf );
+    snprintf( buf,, sizeof( buf,), "$n utters the words, '%s'.", skill_table[sn].name );
 
     for ( rch = ch->in_room->people; rch; rch = rch->next_in_room )
     {
@@ -1315,7 +1315,7 @@ void spell_charm_person( int sn, int level, CHAR_DATA *ch, void *vo )
     af.bitvector2 = 0;
     affect_to_char( victim, &af );
     act( "Isn't $n just so nice?", ch, NULL, victim, TO_VICT );
-    sprintf(buf,"%s has charmed %s. [Room: %d]",
+    snprintf(buf,, sizeof(buf,), "%s has charmed %s. [Room: %d]",
 	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
 	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
 	  victim->in_room->vnum);
@@ -1494,7 +1494,7 @@ void spell_create_water( int sn, int level, CHAR_DATA *ch, void *vo )
 	{
 	    char buf[MAX_STRING_LENGTH];
 
-	    sprintf( buf, "%s water", obj->name );
+	    snprintf( buf,, sizeof( buf,), "%s water", obj->name );
 	    free_string( obj->name );
 	    obj->name = str_dup( buf );
 	}
@@ -2821,7 +2821,7 @@ void spell_gate( int sn, int level, CHAR_DATA *ch, void *vo )
 	act("$n has arrived through a gate.",ch->pet,NULL,NULL,TO_ROOM);
 	do_look(ch->pet,"auto");
     }
-    sprintf(buf,"%s has gated to %s. [Room: %d]",
+    snprintf(buf,, sizeof(buf,), "%s has gated to %s. [Room: %d]",
 	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
 	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
 	  victim->in_room->vnum);
@@ -3148,7 +3148,7 @@ void spell_identify( int sn, int level, CHAR_DATA *ch, void *vo )
     case ITEM_SCROLL:
     case ITEM_POTION:
     case ITEM_PILL:
-	sprintf( buf, "Level %d spells of:", obj->value[0] );
+	snprintf( buf,, sizeof( buf,), "Level %d spells of:", obj->value[0] );
 	send_to_char( buf, ch );
 
 	if ( obj->value[1] >= 0 && obj->value[1] < MAX_SKILL )
@@ -3177,7 +3177,7 @@ void spell_identify( int sn, int level, CHAR_DATA *ch, void *vo )
 
     case ITEM_WAND:
     case ITEM_STAFF:
-	sprintf( buf, "Has %d(%d) charges of level %d",
+	snprintf( buf,, sizeof( buf,), "Has %d(%d) charges of level %d",
 	    obj->value[1], obj->value[2], obj->value[0] );
 	send_to_char( buf, ch );
 
@@ -3207,7 +3207,7 @@ void spell_identify( int sn, int level, CHAR_DATA *ch, void *vo )
 	    case(WEAPON_BOW)    : send_to_char("bow.\n\r",ch);          break;
 	    default		: send_to_char("unknown.\n\r",ch);	break;
  	}
-	sprintf(buf,"Damage is %dd%d (average %d).\n\r",
+	snprintf(buf,, sizeof(buf,), "Damage is %dd%d (average %d).\n\r",
 		obj->value[1],obj->value[2],
 		(1 + obj->value[2]) * obj->value[1] / 2);
 	send_to_char( buf, ch );
@@ -3225,7 +3225,7 @@ void spell_identify( int sn, int level, CHAR_DATA *ch, void *vo )
     {
 	if ( paf->location != APPLY_NONE && paf->modifier != 0 )
 	{
-	    sprintf( buf, "Affects %s by %d.\n\r",
+	    snprintf( buf,, sizeof( buf,), "Affects %s by %d.\n\r",
 		affect_loc_name( paf->location ), paf->modifier );
 	    send_to_char( buf, ch );
 	}
@@ -3235,7 +3235,7 @@ void spell_identify( int sn, int level, CHAR_DATA *ch, void *vo )
     {
 	if ( paf->location != APPLY_NONE && paf->modifier != 0 )
 	{
-	    sprintf( buf, "Affects %s by %d.\n\r",
+	    snprintf( buf,, sizeof( buf,), "Affects %s by %d.\n\r",
 		affect_loc_name( paf->location ), paf->modifier );
 	    send_to_char( buf, ch );
 	}
@@ -3387,17 +3387,17 @@ void spell_locate_object( int sn, int level, CHAR_DATA *ch, void *vo )
 
 	if ( in_obj->carried_by != NULL )
 	{
-	    sprintf( buf, "%s carried by %s\n\r",
+	    snprintf( buf,, sizeof( buf,), "%s carried by %s\n\r",
 		obj->short_descr, PERS(in_obj->carried_by, ch) );
 	}
 // 	else
 	{
 	    if (IS_IMMORTAL(ch) && in_obj->in_room != NULL )
-		sprintf( buf, "%s in %s [Room %d]\n\r",
+		snprintf( buf,, sizeof( buf,), "%s in %s [Room %d]\n\r",
 		    obj->short_descr,
 		    in_obj->in_room->name, in_obj->in_room->vnum);
 // 	    else
-		sprintf( buf, "%s in %s\n\r",
+		snprintf( buf,, sizeof( buf,), "%s in %s\n\r",
 		    obj->short_descr, in_obj->in_room == NULL
 			? "somewhere" : in_obj->in_room->name );
 	}
@@ -4171,7 +4171,7 @@ void spell_summon( int sn, int level, CHAR_DATA *ch, void *vo )
       send_to_char("A swirling portal of colors appears before you.\n\r",victim);
       send_to_char("Your target is aware of the summons.\n\r",ch);
 
-      sprintf(buf,"%s has tried to summon %s. [Room %d]",
+      snprintf(buf,, sizeof(buf,), "%s has tried to summon %s. [Room %d]",
      (ch->short_descr == NULL ? ch->short_descr : ch->name),
      (victim->short_descr == NULL ? victim->short_descr : victim->name),
      victim->in_room->vnum);
@@ -4224,7 +4224,7 @@ void spell_summon( int sn, int level, CHAR_DATA *ch, void *vo )
     act( "$n has summoned you!", ch, NULL, victim,   TO_VICT );
     do_look( victim, "auto" );
 */
-    sprintf(buf,"%s has tried to summon %s. [Room %d]",
+    snprintf(buf,, sizeof(buf,), "%s has tried to summon %s. [Room %d]",
 	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
 	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
 	 victim->in_room->vnum);
@@ -4295,8 +4295,8 @@ void spell_ventriloquate( int sn, int level, CHAR_DATA *ch, void *vo )
 
     target_name = one_argument( target_name, speaker );
 
-    sprintf( buf1, "%s says '%s'.\n\r",              speaker, target_name );
-    sprintf( buf2, "Someone makes %s say '%s'.\n\r", speaker, target_name );
+    snprintf( buf1,, sizeof( buf1,), "%s says '%s'.\n\r",              speaker, target_name );
+    snprintf( buf2,, sizeof( buf2,), "Someone makes %s say '%s'.\n\r", speaker, target_name );
     buf1[0] = UPPER(buf1[0]);
 
     for ( vch = ch->in_room->people; vch != NULL; vch = vch->next_in_room )
@@ -4750,7 +4750,7 @@ void spell_portal( int sn, int level, CHAR_DATA *ch, void *vo )
       act("A swirling portal of colors appears before you.",ch,NULL,
   	NULL,TO_ROOM);
 
-      sprintf(buf,"%s has created a portal to %s. [Room %d]",
+      snprintf(buf,, sizeof(buf,), "%s has created a portal to %s. [Room %d]",
   	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
   	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
   	 victim->in_room->vnum);
@@ -4798,7 +4798,7 @@ void spell_portal( int sn, int level, CHAR_DATA *ch, void *vo )
     act("A swirling portal of colors appears before you.",ch,NULL,
 	NULL,TO_ROOM);
 
-    sprintf(buf,"%s has created a portal to %s. [Room %d]",
+    snprintf(buf,, sizeof(buf,), "%s has created a portal to %s. [Room %d]",
 	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
 	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
 	 victim->in_room->vnum);
@@ -4841,7 +4841,7 @@ void spell_portal( int sn, int level, CHAR_DATA *ch, void *vo )
     act("A swirling portal of colors appears before you.",ch,NULL,
 	NULL,TO_ROOM);
 
-    sprintf(buf,"%s has created a portal to %s. [Room %d]",
+    snprintf(buf,, sizeof(buf,), "%s has created a portal to %s. [Room %d]",
 	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
 	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
 	 victim->in_room->vnum);
@@ -4891,7 +4891,7 @@ void spell_portal( int sn, int level, CHAR_DATA *ch, void *vo )
     act("A swirling portal of colors appears before you.",ch,NULL,
 	NULL,TO_ROOM);
 
-    sprintf(buf,"%s has created a portal to %s. [Room %d]",
+    snprintf(buf,, sizeof(buf,), "%s has created a portal to %s. [Room %d]",
 	 (ch->short_descr == NULL ? ch->short_descr : ch->name),
 	 (victim->short_descr == NULL ? victim->short_descr : victim->name),
 	 victim->in_room->vnum);
