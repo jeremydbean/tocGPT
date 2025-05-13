@@ -1,6 +1,0 @@
---- src/comm.c
-+++ src/comm.c
-@@
-- int     gettimeofday    args( ( struct timeval *tp, struct timezone *tzp ) );
-+/* Old K&R-style gettimeofday prototype removed; using the declaration from <sys/time.h> */
-+// int     gettimeofday    args( ( struct timeval *tp, struct timezone *tzp ) );
