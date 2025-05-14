@@ -2839,32 +2839,18 @@ void show_string(struct descriptor_data *d, char *input)
 	{
 	    *scan = '\0';
 	    write_to_buffer(d,buffer,strlen(buffer));
-//	    	for (chk = d->showstr_point; isspace(*chk); chk++)
-//	    		{//
-//				if (!*chk)
-//						{
-//		    				if (d->showstr_head)
-//		    				{
-//									free_string(d->showstr_head);
-//									d->showstr_head = 0;
-//		    				}
-//		    					d->showstr_point  = 0;
-//							}
-//	    	}
-// NEW LOGIC START:
-        if (!*(d->showstr_point)) // If the char d->showstr_point points to (which was just processed and ended the page) is '\0'
-        {
-            // This means we've reached the absolute end of the paged string.
-            if (d->showstr_head)
-            {
-                free_string(d->showstr_head);
-                d->showstr_head = 0;
-            }
-            d->showstr_point = 0; // Mark paging as completely finished.
-        }
-        // else: It was a page break due to line count, and d->showstr_point still points to more content.
-        // NEW LOGIC END:
-
+	    	for (chk = d->showstr_point; isspace(*chk); chk++)
+	    		{
+						if (!*chk)
+							{
+		    				if (d->showstr_head)
+		    				{
+									free_string(d->showstr_head);
+									d->showstr_head = 0;
+		    				}
+		    					d->showstr_point  = 0;
+							}
+	    	}
 	    return;
 	}
 }
