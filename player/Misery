@@ -1,7 +1,7 @@
 #PLAYER
 Name Misery~
 Id   59089
-LogO 1747198248
+LogO 1747205891
 Vers 3
 Desc .                       //:::::::::::::::::::::::::::::::::::::::::::::\\
 
@@ -107,7 +107,7 @@ Psionic  1
 Cast Fors
 Levl 54
 Tru  70
-Plyd 1659499
+Plyd 1659886
 ListRemorts ~
 NumRemorts 0
 Note 953485148
@@ -125,11 +125,10 @@ PkRec 0
 PkGiv 24
 QuestPnts 111
 Exp  177312
-Act  33964232
+Act  33947848
 AfBy 3678888
 AfBy2 4632
 Comm 24576
-Invi 70
 Mounted 0
 On_Quest 0
 Quest_Pause 0
@@ -227,25 +226,25 @@ Gr 'rom basics'
 Gr 'thief basics'
 Gr 'thief default'
 Gr 'thief guild'
-AffD 'force sword'   0  32   0   0          0        512
-AffD 'major globe'  -1  42 -150  17          0          0
-AffD 'sanctuary'   0  42   0   0        128          0
-AffD 'haste'   0  42   4   2    2097152          0
-AffD 'divine protection'   0  42   0   0          0       4096
-AffD 'aid'   0  42   7  18          0          0
-AffD 'aid'   0  42  34  13          0          0
-AffD 'fly'   0  45   0   0     524288          0
-AffD 'frenzy'   0  42  11  18          0          0
-AffD 'frenzy'   0  42  11  19          0          0
-AffD 'frenzy'   0  42 110  17          0          0
-AffD 'giant strength'   0  42   4   1          0          0
-AffD 'power gloves'   0  42  35  19          0          0
-AffD 'detect invis'   0  42   0   0          8          0
-AffD 'detect hidden'   0  42   0   0         32          0
-AffD 'frost shield'   0  42   0   0          0         16
-AffD 'fire shield'   0  42   0   0          0          8
-AffD 'protection evil'   0  42   0   0       8192          0
-AffD 'pass door'   0  42   0   0    1048576          0
+AffD 'pass door'   0  36   0   0    1048576          0
+AffD 'protection evil'   0  36   0   0       8192          0
+AffD 'fire shield'   0  36   0   0          0          8
+AffD 'frost shield'   0  36   0   0          0         16
+AffD 'detect hidden'   0  36   0   0         32          0
+AffD 'detect invis'   0  36   0   0          8          0
+AffD 'power gloves'   0  36  35  19          0          0
+AffD 'giant strength'   0  36   4   1          0          0
+AffD 'frenzy'   0  36 110  17          0          0
+AffD 'frenzy'   0  36  11  19          0          0
+AffD 'frenzy'   0  36  11  18          0          0
+AffD 'fly'   0  39   0   0     524288          0
+AffD 'aid'   0  36  34  13          0          0
+AffD 'aid'   0  36   7  18          0          0
+AffD 'divine protection'   0  36   0   0          0       4096
+AffD 'haste'   0  36   4   2    2097152          0
+AffD 'sanctuary'   0  36   0   0        128          0
+AffD 'major globe'  -1  36 -150  17          0          0
+AffD 'force sword'   0  26   0   0          0        512
 End
 
 #O
@@ -422,8 +421,8 @@ Lev  51
 Cost 500
 Cond 100
 Repd 0
-Affect -1 51 -1 4 24 0 0
 Affect -1 51 -1 -8 17 0 0
+Affect -1 51 -1 4 24 0 0
 End
 
 #O

@@ -138,7 +138,7 @@ typedef void SPELL_FUN  args( ( int sn, int level, CHAR_DATA *ch, void *vo ) );
 #define LEVEL_HERO1                (MAX_LEVEL - 18)
 #define LEVEL_HERO                 (MAX_LEVEL - 19)
 #define HERO_STEP_XP             5000
-#define LINKDEAD_TIMEOUT_PULSES   (5 * 60 * PULSE_PER_SECOND) /* 5 minutes before linkdead char is quit */
+//#define LINKDEAD_TIMEOUT_PULSES   (5 * 60 * PULSE_PER_SECOND) /* 5 minutes before linkdead char is quit */
 #define PULSE_PER_SECOND            4
 #define PULSE_AGGR            	  ( 1 * PULSE_PER_SECOND)
 #define PULSE_ROOM            	  ( 1 * PULSE_PER_SECOND)
@@ -149,8 +149,8 @@ typedef void SPELL_FUN  args( ( int sn, int level, CHAR_DATA *ch, void *vo ) );
 #define PULSE_AREA                (60 * PULSE_PER_SECOND)
 #define PULSE_DISASTER            (30 * PULSE_PER_SECOND)
 #define PULSE_DEATHTRAP		  ( 2 * PULSE_PER_SECOND)
-#define IDLE_TO_LIMBO_PULSES      (10 * 60 * PULSE_PER_SECOND) /* 5 minutes for connected idle to go to limbo */
-#define LINKDEAD_PURGE_PULSES     (5 * 60 * PULSE_PER_SECOND) /* 5 minutes for linkdead char to be purged */
+#define IDLE_TO_LIMBO_TICKS       5  /* Approx 5 char_update ticks (roughly minutes) for idle to limbo */
+#define LINKDEAD_PURGE_TICKS      3  /* Approx 3 char_update ticks (roughly minutes) for linkdead purge */
 
 #define BATTLE_TICKS                2
 

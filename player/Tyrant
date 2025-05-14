@@ -1,7 +1,7 @@
 #PLAYER
 Name Tyrant~
 Id   23103
-LogO 1747198645
+LogO 1747205990
 Vers 3
 Desc .                         /|                 |\
 .                        / | ___.--^^^--.___ | \
@@ -41,13 +41,13 @@ Gui  2
 Psionic  2
 Cast Fors
 Levl 34
-Plyd 749842
+Plyd 751032
 ListRemorts ~
 NumRemorts 0
 Note 953432339
 Scro 22
 Room 4210
-HMV  966 966 200 200 293 323
+HMV  966 966 200 200 323 323
 NewGold 2
 NewPlat 1929
 NewCopp 31
@@ -99,7 +99,7 @@ Pnts 40
 TSex 1
 LLev 3
 HMVP 951 145 298
-Cond 0 23 40
+Cond 0 4 21
 Alias / who~
 Alias ] recall~
 Alias f flee~
@@ -481,7 +481,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 182
+Time 165
 Cost 10
 Cond 100
 Repd 0
@@ -492,7 +492,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 48
+Time 31
 Cost 10
 Cond 100
 Repd 0
@@ -503,7 +503,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 123
+Time 106
 Cost 10
 Cond 100
 Repd 0
@@ -514,7 +514,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 148
+Time 131
 Cost 10
 Cond 100
 Repd 0
