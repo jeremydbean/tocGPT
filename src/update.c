@@ -1140,8 +1140,8 @@ void char_update( void )
 	else
 	  continue;
 
-	if ( ch->timer > 20 )
-	    ch_quit = ch;
+//	if ( ch->timer > 20 )
+//	    ch_quit = ch;
 
 	if(!IS_NPC(ch) && !IS_IMMORTAL (ch)
 	    && in_room->sector_type == SECT_UNDER_WATER )
@@ -1430,25 +1430,25 @@ void char_update( void )
 	    if (IS_IMMORTAL(ch))
 		ch->timer = 0;
 
-	    if ( ++ch->timer > 8 && ch->in_room != get_room_index(9) )
-	    {
-		if ( ch->was_in_room == NULL && ch->in_room != NULL
-		&& !IS_SET(ch->in_room->room_flags,ROOM_JAIL) )
-		{
-		    ch->was_in_room = ch->in_room;
-		    if ( ch->fighting != NULL )
-			stop_fighting( ch, TRUE );
-
-		    act( "$n disappears into the void.",
-			ch, NULL, NULL, TO_ROOM );
-		    send_to_char( "You disappear into the void.\n\r", ch );
-		    if (ch->level > 3)
-			save_char_obj( ch );
-		    char_from_room( ch );
-		    char_to_room( ch, get_room_index( ROOM_VNUM_LIMBO ) );
-		    ch->pcdata->lmb_timer = 30;
-		}
-	    }
+//	    if ( ++ch->timer > 8 && ch->in_room != get_room_index(9) )
+//	    {
+//		if ( ch->was_in_room == NULL && ch->in_room != NULL
+//		&& !IS_SET(ch->in_room->room_flags,ROOM_JAIL) )
+//		{
+//		    ch->was_in_room = ch->in_room;
+//		    if ( ch->fighting != NULL )
+//			stop_fighting( ch, TRUE );
+//
+//		    act( "$n disappears into the void.",
+//			ch, NULL, NULL, TO_ROOM );
+//		    send_to_char( "You disappear into the void.\n\r", ch );
+//		    if (ch->level > 3)
+//			save_char_obj( ch );
+//		    char_from_room( ch );
+//		    char_to_room( ch, get_room_index( ROOM_VNUM_LIMBO ) );
+//		    ch->pcdata->lmb_timer = 30;
+//		}
+//	    }
 
 	    gain_condition( ch, COND_DRUNK,  -1 );
 	    gain_condition( ch, COND_FULL,   -1 );
@@ -1458,6 +1458,48 @@ void char_update( void )
                send_to_char("You start to feel a little less drunk.\n\r",ch);
 
 	}
+
+// PASTE THIS NEW BLOCK:
+if ( !IS_NPC(ch) )
+{
+    ch->timer++; // Increment timer for all PCs each pulse
+
+    if ( ch->desc == NULL ) // Character is link-dead
+    {
+        if ( ch->timer >= LINKDEAD_TIMEOUT_PULSES )
+        {
+            ch_quit = ch; // Mark for quitting after LINKDEAD_TIMEOUT_PULSES
+        }
+    }
+    else // Character is connected
+    {
+        if ( ch->level < LEVEL_IMMORTAL ) // Only non-immortals go idle to limbo
+        {
+            // Idle to Limbo Logic (using a shorter timeout, e.g., 2 minutes)
+            // This re-incorporates the "idle to limbo" logic with a clear timer.
+            // Adjust (2 * 60 * PULSE_PER_SECOND) as desired for idle-to-limbo timeout.
+            if ( ch->timer > (2 * 60 * PULSE_PER_SECOND) 
+                 && ch->was_in_room == NULL 
+                 && ch->in_room != NULL
+                 && ch->in_room->vnum != ROOM_VNUM_LIMBO 
+                 && !IS_SET(ch->in_room->room_flags, ROOM_JAIL) )
+            {
+                if ( ch->fighting != NULL )
+                    stop_fighting( ch, TRUE );
+                act( "$n disappears into the void.", ch, NULL, NULL, TO_ROOM );
+                send_to_char( "You disappear into the void.\n\r", ch );
+                if (ch->level > 1) /* Match existing save condition for newbies */
+                    save_char_obj( ch );
+                ch->was_in_room = ch->in_room; // Store current room before moving to limbo
+                char_from_room( ch );
+                char_to_room( ch, get_room_index( ROOM_VNUM_LIMBO ) );
+                // ch->pcdata->lmb_timer = 30; // If lmb_timer is used by something else, you can keep it.
+                                             // Otherwise, the main ch->timer handles general idleness.
+            }
+        }
+    }
+}
+// END OF PASTED BLOCK
 
 	for ( paf = ch->affected; paf != NULL; paf = paf_next )
 	{
@@ -1626,10 +1668,55 @@ void char_update( void )
 	    && ch->level >= 3)
 	    save_char_obj(ch);
 
-	if ( ch == ch_quit && ch->in_room != get_room_index(9) )
-	    do_quit( ch, "" );
+//	if ( ch == ch_quit && ch->in_room != get_room_index(9) )
+//	    do_quit( ch, "" );
+    }
+// PASTE THIS NEW BLOCK (before the final 'return;' of char_update):
+
+// Handle quitting of link-dead character, if one was marked during the main loop
+if (ch_quit != NULL)
+{
+    // Ensure the character still exists and is link-dead, just in case.
+    // (ch_quit was set if ch_quit->desc == NULL)
+    bool still_exists_and_linkdead = FALSE;
+    CHAR_DATA *temp_ch_verify;
+    for (temp_ch_verify = char_list; temp_ch_verify != NULL; temp_ch_verify = temp_ch_verify->next) {
+        if (temp_ch_verify == ch_quit && temp_ch_verify->desc == NULL) {
+            still_exists_and_linkdead = TRUE;
+            break;
+        }
     }
 
+    if (still_exists_and_linkdead)
+    {
+        sprintf(log_buf, "%s (link-dead) is being removed from the game due to timeout (timer: %d).",
+            ch_quit->name, ch_quit->timer);
+        log_string(log_buf);
+
+        // Send wizinfo:
+        // Avoid spamming players if an immortal admin happens to time out linkdead.
+        // Use get_trust to ensure visibility for relevant staff.
+        if (IS_IMMORTAL(ch_quit))
+        {
+             wizinfo(log_buf, get_trust(ch_quit)); 
+        }
+        else
+        {
+             wizinfo(log_buf, LEVEL_IMMORTAL); // Inform general immortals about mortals
+        }
+
+        // Save character before quitting if they are of significant level
+        if (ch_quit->level > 1) /* Match existing save logic for newbies */
+        {
+            save_char_obj(ch_quit);
+        }
+
+        do_quit(ch_quit, ""); /* Force quit the character */
+        /* ch_quit pointer is now invalid as do_quit calls extract_char */
+    }
+    // ch_quit is reset to NULL at the start of the next char_update call.
+}
+// END OF PASTED BLOCK
     return;
 }
 

@@ -1094,27 +1094,30 @@ void close_socket( DESCRIPTOR_DATA *dclose )
     {
 	sprintf( log_buf, "Closing link to %s.", ch->name );
 	log_string( log_buf );
-	if ( dclose->connected == CON_PLAYING
-      /*  || dclose->connected == CON_INPUT_BOARD */)
-
-	{
-	  if(!IS_SET(ch->act, PLR_WIZINVIS) )
-		{
-	    act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
-	    sprintf(buf, "%s has lost %s link. [Room: %d]", ch->name,
-			ch->sex == 0 ? "its" : ch->sex == 1 ? "his" : "her",
-			ch->in_room->vnum);
-	    	if ( IS_SET(ch->act, PLR_WIZINVIS))
-					wizinfo( buf, ch->invis_level );
-	    	else
-					wizinfo( buf, LEVEL_IMMORTAL );
-	    		ch->desc = NULL;
-		}
-	}
-	else
-	{
-	    free_char( dclose->character );
-	}
+// ... (inside close_socket, after (ch = dclose->character) != NULL check) ...
+    	if ( dclose->connected == CON_PLAYING )
+    	{
+    	  if(!IS_SET(ch->act, PLR_WIZINVIS) ) 
+    		{ 
+    	    act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
+    	    // The sprintf and wizinfo for logging the link loss can remain here
+    	    sprintf(buf, "%s has lost %s link. [Room: %d]", ch->name,
+    			ch->sex == 0 ? "its" : ch->sex == 1 ? "his" : "her",
+    			ch->in_room->vnum);
+    	    	// This wizinfo logic could also be simplified, but is not the primary cause of the ghosting
+    	    	if ( IS_SET(ch->act, PLR_WIZINVIS)) 
+    					wizinfo( buf, ch->invis_level );
+    	    	else
+    					wizinfo( buf, LEVEL_IMMORTAL );
+    		} 
+            ch->desc = NULL; /* <--- MOVED/ENSURED HERE: Always null descriptor if CON_PLAYING */
+    	}
+    	else // Not CON_PLAYING (e.g., character was in creation, etc.)
+    	{
+    	    free_char( dclose->character );
+    	    dclose->character = NULL; // Good practice to also null the dclose->character pointer after freeing
+    	}
+    // ... (rest of close_socket) ...
     }
 
     if ( d_next == dclose )
