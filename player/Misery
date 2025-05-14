@@ -1,7 +1,7 @@
 #PLAYER
 Name Misery~
 Id   59089
-LogO 1747196190
+LogO 1747198248
 Vers 3
 Desc .                       //:::::::::::::::::::::::::::::::::::::::::::::\\
 
@@ -107,7 +107,7 @@ Psionic  1
 Cast Fors
 Levl 54
 Tru  70
-Plyd 1659493
+Plyd 1659499
 ListRemorts ~
 NumRemorts 0
 Note 953485148
@@ -227,25 +227,25 @@ Gr 'rom basics'
 Gr 'thief basics'
 Gr 'thief default'
 Gr 'thief guild'
-AffD 'pass door'   0  42   0   0    1048576          0
-AffD 'protection evil'   0  42   0   0       8192          0
-AffD 'fire shield'   0  42   0   0          0          8
-AffD 'frost shield'   0  42   0   0          0         16
-AffD 'detect hidden'   0  42   0   0         32          0
-AffD 'detect invis'   0  42   0   0          8          0
-AffD 'power gloves'   0  42  35  19          0          0
-AffD 'giant strength'   0  42   4   1          0          0
-AffD 'frenzy'   0  42 110  17          0          0
-AffD 'frenzy'   0  42  11  19          0          0
-AffD 'frenzy'   0  42  11  18          0          0
-AffD 'fly'   0  45   0   0     524288          0
-AffD 'aid'   0  42  34  13          0          0
-AffD 'aid'   0  42   7  18          0          0
-AffD 'divine protection'   0  42   0   0          0       4096
-AffD 'haste'   0  42   4   2    2097152          0
-AffD 'sanctuary'   0  42   0   0        128          0
-AffD 'major globe'  -1  42 -150  17          0          0
 AffD 'force sword'   0  32   0   0          0        512
+AffD 'major globe'  -1  42 -150  17          0          0
+AffD 'sanctuary'   0  42   0   0        128          0
+AffD 'haste'   0  42   4   2    2097152          0
+AffD 'divine protection'   0  42   0   0          0       4096
+AffD 'aid'   0  42   7  18          0          0
+AffD 'aid'   0  42  34  13          0          0
+AffD 'fly'   0  45   0   0     524288          0
+AffD 'frenzy'   0  42  11  18          0          0
+AffD 'frenzy'   0  42  11  19          0          0
+AffD 'frenzy'   0  42 110  17          0          0
+AffD 'giant strength'   0  42   4   1          0          0
+AffD 'power gloves'   0  42  35  19          0          0
+AffD 'detect invis'   0  42   0   0          8          0
+AffD 'detect hidden'   0  42   0   0         32          0
+AffD 'frost shield'   0  42   0   0          0         16
+AffD 'fire shield'   0  42   0   0          0          8
+AffD 'protection evil'   0  42   0   0       8192          0
+AffD 'pass door'   0  42   0   0    1048576          0
 End
 
 #O
@@ -422,8 +422,8 @@ Lev  51
 Cost 500
 Cond 100
 Repd 0
-Affect -1 51 -1 -8 17 0 0
 Affect -1 51 -1 4 24 0 0
+Affect -1 51 -1 -8 17 0 0
 End
 
 #O

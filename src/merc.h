@@ -149,6 +149,8 @@ typedef void SPELL_FUN  args( ( int sn, int level, CHAR_DATA *ch, void *vo ) );
 #define PULSE_AREA                (60 * PULSE_PER_SECOND)
 #define PULSE_DISASTER            (30 * PULSE_PER_SECOND)
 #define PULSE_DEATHTRAP		  ( 2 * PULSE_PER_SECOND)
+#define IDLE_TO_LIMBO_PULSES      (10 * 60 * PULSE_PER_SECOND) /* 5 minutes for connected idle to go to limbo */
+#define LINKDEAD_PURGE_PULSES     (5 * 60 * PULSE_PER_SECOND) /* 5 minutes for linkdead char to be purged */
 
 #define BATTLE_TICKS                2
 

@@ -1,7 +1,7 @@
 #PLAYER
 Name Tyrant~
 Id   23103
-LogO 953491738
+LogO 1747198645
 Vers 3
 Desc .                         /|                 |\
 .                        / | ___.--^^^--.___ | \
@@ -41,13 +41,13 @@ Gui  2
 Psionic  2
 Cast Fors
 Levl 34
-Plyd 749459
+Plyd 749842
 ListRemorts ~
 NumRemorts 0
 Note 953432339
 Scro 22
-Room 4206
-HMV  932 966 200 200 92 323
+Room 4210
+HMV  966 966 200 200 293 323
 NewGold 2
 NewPlat 1929
 NewCopp 31
@@ -61,7 +61,6 @@ QuestPnts 243
 Exp  78282
 Act  100729032
 AfBy 512
-AfBy2 64
 Comm 28672
 Mounted 0
 On_Quest 0
@@ -98,9 +97,9 @@ Pass MiJx5Di.yq8i6~
 Titl . O==}-??? PKILLS!-->~
 Pnts 40
 TSex 1
-LLev 100
+LLev 3
 HMVP 951 145 298
-Cond 0 29 46
+Cond 0 23 40
 Alias / who~
 Alias ] recall~
 Alias f flee~
@@ -154,7 +153,6 @@ Gr 'rom basics'
 Gr 'thief basics'
 Gr 'thief default'
 Gr 'thief guild'
-AffD 'stealth'  10   2   0   0          0         64
 End
 
 #O
@@ -483,7 +481,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 187
+Time 182
 Cost 10
 Cond 100
 Repd 0
@@ -494,7 +492,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 53
+Time 48
 Cost 10
 Cond 100
 Repd 0
@@ -505,7 +503,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 128
+Time 123
 Cost 10
 Cond 100
 Repd 0
@@ -516,7 +514,7 @@ End
 Vnum 9231
 Nest 0
 Wear -1
-Time 153
+Time 148
 Cost 10
 Cond 100
 Repd 0
