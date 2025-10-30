@@ -1,0 +1,7 @@
+# TOC Launcher configuration
+# Copy this file to launcher_config.ini and adjust paths as needed.
+mud_executable=.\\toc.exe
+working_directory=.
+info_log=.\\log\\info.log
+wiz_log=.\\log\\wizinfo.log
+auto_restart=1
