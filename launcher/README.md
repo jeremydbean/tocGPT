@@ -6,12 +6,34 @@ information and wizinfo logs in real time.
 
 ## Building
 
-The launcher is a single C++ source file that only depends on the Win32 API. It
-can be compiled with the Microsoft Visual C++ compiler that ships with Visual
-Studio or with the Build Tools.
+### One-click build on Windows 11
+
+Run the bundled PowerShell script from an elevated terminal to install the
+required toolchain (if missing) and produce a portable launcher executable:
 
 ```
-cl /std:c++17 /W4 /EHsc launcher\win_launcher.cpp user32.lib gdi32.lib shell32.lib
+powershell -ExecutionPolicy Bypass -File launcher\build_launcher.ps1
+```
+
+The script performs the following tasks:
+
+1. Installs the **Visual Studio 2022 Build Tools** with the MSVC C++ workload
+   through `winget` when they are not already present.
+2. Locates the `vcvars*.bat` environment script that ships with MSVC.
+3. Invokes `cl.exe` with the correct libraries and writes the resulting
+   `win_launcher.exe` to `launcher\bin\`.
+
+To generate a debug build instead, run the script with `-Configuration Debug`.
+
+### Manual build
+
+The launcher is a single C++ source file that only depends on the Win32 API. It
+can also be compiled manually with the Microsoft Visual C++ compiler that ships
+with Visual Studio or with the Build Tools after the environment is set up:
+
+```
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat" && \
+cl /std:c++17 /W4 /EHsc launcher\win_launcher.cpp user32.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib
 ```
 
 The resulting `win_launcher.exe` is portable. Place it in the same directory as

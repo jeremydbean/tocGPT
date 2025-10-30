@@ -11,6 +11,13 @@ sudo chmod a+rwx -R tocGPT
 ## Windows Launcher
 
 A portable Windows launcher that keeps the MUD running and surfaces informational
-and wizinfo logs is available under `launcher/`. Build it with the standard
-Microsoft toolchain and place the resulting executable alongside `toc.exe`.
-See `launcher/README.md` for full instructions.
+and wizinfo logs is available under `launcher/`.
+
+* **One-click build:** run `powershell -ExecutionPolicy Bypass -File launcher\build_launcher.ps1`
+  from an elevated terminal on Windows 11. The script installs the required
+  Visual Studio Build Tools (via `winget`) when missing and emits
+  `launcher\bin\win_launcher.exe`.
+* **Manual build:** follow the MSVC instructions in `launcher/README.md` if you
+  already have the Windows C++ toolchain configured.
+
+Place the resulting executable alongside `toc.exe` once compiled.
