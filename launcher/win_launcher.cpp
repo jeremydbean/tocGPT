@@ -55,12 +55,64 @@ std::wstring Trim(const std::wstring &text) {
 }
 
 std::wstring ToWide(const std::string &input) {
-    std::wstring output;
-    output.reserve(input.size());
-    for (unsigned char ch : input) {
-        output.push_back(static_cast<wchar_t>(ch));
+    if (input.empty()) {
+        return L"";
     }
-    return output;
+
+    const auto convert = [&input](UINT codePage, DWORD flags)
+        -> std::optional<std::wstring> {
+        int required = MultiByteToWideChar(codePage, flags, input.data(),
+                                           static_cast<int>(input.size()), nullptr,
+                                           0);
+        if (required <= 0) {
+            return std::nullopt;
+        }
+        std::wstring wide(static_cast<std::size_t>(required), L'\0');
+        int converted = MultiByteToWideChar(codePage, flags, input.data(),
+                                            static_cast<int>(input.size()),
+                                            wide.data(), required);
+        if (converted <= 0) {
+            return std::nullopt;
+        }
+        return wide;
+    };
+
+    if (auto utf8 = convert(CP_UTF8, MB_ERR_INVALID_CHARS)) {
+        return *utf8;
+    }
+    if (auto ansi = convert(CP_ACP, 0)) {
+        return *ansi;
+    }
+
+    std::wstring fallback;
+    fallback.reserve(input.size());
+    for (unsigned char ch : input) {
+        fallback.push_back(static_cast<wchar_t>(ch));
+    }
+    return fallback;
+}
+
+std::wstring NormaliseLineEndings(std::wstring text) {
+    std::wstring normalised;
+    normalised.reserve(text.size() + text.size() / 4);
+    for (std::size_t i = 0; i < text.size(); ++i) {
+        const wchar_t ch = text[i];
+        if (ch == L'\r') {
+            normalised.push_back(L'\r');
+            if (i + 1 < text.size() && text[i + 1] == L'\n') {
+                normalised.push_back(L'\n');
+                ++i;
+            } else {
+                normalised.push_back(L'\n');
+            }
+        } else if (ch == L'\n') {
+            normalised.push_back(L'\r');
+            normalised.push_back(L'\n');
+        } else {
+            normalised.push_back(ch);
+        }
+    }
+    return normalised;
 }
 
 void ApplyRelativePaths(LauncherConfig &config, const fs::path &baseDir) {
@@ -129,6 +181,7 @@ void AppendText(HWND control, const std::wstring &text) {
     SendMessageW(control, EM_SETSEL, length, length);
     SendMessageW(control, EM_REPLACESEL, FALSE,
                  reinterpret_cast<LPARAM>(text.c_str()));
+    SendMessageW(control, EM_SCROLLCARET, 0, 0);
 }
 
 class MudProcess {
@@ -264,7 +317,7 @@ class LogWatcher {
                         knownSize = size;
                         if (!data.empty()) {
                             auto *chunk = new PostedLogChunk;
-                            chunk->text = ToWide(data);
+                            chunk->text = NormaliseLineEndings(ToWide(data));
                             PostMessageW(window_, message_,
                                          reinterpret_cast<WPARAM>(this),
                                          reinterpret_cast<LPARAM>(chunk));
@@ -463,13 +516,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
             state->infoLogControl = CreateWindowExW(
                 WS_EX_CLIENTEDGE, L"EDIT", nullptr,
-                WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
+                WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL |
+                    ES_READONLY | WS_VSCROLL,
                 padding, padding + 70, 360, 200, hwnd,
                 reinterpret_cast<HMENU>(4), nullptr, nullptr);
 
             state->wizLogControl = CreateWindowExW(
                 WS_EX_CLIENTEDGE, L"EDIT", nullptr,
-                WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
+                WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_AUTOVSCROLL |
+                    ES_READONLY | WS_VSCROLL,
                 padding, padding + 280, 360, 200, hwnd,
                 reinterpret_cast<HMENU>(5), nullptr, nullptr);
 
