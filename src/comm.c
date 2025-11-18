@@ -1172,7 +1172,7 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
 
     /* Check for overflow. */
     iStart = strlen(d->inbuf);
-    if ( iStart >= sizeof(d->inbuf) - 10 )
+    if ( (size_t)iStart >= sizeof(d->inbuf) - 10 )
     {
 	sprintf( log_buf, "%s input overflow!", d->host );
 	log_string( log_buf );
@@ -1422,28 +1422,28 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
 
 	  if (victim->fighting != NULL)
 	    {
-			if (IS_SET(ch->act,PLR_DAMAGE_NUMBERS))
-			{
-	      if(victim->fighting == ch)
+                        if (IS_SET(ch->act,PLR_DAMAGE_NUMBERS))
+                        {
+              if(victim->fighting == ch)
 
-	       sprintf(buf,"\n[ %s: [%d/%d hp] <*> You: %s ]",
-		  PERS(victim,ch), victim->hit, victim->max_hit,wound2);
-	      else {}
-		sprintf(buf,"\n[ %s: [%d/%d hp] <*> %s: %s ]",
-		PERS(victim, ch), victim->hit,victim->max_hit,PERS(victim->fighting,ch),wound2);
-				}
-			}
+               sprintf(buf,"\n[ %s: [%d/%d hp] <*> You: %s ]",
+                  PERS(victim,ch), victim->hit, victim->max_hit,wound2);
+             else
+               sprintf(buf,"\n[ %s: [%d/%d hp] <*> %s: %s ]",
+               PERS(victim, ch), victim->hit,victim->max_hit,PERS(victim->fighting,ch),wound2);
+                                }
+                        }
 
 
-			if (!IS_SET(ch->act,PLR_DAMAGE_NUMBERS))
-			{
-				if(victim->fighting == ch)
-				 sprintf(buf,"\n[ %s: %s <*> You: %s ]",
-			PERS(victim,ch), wound,wound2);
-				else
-		sprintf(buf,"\n[ %s: %s <*> %s: %s ]",
-		  PERS(victim,ch), wound,wound2);
-			}
+                        if (!IS_SET(ch->act,PLR_DAMAGE_NUMBERS))
+                        {
+                                if(victim->fighting == ch)
+                                 sprintf(buf,"\n[ %s: %s <*> You: %s ]",
+                        PERS(victim,ch), wound,wound2);
+                                else
+               sprintf(buf,"\n[ %s: %s <*> %s: %s ]",
+                 PERS(victim,ch), wound,PERS(victim->fighting,ch),wound2);
+                        }
 
 
 
@@ -3511,6 +3511,17 @@ void config_prompt( CHAR_DATA *ch )
     buf[0] = '0';
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
+    size_t used = 0;
+
+#define APPEND_TO_PROMPT(...) do { \
+    int _written = snprintf(buf + used, sizeof(buf) - used, __VA_ARGS__); \
+    if (_written < 0) _written = 0; \
+    if ((size_t)_written >= sizeof(buf) - used) { \
+        used = sizeof(buf) - 1; \
+    } else { \
+        used += (size_t)_written; \
+    } \
+} while (0)
 
     buf[0] = '\0';
     buf2[0] = '\0';
@@ -3529,42 +3540,43 @@ void config_prompt( CHAR_DATA *ch )
     if (buf2[0] == '\0') {
         if( IS_IMMORTAL( ch ) && ch->in_room ) {
             incl++;
-            sprintf( buf, "<Room:%d", ch->in_room->vnum );
+            APPEND_TO_PROMPT( "<Room:%d", ch->in_room->vnum );
         }
 
         if (ch->hit < ch->max_hit) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<%dhp", ch->hit);
+                APPEND_TO_PROMPT("<%dhp", ch->hit);
             else
-                sprintf(buf,"%s %dhp", buf, ch->hit);
+                APPEND_TO_PROMPT(" %dhp", ch->hit);
         }
 
         if (ch->mana < ch->max_mana) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<%dm", ch->mana);
+                APPEND_TO_PROMPT("<%dm", ch->mana);
             else
-                sprintf(buf,"%s %dm", buf, ch->mana);
+                APPEND_TO_PROMPT(" %dm", ch->mana);
         }
 
         if (ch->move < ch->max_move) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<%dmv", ch->move);
+                APPEND_TO_PROMPT("<%dmv", ch->move);
             else
-                sprintf(buf,"%s %dmv", buf, ch->move);
+                APPEND_TO_PROMPT(" %dmv", ch->move);
         }
 
         if (IS_IMMORTAL(ch) && IS_SET(ch->act, PLR_WIZINVIS)) {
             incl++;
             if (incl == 1)
-                sprintf(buf,"<(WIZI:%d)", ch->invis_level);
+                APPEND_TO_PROMPT("<(WIZI:%d)", ch->invis_level);
             else
-                sprintf(buf,"%s (WIZI:%d)", buf, ch->invis_level);
+                APPEND_TO_PROMPT(" (WIZI:%d)", ch->invis_level);
         }
 
-        sprintf(buf2,"%s> ",buf);
+        APPEND_TO_PROMPT("> ");
+        snprintf(buf2, sizeof(buf2), "%s", buf);
     } else {
         sprintf(buf,"%d",ch->hit);
         str_replace_c(buf2, "%h", buf);
@@ -3622,6 +3634,8 @@ void config_prompt( CHAR_DATA *ch )
         send_to_char("You're AFK! ",ch);
    else
         send_to_char( buf2, ch );
+
+#undef APPEND_TO_PROMPT
 
    return;
 }

@@ -732,16 +732,15 @@ void do_drop( CHAR_DATA *ch, char *argument )
                             extract_obj( obj );
                             break;
                         }
-                        break;
+                        /* fall through */
                     case OBJ_VNUM_MONEY_SOME:
                         if(obj->value[1] == TYPE_PLATINUM) {
                             amount += obj->value[0];
                             extract_obj( obj );
                             break;
-                        }
-                        break;
-                    }
-                }
+			}
+		    }
+		}
 
 		obj_to_room( create_money(amount,TYPE_PLATINUM),
 			ch->in_room);
@@ -772,16 +771,15 @@ void do_drop( CHAR_DATA *ch, char *argument )
                             extract_obj( obj );
                             break;
                         }
-                        break;
+                        /* fall through */
                     case OBJ_VNUM_MONEY_SOME:
                         if(obj->value[1] == TYPE_GOLD) {
                             amount += obj->value[0];
                             extract_obj( obj );
                             break;
-                        }
-                        break;
-                    }
-                }
+			}
+		    }
+		}
 
 		obj_to_room( create_money(amount,TYPE_GOLD),
 			ch->in_room);
@@ -812,16 +810,15 @@ void do_drop( CHAR_DATA *ch, char *argument )
                             extract_obj( obj );
                             break;
                         }
-                        break;
+                        /* fall through */
                     case OBJ_VNUM_MONEY_SOME:
                         if(obj->value[1] == TYPE_SILVER) {
                             amount += obj->value[0];
                             extract_obj( obj );
                             break;
-                        }
-                        break;
-                    }
-                }
+			}
+		    }
+		}
 
 		obj_to_room( create_money(amount,TYPE_SILVER),
 			ch->in_room);
@@ -845,16 +842,15 @@ void do_drop( CHAR_DATA *ch, char *argument )
                             extract_obj( obj );
                             break;
                         }
-                        break;
+                        /* fall through */
                     case OBJ_VNUM_MONEY_SOME:
                         if(obj->value[1] == TYPE_COPPER) {
                             amount += obj->value[0];
                             extract_obj( obj );
                             break;
-                        }
-                        break;
-                    }
-                }
+			}
+		    }
+		}
 
 		obj_to_room( create_money(amount,TYPE_COPPER),
 			ch->in_room);
