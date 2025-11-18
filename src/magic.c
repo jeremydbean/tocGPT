@@ -507,12 +507,9 @@ void do_cast( CHAR_DATA *ch, char *argument )
     &&   victim != ch
     &&   victim->master != ch)
     {
-	CHAR_DATA *vch;
-	CHAR_DATA *vch_next;
-
-	for ( vch = ch->in_room->people; vch; vch = vch_next )
-	{
-	    vch_next = vch->next_in_room;
+        for ( vch = ch->in_room->people; vch; vch = vch_next )
+        {
+            vch_next = vch->next_in_room;
 	    if ( victim == vch && victim->fighting == NULL )
 	    {
 		check_killer( ch, victim );
