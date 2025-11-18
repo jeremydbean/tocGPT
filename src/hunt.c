@@ -404,7 +404,7 @@ void do_danger_sense( CHAR_DATA *ch, char *argument )
     char buf2[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     DESCRIPTOR_DATA *d;
-    int count, chance, dir, count2;
+    int count, chance, count2;
     int distance = 0;
 
    if (IS_NPC(ch))
@@ -448,7 +448,7 @@ void do_danger_sense( CHAR_DATA *ch, char *argument )
             &&   victim != ch
             &&   can_see( ch, victim ) )
             {
-               dir = find_first_step(ch, ch->in_room, victim->in_room, &distance);
+               find_first_step(ch, ch->in_room, victim->in_room, &distance);
 
                if (distance <= 5)
                sprintf(buf2,"%s is in the nearby vicinity.\n\r",victim->name);

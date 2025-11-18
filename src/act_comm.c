@@ -2453,13 +2453,10 @@ void do_pose( CHAR_DATA *ch, char *argument )
     if ( IS_NPC(ch) )
         return;
 
-    /*
-     * Avoid signed/unsigned mix by storing the pose table length as a signed
-     * int before applying UMIN.
-     */
     {
-        int pose_max = (int)(sizeof(pose_table) / sizeof(pose_table[0]) - 1);
-        level = UMIN( ch->level, pose_max );
+        const int max_pose = (int)(sizeof(pose_table) / sizeof(pose_table[0]) - 1);
+
+        level = UMIN( ch->level, max_pose );
     }
     pose  = number_range(0, level);
 

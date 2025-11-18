@@ -2677,7 +2677,7 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA *pObjIndex, int level )
          switch (obj->value[0] )
          {
          case 1:
-	  for ( ; ; )
+          for ( ; ; )
            {
             to_room = get_room_index( number_range( 0, 65535 ) );
             if (  to_room != NULL &&
@@ -2685,12 +2685,13 @@ OBJ_DATA *create_object( OBJ_INDEX_DATA *pObjIndex, int level )
                   || !IS_SET(to_room->room_flags, ROOM_NO_RECALL)
                   || !IS_SET(to_room->room_flags, ROOM_JAIL)
                   || !IS_SET(to_room->room_flags2, ROOM2_NO_TPORT)
-	          || !IS_SET(to_room->room_flags, ROOM_IMP_ONLY) ) )
+                  || !IS_SET(to_room->room_flags, ROOM_IMP_ONLY) ) )
                   break;
            }
           obj->value[1] = to_room->vnum;
           break;
         }
+        break;
     case ITEM_SCROLL:
 /*      if (level != -1 && !pObjIndex->new_format)  EC */
         if(pObjIndex->level == -1 || pObjIndex->value[0] == -1)
@@ -3337,8 +3338,8 @@ char *fread_string( FILE *fp )
                 plast[-1] = '\0';
                 iHash     = UMIN( MAX_KEY_HASH - 1, plast - 1 - top_string );
                 for ( pHash = string_hash[iHash]; pHash; pHash = pHashPrev )
-		{
-                    for ( ic = 0; ic < sizeof(char *); ic++ )
+                {
+                    for ( ic = 0; ic < (int)sizeof(char *); ic++ )
                         u1.rgc[ic] = pHash[ic];
                     pHashPrev = u1.pc;
                     pHash    += sizeof(char *);
@@ -3353,7 +3354,7 @@ char *fread_string( FILE *fp )
                     pString             = top_string;
                     top_string          = plast;
                     u1.pc               = string_hash[iHash];
-                    for ( ic = 0; ic < sizeof(char *); ic++ )
+                    for ( ic = 0; ic < (int)sizeof(char *); ic++ )
                         pString[ic] = u1.rgc[ic];
                     string_hash[iHash]  = pString;
  
@@ -3435,9 +3436,9 @@ char *fread_string_eol( FILE *fp )
                 iHash     = UMIN( MAX_KEY_HASH - 1, plast - 1 - top_string );
                 for ( pHash = string_hash[iHash]; pHash; pHash = pHashPrev )
                 {
-                    for ( ic = 0; ic < sizeof(char *); ic++ )
+                    for ( ic = 0; ic < (int)sizeof(char *); ic++ )
                         u1.rgc[ic] = pHash[ic];
-		    pHashPrev = u1.pc;
+                    pHashPrev = u1.pc;
                     pHash    += sizeof(char *);
  
                     if ( top_string[sizeof(char *)] == pHash[0]
@@ -3450,7 +3451,7 @@ char *fread_string_eol( FILE *fp )
                     pString             = top_string;
                     top_string          = plast;
                     u1.pc               = string_hash[iHash];
-                    for ( ic = 0; ic < sizeof(char *); ic++ )
+                    for ( ic = 0; ic < (int)sizeof(char *); ic++ )
                         pString[ic] = u1.rgc[ic];
                     string_hash[iHash]  = pString;
  

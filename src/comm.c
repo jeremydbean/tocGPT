@@ -1172,10 +1172,10 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
 
     /* Check for overflow. */
     iStart = strlen(d->inbuf);
-    if ( (size_t)iStart >= sizeof(d->inbuf) - 10 )
+    if ( iStart >= (int)sizeof(d->inbuf) - 10 )
     {
-	sprintf( log_buf, "%s input overflow!", d->host );
-	log_string( log_buf );
+        sprintf( log_buf, "%s input overflow!", d->host );
+        log_string( log_buf );
 	write_to_descriptor( d->descriptor,
 	    "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
 	return FALSE;
@@ -1441,8 +1441,8 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
                                  sprintf(buf,"\n[ %s: %s <*> You: %s ]",
                         PERS(victim,ch), wound,wound2);
                                 else
-               sprintf(buf,"\n[ %s: %s <*> %s: %s ]",
-                 PERS(victim,ch), wound,PERS(victim->fighting,ch),wound2);
+                sprintf(buf,"\n[ %s: %s <*> %s: %s ]",
+                  PERS(victim,ch), wound, PERS(victim->fighting,ch), wound2);
                         }
 
 
@@ -3508,7 +3508,6 @@ void config_prompt( CHAR_DATA *ch )
 {
     DESCRIPTOR_DATA *d;
     char buf[MAX_STRING_LENGTH];
-    buf[0] = '0';
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
     size_t used = 0;
@@ -3538,45 +3537,51 @@ void config_prompt( CHAR_DATA *ch )
 
     sprintf(buf2, "%s", ch->prompt);
     if (buf2[0] == '\0') {
+        size_t len = 0;
+
         if( IS_IMMORTAL( ch ) && ch->in_room ) {
             incl++;
-            APPEND_TO_PROMPT( "<Room:%d", ch->in_room->vnum );
+            snprintf( buf, sizeof(buf), "<Room:%d", ch->in_room->vnum );
+            len = strlen(buf);
         }
 
         if (ch->hit < ch->max_hit) {
             incl++;
+            len = strlen(buf);
             if (incl == 1)
-                APPEND_TO_PROMPT("<%dhp", ch->hit);
+                snprintf(buf, sizeof(buf), "<%dhp", ch->hit);
             else
-                APPEND_TO_PROMPT(" %dhp", ch->hit);
+                snprintf(buf + len, sizeof(buf) - len, " %dhp", ch->hit);
         }
 
         if (ch->mana < ch->max_mana) {
             incl++;
+            len = strlen(buf);
             if (incl == 1)
-                APPEND_TO_PROMPT("<%dm", ch->mana);
+                snprintf(buf, sizeof(buf), "<%dm", ch->mana);
             else
-                APPEND_TO_PROMPT(" %dm", ch->mana);
+                snprintf(buf + len, sizeof(buf) - len, " %dm", ch->mana);
         }
 
         if (ch->move < ch->max_move) {
             incl++;
+            len = strlen(buf);
             if (incl == 1)
-                APPEND_TO_PROMPT("<%dmv", ch->move);
+                snprintf(buf, sizeof(buf), "<%dmv", ch->move);
             else
-                APPEND_TO_PROMPT(" %dmv", ch->move);
+                snprintf(buf + len, sizeof(buf) - len, " %dmv", ch->move);
         }
 
         if (IS_IMMORTAL(ch) && IS_SET(ch->act, PLR_WIZINVIS)) {
             incl++;
+            len = strlen(buf);
             if (incl == 1)
-                APPEND_TO_PROMPT("<(WIZI:%d)", ch->invis_level);
+                snprintf(buf, sizeof(buf), "<(WIZI:%d)", ch->invis_level);
             else
-                APPEND_TO_PROMPT(" (WIZI:%d)", ch->invis_level);
+                snprintf(buf + len, sizeof(buf) - len, " (WIZI:%d)", ch->invis_level);
         }
 
-        APPEND_TO_PROMPT("> ");
-        snprintf(buf2, sizeof(buf2), "%s", buf);
+        snprintf(buf2, sizeof(buf2), "%s> ", buf);
     } else {
         sprintf(buf,"%d",ch->hit);
         str_replace_c(buf2, "%h", buf);
