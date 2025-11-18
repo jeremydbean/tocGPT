@@ -176,7 +176,7 @@ def main():
     global queue_writer, QUEUE_PATH, DEFAULT_LOG
 
     parser = argparse.ArgumentParser(description="Run ToC web admin server")
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--port", type=int, default=9001)
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--queue", default=str(QUEUE_PATH))
     parser.add_argument("--log-file", default=str(DEFAULT_LOG))

@@ -295,6 +295,7 @@ DECLARE_DO_FUN( do_old_prompt   );
 DECLARE_DO_FUN( do_psionic_armor);
 DECLARE_DO_FUN(do_psychic_shield);
 DECLARE_DO_FUN( do_pstat        );
+DECLARE_DO_FUN( do_grantpsionics);
 DECLARE_DO_FUN( do_pull		);
 DECLARE_DO_FUN( do_push		);
 DECLARE_DO_FUN(	do_purge	);
