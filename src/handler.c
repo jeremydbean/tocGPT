@@ -3101,6 +3101,7 @@ char *imm2_bit_name(int imm_flags)
 {
     static char buf[512];
 
+    UNUSED_PARAM(imm_flags);
     buf[0] = '\0';
 
     return ( buf[0] != '\0' ) ? buf+1 : "none";

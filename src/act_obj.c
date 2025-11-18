@@ -1222,6 +1222,7 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 
 void do_convert(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     int temp, left;
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
@@ -1262,6 +1263,7 @@ void do_convert(CHAR_DATA *ch, char *argument)
 
 void do_balance( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
 
     if(IS_NPC(ch))
@@ -2401,6 +2403,7 @@ void do_recite( CHAR_DATA *ch, char *argument )
 
 void do_brandish( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *vch;
     CHAR_DATA *vch_next;
     OBJ_DATA *staff;

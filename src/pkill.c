@@ -163,8 +163,9 @@ void update_pkills(CHAR_DATA *ch)
   return;
 }
 
-void do_topten( CHAR_DATA *ch, char *argument ) 
+void do_topten( CHAR_DATA *ch, char *argument )
 { int i,boundary;
+  UNUSED_PARAM(argument);
   char buf[MAX_STRING_LENGTH];
   PKILL_LIST_DATA *pkill;
  

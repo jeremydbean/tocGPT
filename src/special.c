@@ -279,8 +279,10 @@ bool dragon( CHAR_DATA *mob, char *spell_name )
  */
 bool spec_breath_any( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     if ( cmd != NULL)
-	return FALSE;
+        return FALSE;
  
     if ( mob->position != POS_FIGHTING )
 	return FALSE;
@@ -304,16 +306,20 @@ bool spec_breath_any( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_breath_acid( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     if ( cmd != NULL)
-	return FALSE;
+        return FALSE;
  
     return dragon( mob, "acid breath" );
 }
  
 bool spec_breath_dispel( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     if ( cmd != NULL)
-	return FALSE;
+        return FALSE;
  
     return dragon( mob, "dispel breath" );
 }
@@ -321,8 +327,10 @@ bool spec_breath_dispel( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_breath_fire( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     if ( cmd != NULL)
-	return FALSE;
+        return FALSE;
  
     return dragon( mob, "fire breath" );
 }
@@ -331,8 +339,10 @@ bool spec_breath_fire( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_breath_frost( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     if ( cmd != NULL)
-	return FALSE;
+        return FALSE;
  
     return dragon( mob, "frost breath" );
 }
@@ -341,6 +351,8 @@ bool spec_breath_frost( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_breath_gas( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     int sn;
  
     if ( cmd != NULL)
@@ -359,8 +371,10 @@ bool spec_breath_gas( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_breath_lightning( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     if ( cmd != NULL)
-	return FALSE;
+        return FALSE;
  
     return dragon( mob, "lightning breath" );
 }
@@ -369,6 +383,8 @@ bool spec_breath_lightning( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *ar
  
 bool spec_cast_adept( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
  
@@ -433,6 +449,8 @@ bool spec_cast_adept( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_cleric( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
@@ -498,6 +516,8 @@ bool spec_cast_cleric( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_judge( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
@@ -531,6 +551,8 @@ bool spec_cast_judge( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_mage( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
@@ -609,6 +631,8 @@ bool spec_cast_mage( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_cast_undead( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
@@ -663,6 +687,8 @@ bool spec_cast_undead( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_psionic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
@@ -723,6 +749,8 @@ bool spec_psionic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_executioner( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     DESCRIPTOR_DATA *d;
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
@@ -885,6 +913,8 @@ bool spec_executioner( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_fido( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     OBJ_DATA *corpse;
     OBJ_DATA *c_next;
     OBJ_DATA *obj;
@@ -920,6 +950,8 @@ bool spec_fido( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_guard( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
@@ -1015,6 +1047,8 @@ bool spec_guard( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_janitor( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     OBJ_DATA *trash;
     OBJ_DATA *trash_next;
  
@@ -1047,8 +1081,10 @@ bool spec_janitor( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_mayor( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     static const char open_path[] =
-	"WY3a3003b33000c111d0d111Oe333333Oe22c222112212111a1YS.";
+        "WY3a3003b33000c111d0d111Oe333333Oe22c222112212111a1YS.";
  
     static const char close_path[] =
 	"WY3a3003b33000c111d0d111CE333333CE22c222112212111a1YS.";
@@ -1159,6 +1195,8 @@ bool spec_mayor( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_poison( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     CHAR_DATA *victim;
  
     if ( cmd != NULL)
@@ -1180,6 +1218,8 @@ bool spec_poison( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_thief( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
     long gold;
@@ -1252,6 +1292,7 @@ bool spec_thief( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_guild_guard( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(arg);
     struct gg_struct {
 	   int mob_num;         /* Mobs vnum                    */
 	   int room_num;        /* Room number where effective  */
@@ -1439,8 +1480,9 @@ struct {
  
  
 bool spec_pet_shop_owner( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd,
-	 char *argument)
+         char *argument)
 {
+    UNUSED_PARAM(mob);
     char buf[MAX_STRING_LENGTH];
  
     if ( (cmd==NULL) || (ch == NULL)
@@ -1725,6 +1767,7 @@ bool spec_pawn_shop_owner( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg
  
 bool spec_castle_guard( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(arg);
     struct cg_struct {
 	   int mob_num;         /* Mobs vnum                    */
 	   int room_num;        /* Room number where effective  */
@@ -1816,20 +1859,20 @@ bool spec_castle_guard( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
     for ( d = descriptor_list; d != NULL; d = d->next )
     {
-	CHAR_DATA *victim;
- 
-	victim = d->original ? d->original : d->character;
- 
-	if ( d->connected == CON_PLAYING &&
-	     d->character != ch &&
-	     !IS_NPC(victim) &&
-	     !IS_SET(victim->comm,COMM_NOCASTLE) &&
-	     !IS_SET(victim->comm,COMM_QUIET) &&
-	     cg_table[i].castle == victim->pcdata->castle)
-	{
-	    act_new("$n castle chats '$t just tried to enter the castle!'",
-		    mob,ch->name,d->character,TO_VICT,POS_DEAD);
-	}
+        CHAR_DATA *listener;
+
+        listener = d->original ? d->original : d->character;
+
+        if ( d->connected == CON_PLAYING &&
+             d->character != ch &&
+             !IS_NPC(listener) &&
+             !IS_SET(listener->comm,COMM_NOCASTLE) &&
+             !IS_SET(listener->comm,COMM_QUIET) &&
+             cg_table[i].castle == listener->pcdata->castle)
+        {
+            act_new("$n castle chats '$t just tried to enter the castle!'",
+                    mob,ch->name,d->character,TO_VICT,POS_DEAD);
+        }
     }
  
     return TRUE;
@@ -1838,6 +1881,7 @@ bool spec_castle_guard( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_castle_guard_agg( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(arg);
     struct {
 	   int mob_num;         /* Mobs vnum                    */
 	   int castle;          /* Castle to allow              */
@@ -1918,7 +1962,8 @@ bool spec_castle_guard_agg( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *ar
  
 bool spec_xp_converter( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
-  char buf[MAX_STRING_LENGTH];
+    UNUSED_PARAM(arg);
+    char buf[MAX_STRING_LENGTH];
   int xp = 0;
   int practices = 0;
  
@@ -1962,6 +2007,7 @@ bool spec_xp_converter( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 #define CLUB_DANCEFLOOR 84
 bool spec_club_bouncer( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(arg);
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
     ROOM_INDEX_DATA *to_room;
@@ -2030,9 +2076,10 @@ bool spec_club_bouncer( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_club_clerk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
- 
+    UNUSED_PARAM(arg);
+
     if ( !IS_AWAKE(mob) )
-	return FALSE;
+        return FALSE;
  
     if (mob->in_room->vnum != CLUB_ENTRANCE)
 	return FALSE;
@@ -2066,6 +2113,7 @@ bool spec_club_clerk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_club_bartender( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(arg);
     int action;
  
     if (cmd == NULL)
@@ -2133,6 +2181,8 @@ bool spec_club_bartender( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg 
  
 bool spec_club_dj( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     static int cur_line=0;
  
     char song_list[][100] =
@@ -2198,6 +2248,8 @@ bool spec_club_dj( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_paramedic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
   CHAR_DATA *vch;
   CHAR_DATA *most_hurt = NULL;
@@ -2313,7 +2365,8 @@ bool spec_paramedic( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
 bool spec_quest_master( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argument )
 {
-  OBJ_DATA *obj = NULL, *obj_next;
+    UNUSED_PARAM(mob);
+    OBJ_DATA *obj = NULL, *obj_next;
   char buf[MAX_STRING_LENGTH];
   char arg[MAX_INPUT_LENGTH];
   int  seeker = 0;
@@ -2589,7 +2642,9 @@ bool spec_quest_master( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argume
  
 bool spec_kidnapper( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argument )
 {
-   CHAR_DATA *wch;
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
+    CHAR_DATA *wch;
    ROOM_INDEX_DATA *pRoomTport = NULL;
    int seeker;
    bool found = FALSE;
@@ -2655,6 +2710,8 @@ bool spec_kidnapper( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *argument 
  
 bool spec_monk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;
@@ -2709,6 +2766,8 @@ bool spec_monk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 
 bool spec_cast_necro( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(arg);
     char *spell __attribute__((unused)) = NULL;
     CHAR_DATA *victim;
     CHAR_DATA *v_next;

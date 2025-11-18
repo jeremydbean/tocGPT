@@ -724,6 +724,7 @@ void do_note( CHAR_DATA *ch, char *argument )
 
 void do_delet( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     send_to_char("You must type the full command to delete yourself.\n\r",ch);
 }
 /*
@@ -852,6 +853,7 @@ void do_delete( CHAR_DATA *ch, char *argument)
 
 void do_channels( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     /* lists all channels and their status */
     send_to_char("   channel     status\n\r",ch);
     send_to_char("---------------------\n\r",ch);
@@ -1171,6 +1173,7 @@ void do_hero( CHAR_DATA *ch, char *argument )
 
 void do_deaf( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     if (IS_SET(ch->comm,COMM_NOSHOUT))
     {
       send_to_char("The gods have taken away your ability to shout.\n\r",ch);
@@ -1193,6 +1196,7 @@ void do_deaf( CHAR_DATA *ch, char *argument)
 
 void do_quiet ( CHAR_DATA *ch, char * argument)
 {
+    UNUSED_PARAM(argument);
     if (IS_SET(ch->comm,COMM_QUIET))
     {
 	 send_to_char("Quiet mode removed.\n\r",ch);
@@ -2447,6 +2451,7 @@ const   struct  pose_table_type pose_table      []      =
 
 void do_pose( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     int level;
     int pose;
 
@@ -2497,6 +2502,7 @@ void do_typo( CHAR_DATA *ch, char *argument )
 
 void do_roll( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     int chance;
   	chance = number_percent( );
     sprintf(log_buf,"[Roll]: \x02\x02%s rolls %d/100\x02\x01",ch->name,chance);
@@ -2506,6 +2512,7 @@ void do_roll( CHAR_DATA *ch, char *argument )
 
 void do_qui( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     send_to_char( "If you want to QUIT, you have to spell it out.\n\r", ch );
     return;
 }
@@ -2514,6 +2521,7 @@ void do_qui( CHAR_DATA *ch, char *argument )
 
 void do_quit( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     DESCRIPTOR_DATA *d, *d_next;
     int id;
 
@@ -2588,6 +2596,7 @@ void do_quit( CHAR_DATA *ch, char *argument )
 
 void do_save( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     if ( IS_NPC(ch) )
         return;
 
