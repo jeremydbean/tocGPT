@@ -34,6 +34,320 @@ For more help, type 'help <topic>' for any command, skill, or spell.
 Type 'help KEYWORD' to see a list of all of the available topics.
 Also help on: DAMAGE DYING EXPERIENCE NEWS STORY TICK WIZLIST GUILDS
 If you are new here, we recommend that you read BEGINNERS.
+
+The COMMANDS topic shows only the commands that your current trust level
+allows you to use.  Mortals and heroes will see only mortal commands here.
+Immortal-only commands are documented under WIZHELP and will not appear to
+non-immortals.
+~
+
+0 NE NORTHEAST NW NORTHWEST SE SOUTHEAST SW SOUTHWEST~
+Syntax: <direction>
+
+These are shorthand movement commands for the diagonal exits in a room.
+Each direction functions the same way as typing the full diagonal, for
+example "ne" moves northeast and "sw" moves southwest.  If the exit exists
+and is open, you will step through it; otherwise you will be told the way
+is closed or blocked.
+~
+
+0 ENTER RIDE MOUNT~
+Syntax: enter
+Syntax: ride <mount> / mount <mount>
+
+ENTER uses a room's default portal or structure entrance when no explicit
+exit keyword is given.  It is often used for doors, wagons, boats, or other
+special entries that do not map cleanly to the six main directions.
+
+RIDE and MOUNT allow you to climb onto a valid mountable creature or
+vehicle.  While mounted you move with your mount and benefit from its speed;
+use DISMOUNT to climb off.  Some areas restrict mounted travel.
+~
+
+0 CASTLE~
+Syntax: castle
+Syntax: castle <message>
+
+Castle chat is the private channel for members of your castle.  Typing
+castle with no arguments toggles whether you hear castle chat.  Supplying a
+message sends it to every logged-in member of your castle.  Synonyms: CC and
+"-".
+~
+
+0 IGNORE~
+Syntax: ignore <name>
+        ignore none
+        ignore list
+
+Adds or removes players from a personal ignore list.  Characters on your
+ignore list cannot contact you via tells or channels.  The LIST option shows
+who you are currently ignoring; NONE clears the entire list.
+~
+
+0 LISTEN~
+Syntax: listen
+
+Listen provides a short ambient description of the sounds around you in your
+current room.  It is helpful for spotting nearby activity without moving.
+~
+
+0 REPAIR~
+Syntax: repair <object>
+
+Requests repairs from an NPC repair vendor on worn equipment.  The shopkeeper
+will quote and charge a gold cost based on condition and item type before
+restoring durability.  If the item cannot be repaired, you will be told why.
+~
+
+0 SECONDARY~
+Syntax: secondary <weapon>
+
+Equips the specified weapon in your off-hand if you have trained the
+SECONDARY weapon skill.  This toggles dual wielding; to return to a single
+weapon, wield your main-hand weapon normally.
+~
+
+0 TELEKINESIS TK CLAIRVOYANCE DANGER PROJECT SHIFT~
+Syntax: telekinesis <target>
+Syntax: tk <target>
+Syntax: clairvoyance
+Syntax: danger
+Syntax: project <direction>
+Syntax: shift <player>
+
+Psionic utility commands:
+- TELEKINESIS/TK attempts to move or lift a target with mental force.  It
+  requires psionic training and enough mana to succeed.
+- CLAIRVOYANCE briefly lets you scry your surroundings for concealed exits or
+  threats without moving.
+- DANGER (Danger Sense) gives you a quick pulse of awareness about nearby
+  threats, warning you if a room or foe is particularly perilous.
+- PROJECT sends your spirit one room at a time in the chosen direction,
+  letting you scout ahead while your body stays behind.  Running out of
+  control or mana will snap you back to your body.
+- SHIFT teleports you directly to another player if the destination and your
+  current room permit travel; many safe or special rooms block shifting.
+~
+
+0 CHANGES MOTD NEWS RULES STORY WIZLIST~
+Syntax: changes
+Syntax: motd
+Syntax: news
+Syntax: rules
+Syntax: story
+ Syntax: wizlist
+ 
+ Information commands:
+ - CHANGES lists recent game updates.
+ - MOTD shows the message of the day you see on login.
+ - NEWS lists recent news posts.
+ - RULES displays the game rules and policies.
+ - STORY recounts the world background.
+ - WIZLIST shows the immortals of the realm in order of seniority.
+ ~
+
+0 LORE~
+Syntax: lore <object>
+
+Analyzes an object to reveal its type, magical properties, level, and any
+special effects.  Higher lore skill gives more detailed information and a
+better chance to identify cursed or hidden attributes.
+~
+
+0 AFK DAMAGENUMBERS~
+Syntax: afk
+Syntax: damagenumbers
+
+AFK toggles an "away from keyboard" flag and message so others know you are
+currently unavailable.  You will not auto-reply to tells while AFK.
+
+ DAMAGENUMBERS toggles numerical combat feedback on or off, letting you see
+ exact damage values when you hit or are hit.
+~
+
+0 CRAWL JUMP~
+Syntax: crawl
+Syntax: jump
+
+CRAWL lets you move through low passages or stay low to the ground to reduce
+your profile; movement is slower while crawling.  JUMP clears pits, low
+barriers, and similar hazards when the room allows it, sometimes avoiding
+traps or terrain penalties.
+~
+
+0 DELET DELETE~
+Syntax: delet
+Syntax: delete
+
+DELET is a safety guard that prepares you for character deletion.  Typing
+DELETE after using DELET fully confirms removal of your character file.  Use
+with caution; deleted characters cannot be recovered without immortal aid.
+~
+
+0 PROMPT~
+Syntax: prompt
+Syntax: prompt <format string>
+Syntax: prompt all
+
+Customizes the prompt shown at the bottom of your screen.  PROMPT with no
+arguments shows your current setting; PROMPT ALL sets a detailed default.
+Placeholders such as %h for hit points, %m for mana, %v for movement, %g for
+gold, and %r for room name may be used to build your own display.
+~
+
+0 QUESTION~
+Syntax: question
+Syntax: question <message>
+
+Toggles or uses the Q/A channel.  With no message, the command toggles your
+subscription to the Q/A channel.  With a message, it broadcasts your question
+to everyone listening on that channel so other players can help.
+~
+
+0 BANK BALANCE DEPOSIT WITHDRAW CONVERT~
+Syntax: balance
+Syntax: deposit <amount>
+Syntax: withdraw <amount>
+Syntax: convert <silver/gold amount>
+
+Banking commands allow you to store wealth safely.  BALANCE shows your bank
+holdings.  DEPOSIT moves coins from your inventory into the bank; WITHDRAW
+removes them.  CONVERT exchanges between gold and silver denominations so you
+can carry what you need for purchases.
+~
+
+0 BREW CONCOCT SCRIBE SHOOT PICK JUNK~
+Syntax: brew <potion recipe>
+Syntax: concoct <component list>
+Syntax: scribe <scroll recipe>
+Syntax: shoot <target>
+Syntax: pick <direction/lock>
+Syntax: junk <object>
+
+Crafting and utility commands:
+- BREW/CONCOCT create magical potions from components you carry.
+- SCRIBE copies a spell into a blank scroll if you know the spell and have a
+  quill.
+- SHOOT uses a loaded projectile weapon to fire at your current target.
+- PICK attempts to pick the lock on a door or container using your lockpicks
+  and the PICK LOCK skill.
+- JUNK destroys an unwanted object, clearing inventory space without leaving
+  a corpse behind.
+~
+
+0 BACKSTAB BS BASH BERSERK BLINDING CONFUSE CRANE DOORBASH DIRT DISARM DISMOUNT FISTS HIT KICK MIND BLAST MINDBLAST MURDE MURDER NERVE NIGHTMARE PYROTECHNICS RESCUE SMITE STUNNING TORMENT TRIP~
+Syntax: backstab <victim>          Syntax: bs <victim>
+Syntax: bash <victim>              Syntax: berserk
+Syntax: blinding <victim>          Syntax: confuse <victim>
+Syntax: crane                      Syntax: doorbash <door>
+Syntax: dirt <victim>              Syntax: disarm
+Syntax: dismount                   Syntax: fists
+Syntax: hit <victim>
+Syntax: kick <victim>              Syntax: murder <victim>
+Syntax: mindblast <victim>
+Syntax: nerve <victim>             Syntax: nightmare <victim>
+Syntax: pyrotechnics <victim>      Syntax: rescue <ally>
+Syntax: smite <victim>             Syntax: stunning <victim>
+Syntax: torment <victim>           Syntax: trip <victim>
+
+Advanced combat maneuvers.  Each of these abilities relies on its associated
+skill or spell and often requires appropriate weapons or positioning.
+- BACKSTAB/BS: attack from hiding for heavy opening damage with a piercing
+  weapon.
+- BASH: slam your foe to the ground, potentially stunning them.
+- BERSERK: enter a battle frenzy to boost offense while losing some control.
+- BLINDING/CONFUSE/NIGHTMARE/PYROTECHNICS/SMITE/STUNNING/TORMENT: offensive
+  techniques that inflict status effects; see the relevant skill for exact
+  outcomes and save checks.
+- CRANE and FISTS: unarmed fighting stances that improve hand-to-hand combat.
+- DOORBASH: force a locked door open with brute strength instead of a key.
+- DIRT: fling dirt to blind an opponent temporarily.
+- DISARM: knock a weapon from your opponent's hand.
+- DISMOUNT: climb off your current mount.
+- HIT and MURDER/MURDE: direct physical attacks; HIT mirrors the normal KILL
+  command while MURDER is always considered a hostile action.
+- KICK, NERVE, TRIP: quick physical attacks aimed at disrupting foes.
+- MINDBLAST: psionic assault that harms and can disorient foes if they fail
+  their save.
+- RESCUE: pull an ally out of melee by taking their opponent onto yourself.
+~
+
+0 AQUEST TOPTEN SEARCH TRACK HIDE LEVITATE SNEAK STEAL STEALTH STEEL SHOVE ROLL IRON MINDBAR PSIONIC PSYCHIC FLING GKICK QUI QUIT~
+Syntax: aquest
+Syntax: topten
+Syntax: search
+Syntax: track <target>
+Syntax: hide
+Syntax: levitate
+Syntax: sneak
+Syntax: steal <object> <victim>
+Syntax: stealth
+Syntax: steel
+Syntax: shove <victim>
+Syntax: roll
+Syntax: iron
+Syntax: mindbar
+Syntax: psionic
+Syntax: psychic
+Syntax: fling <victim>
+Syntax: gkick <victim>
+Syntax: quit
+Syntax: qui
+
+Exploration and miscellaneous skills:
+- AQUEST shows the status of the automatic quest system.
+- TOPTEN displays the current leaderboard of notable characters.
+- SEARCH actively looks for hidden doors, exits, or traps in the room.
+- TRACK attempts to follow the trail of another character across rooms.
+- HIDE, SNEAK, STEALTH, and STEEL are stealth toggles that help you move
+  unseen or silently when trained.
+- LEVITATE engages psionic lift, allowing you to float over some hazards.
+- STEAL takes items from another character if you remain unnoticed.
+- SHOVE and FLING push or toss targets out of the current room.
+- ROLL and IRON are defensive stances that improve dodging or toughness.
+- MINDBAR/PSIONIC/PSYCHIC toggle specialized psionic defenses or channels.
+- GKICK delivers a sweeping group kick aimed at disrupting multiple foes.
+- QUIT (or QUI) cleanly saves your character and disconnects from the game
+  when you are not in combat.
+~
+
+62 IMMORTAL CHANNELS BEEP GODTALK IMOTD INVIS ITRANS JAIL KSOCK MAXLOADS NEWCORPSE NOCHANNELS NOTITLE SLA SLAY WARN WHINER WIZCHECK TRANSFUSION RETRIEVED LISTCLUE~
+Syntax: godtalk <message>
+Syntax: imotd
+Syntax: invis [level]
+Syntax: itrans <player> <room vnum>
+Syntax: jail <player>
+Syntax: ksock <descriptor>
+Syntax: maxloads
+Syntax: newcorpse <player>
+Syntax: nochannels <player>
+Syntax: notitle <player>
+Syntax: sla <player>
+Syntax: slay <player>
+Syntax: warn <player> <reason>
+Syntax: whiner <player>
+Syntax: wizcheck <player>
+Syntax: transfusion <target>
+Syntax: retrieved
+Syntax: listclue
+Syntax: beep <immortal>
+
+Immortal-only administration commands, shown here for completeness but only
+usable by staff:
+- GODTALK is a private channel for level 1 immortals and above.
+- IMOTD views the immortal MOTD.
+- INVIS sets your invisibility level for mortals.
+- ITRANS transfers a player to a room vnum.
+- JAIL moves a player into the jail room.
+- KSOCK shows socket information for a descriptor number.
+- NEWCORPSE creates a replacement corpse for a player.
+- NOCHANNELS and NOTITLE strip channel or title privileges from a player.
+- SLAY executes a targeted character immediately.
+- WARN and WHINER issue administrative warnings or flags.
+- WIZCHECK reports potential issues with a player's stats or flags.
+- TRANSFUSION heals using your own energy; RETRIEVED and LISTCLUE support
+  quest object recovery and quest clue listings.
+- BEEP pings another immortal regardless of channel settings.
 ~
 
 0 ALIAS ALIASES~
