@@ -82,6 +82,8 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
    docker build -t toc .
    ```
 2. Start the game server on the default port 9000 with host persistence (recommended):
+
+##MacOS/Linux
    ```bash
    docker run --rm -it \
      -p 9000:9000 \
@@ -90,7 +92,12 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
      -v $(pwd)/log:/app/log \
      toc
    ```
-3. Change the port (optional) by setting `PORT`/`MUD_PORT` while keeping persistence:
+## Windows
+   ```bash
+  docker run --rm -it -p 9000:9000 -v "${PWD}\player:/app/player" -v "${PWD}\backups:/app/backups" -v "${PWD}\log:/app/log" toc
+  ```
+
+4. Change the port (optional) by setting `PORT`/`MUD_PORT` while keeping persistence:
    ```bash
    docker run --rm -it \
      -e PORT=4000 \
@@ -100,7 +107,7 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
      -v $(pwd)/log:/app/log \
      toc
    ```
-4. Publish the web admin dashboard (port 9001) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
+5. Publish the web admin dashboard (port 9001) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
    ```bash
    docker run --rm -it \
      -p 9000:9000 \   # game
@@ -110,7 +117,7 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
      -v $(pwd)/log:/app/log \
      toc
    ```
-5. Run without host persistence (not recommended): drop the `-v` flags to use container-local storage only:
+6. Run without host persistence (not recommended): drop the `-v` flags to use container-local storage only:
    ```bash
    docker run --rm -it -p 9000:9000 toc
    ```
