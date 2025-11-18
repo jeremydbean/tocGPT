@@ -2957,36 +2957,39 @@ void disaster_update( void )
 	      break;
 	     }
 
-	     if(hit == TRUE)
-	     {
-		     EXIT_DATA *pexit;
-		     int door, move, rand_door[10];
-		     int count = -1;
+             if(hit == TRUE)
+             {
+                     EXIT_DATA *pexit;
+                     int door, move, rand_door[10];
+                     int count;
 
-		       for(move = dice(1,3) ; move > 0; move--)
-		         {
-		             for( door = 0; door < 10; door++)
-		               if ( ( pexit = vch->in_room->exit[door] ) != NULL &&  !IS_SET(pexit->exit_info, EX_CLOSED) )
-		                 {
-			                    count++;
-			                    rand_door[count] = door;
-		                 }
-		              door = number_range(0,count);
-		              if(rand_door >= 0)
-		                {
-    		             send_to_char("You struggle in vain as the flood waters carry you along.\n\r",vch);
-		                 act("$n is carried off by the flood waters.",vch,NULL,NULL,TO_ROOM);
-		                 SET_BIT(vch->act, PLR_WIZINVIS);
-		                 move_char( vch, rand_door[door], TRUE);
-		                 REMOVE_BIT(vch->act, PLR_WIZINVIS);
-		                 act("$n arrives on a wave of water screaming, 'HHggEEggLLggPP!'.",vch,NULL,NULL,TO_ROOM);
-		                 damage(vch,vch,dice(4,4),skill_lookup("waterfall"),DAM_LIGHTNING);
-		                 }
-		             count = -1;
-		}
-	     }
-	   break;
-	   case 2:
+                     for(move = dice(1,3) ; move > 0; move--)
+                     {
+                         count = -1;
+
+                         for( door = 0; door < 10; door++)
+                             if ( ( pexit = vch->in_room->exit[door] ) != NULL &&  !IS_SET(pexit->exit_info, EX_CLOSED) )
+                             {
+                                     count++;
+                                     rand_door[count] = door;
+                             }
+
+                         if ( count < 0 )
+                             break;
+
+                         door = number_range(0,count);
+
+                        send_to_char("You struggle in vain as the flood waters carry you along.\n\r",vch);
+                        act("$n is carried off by the flood waters.",vch,NULL,NULL,TO_ROOM);
+                        SET_BIT(vch->act, PLR_WIZINVIS);
+                        move_char( vch, rand_door[door], TRUE);
+                        REMOVE_BIT(vch->act, PLR_WIZINVIS);
+                        act("$n arrives on a wave of water screaming, 'HHggEEggLLggPP!'.",vch,NULL,NULL,TO_ROOM);
+                        damage(vch,vch,dice(4,4),skill_lookup("waterfall"),DAM_LIGHTNING);
+                     }
+             }
+           break;
+           case 2:
 	     send_to_char("The lightning sure looks nasty.\n\r",vch);
 	     if(vch->in_room->sector_type == 0)
 	       send_to_char("Good thing your safe indoors!\n\r",vch);
