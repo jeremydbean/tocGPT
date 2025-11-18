@@ -1370,11 +1370,12 @@ name unusable.  Use the undeny command to allow to character to play again.
 ~
 
 67 DISCONNECT DUMP~
-Syntax: dump <name>
+Syntax: disconnect <name>
+        disconnect <descriptor #>
 
 Disconnect breaks a player's link to the game, dumping them back to the telnet
-prompt.  This is a non-lethal way of getting rid of spammers and annoying
-players.
+prompt.  You may target by character name or the descriptor number shown in the
+SOCKETS command. Use LOGOUT instead if you simply want to drop your own link.
 ~
 
 64 FREEZE~
@@ -1687,10 +1688,27 @@ is higher level than the level you set your cloak at can see you anywhere though
 69 BACKUP~
 Syntax: backup
         backup now
+        backup daily
 
-This command will perform a backup on all of the pfiles.  Typing backup by itself
-will show when the next scheduled backup will take place.
+This command will perform a backup on all of the pfiles. Typing backup by itself
+will show when the next scheduled backup will take place. The DAILY option runs
+the daily archive immediately and resets the 24-hour timer; NOW performs an
+immediate compressed backup.
 
+~
+
+0 LOGIN~
+Syntax: login
+
+Displays your current connection host, port, and how long this session has been
+active.
+~
+
+0 LOGOUT~
+Syntax: logout
+
+Saves your character and closes your connection to the game, returning you to
+the login prompt. You cannot logout while fighting.
 ~
 
 69 PSTAT~

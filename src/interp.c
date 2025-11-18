@@ -317,6 +317,8 @@ const	struct	cmd_type	cmd_table	[] =
     { "/",		do_recall,	POS_FIGHTING,	 0,  LOG_NORMAL, 0 },
     { "roll",		do_roll,	POS_DEAD,	 0,  LOG_ALWAYS, 0 },
     { "save",		do_save,	POS_DEAD,	 0,  LOG_ALWAYS, 1 },
+    { "login",		do_login,	POS_DEAD,	 0,  LOG_NORMAL, 1 },
+    { "logout",		do_logout,	POS_RESTING,	 0,  LOG_NORMAL, 1 },
     { "sleep",		do_sleep,	POS_SLEEPING,	 0,  LOG_NORMAL, 1 },
     { "sneak",		do_sneak,	POS_STANDING,	 0,  LOG_NORMAL, 1 },
     { "split",		do_split,	POS_RESTING,	 0,  LOG_NORMAL, 1 },
@@ -339,7 +341,7 @@ const	struct	cmd_type	cmd_table	[] =
     { "allow",          do_allow,       POS_DEAD,       L3,  LOG_ALWAYS, 1 },
 /*  { "areaload",       do_areaload,    POS_DEAD,       L4,  LOG_ALWAYS, 1 }, */
 /*  { "areasave",       do_areasave,    POS_DEAD,       L4,  LOG_ALWAYS, 1 }, */
-    { "backup",					show_backup,		POS_DEAD,				L1,  LOG_ALWAYS, 1 },
+    { "backup",             do_backup,      POS_DEAD,       L1,  LOG_ALWAYS, 1 },
     { "ban",            do_ban,         POS_DEAD,       L3,  LOG_ALWAYS, 1 },
     { "cloak",          do_cloak,       POS_DEAD,       L8,  LOG_ALWAYS, 1 },
     { "clone",          do_clone,       POS_DEAD,       L5,  LOG_ALWAYS, 1 },

@@ -725,27 +725,52 @@ void do_disconnect( CHAR_DATA *ch, char *argument )
 	return;
     }
 
+    if ( is_number( arg ) )
+    {
+        int desc = atoi( arg );
+
+        for ( d = descriptor_list; d != NULL; d = d->next )
+        {
+            if ( d->descriptor == desc )
+            {
+                snprintf( buf, sizeof(buf), "Descriptor %d successfully disconnected.\n\r", desc );
+                send_to_char( buf, ch );
+                close_socket( d );
+                return;
+            }
+        }
+
+        send_to_char( "Descriptor not found!\n\r", ch );
+        return;
+    }
+
     if ( ( victim = get_char_world( ch, arg ) ) == NULL )
     {
-	send_to_char( "They aren't here.\n\r", ch );
-	return;
+        send_to_char( "They aren't here.\n\r", ch );
+        return;
     }
 
     if ( victim->desc == NULL )
     {
-	act( "$N doesn't have a descriptor.", ch, NULL, victim, TO_CHAR );
-	return;
+        act( "$N doesn't have a descriptor.", ch, NULL, victim, TO_CHAR );
+        return;
+    }
+
+    if ( victim == ch )
+    {
+        send_to_char( "Use LOGOUT if you wish to drop your own link.\n\r", ch );
+        return;
     }
 
     for ( d = descriptor_list; d != NULL; d = d->next )
     {
-	if ( d == victim->desc )
-	{
-	    snprintf(buf, sizeof(buf),"%s successfully disconnected.\n\r",victim->name);
-	    send_to_char( buf, ch );
-	    close_socket( d );
-	    return;
-	}
+        if ( d == victim->desc )
+        {
+            snprintf(buf, sizeof(buf),"%s successfully disconnected.\n\r",victim->name);
+            send_to_char( buf, ch );
+            close_socket( d );
+            return;
+        }
     }
 
     bug( "Do_disconnect: desc not found.", 0 );

@@ -302,6 +302,8 @@ const	struct	cmd_type	cmd_table	[] =
     { "/",		do_recall,	POS_FIGHTING,	 0,  LOG_NORMAL, 0 },
     { "roll",		do_chance,	POS_DEAD,	 0,  LOG_NORMAL, 0 },
     { "save",		do_save,	POS_DEAD,	 0,  LOG_NORMAL, 1 },
+    { "login",		do_login,	POS_DEAD,	 0,  LOG_NORMAL, 1 },
+    { "logout",		do_logout,	POS_RESTING,	 0,  LOG_NORMAL, 1 },
     { "sleep",		do_sleep,	POS_SLEEPING,	 0,  LOG_NORMAL, 1 },
     { "sneak",		do_sneak,	POS_STANDING,	 0,  LOG_NORMAL, 1 },
     { "split",		do_split,	POS_RESTING,	 0,  LOG_NORMAL, 1 },

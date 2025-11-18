@@ -18,7 +18,6 @@
 #include <time.h>
 #include <ctype.h>
 #include "merc.h"
-extern void do_backup(void);
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_quit  );
@@ -824,7 +823,7 @@ void do_delete( CHAR_DATA *ch, char *argument)
 
     if (!strcmp( crypt(arg1, ch->pcdata->pwd),ch->pcdata->pwd) )
     {
-    do_backup();
+    run_backup_job( ch->name, FALSE );
     sprintf( buf, "mv %s%s %s%s.deleted", PLAYER_DIR, capitalize( ch->name ), PLAYER_DIR, capitalize( ch->name ));
         int rc = system(buf); (void)rc;;
     send_to_char( "\n\r", ch );

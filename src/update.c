@@ -63,9 +63,11 @@ void    room_aff_update    args( ( void ) );
 void	dtrap_update	   args( ( void ) );
 void	sanity_check	   args( ( void ) );
 void	quest_update	   args( ( void ) );
-void    do_backup          args( ( void ) );
-void    do_dailybackup     args( ( void ) );
-void    btick_update    args( ( void ) );
+void    do_backup           args( ( CHAR_DATA *ch, char *argument ) );
+void    do_dailybackup      args( ( void ) );
+void    run_backup_job      args( ( const char *initiator, bool daily ) );
+void    check_backup_timers args( ( void ) );
+void    btick_update        args( ( void ) );
 void	save_pkills	args( ( void ) );
 
 extern  AREA_DATA *		area_first;
@@ -167,61 +169,109 @@ const struct component_type component_table [] =
 int	save_number = 0;
 
 
-/* Pfile backup command fixed on 12/17/97 - Ricochet */
-void do_backup( void )
+static void log_backup_message( const char *message )
 {
-    extern long backup;
-    wizinfo("Automated backup complete.",62);
-    log_string("Automated backup complete.");
-    backup = current_time + (60*60*4);
-  /*  system("tar cfz ../backups/`date +%b.%d`.tar.gz ../player"); */
-    system("tar cfz ../backups/`date +%b.%d.%Y-%H.%M.%S`.tar.gz ../player");
-    return;
+    wizinfo( (char *) message, 62 );
+    log_string( (char *) message );
+}
 
+void run_backup_job( const char *initiator, bool daily )
+{
+    char buf[MAX_STRING_LENGTH];
+    char cmd_buf[MAX_STRING_LENGTH];
+    const char *who = ( initiator != NULL && initiator[0] != '\0' ) ? initiator : "system";
+    const char *label = daily ? "Daily" : "Automated";
+
+    snprintf( buf, sizeof(buf), "%s backup started by %s.", label, who );
+    log_backup_message( buf );
+
+    if ( daily )
+    {
+        snprintf( cmd_buf, sizeof(cmd_buf), "tar cf ../backups/`date +%b.%d`.tar ../player" );
+        dailybackup = current_time + (60*60*24);
+    }
+    else
+    {
+        snprintf( cmd_buf, sizeof(cmd_buf), "tar cfz ../backups/`date +%b.%d.%Y-%H.%M.%S`.tar.gz ../player" );
+        backup = current_time + (60*60*4);
+    }
+
+    if ( system( cmd_buf ) != 0 )
+    {
+        snprintf( buf, sizeof(buf), "%s backup requested by %s failed while archiving player files.", label, who );
+        log_backup_message( buf );
+    }
+    else
+    {
+        snprintf( buf, sizeof(buf), "%s backup complete.", label );
+        log_backup_message( buf );
+    }
+}
+
+/* Pfile backup command fixed on 12/17/97 - Ricochet */
+void do_backup( CHAR_DATA *ch, char *argument )
+{
+    char arg1[MAX_INPUT_LENGTH];
+    char buf[MAX_STRING_LENGTH];
+
+    if ( ch != NULL && IS_NPC( ch ) )
+        return;
+
+    argument = one_argument( argument, arg1 );
+
+    if ( backup == 0 )
+        backup = current_time + (60*60*4);
+
+    if ( dailybackup == 0 )
+        dailybackup = current_time + (60*60*24);
+
+    if ( arg1[0] == '\0' )
+    {
+        snprintf( buf, sizeof(buf), "Next pfile backup scheduled for %s\n\r", (char *) ctime( &backup ) );
+        send_to_char( buf, ch );
+        snprintf( buf, sizeof(buf), "Next daily backup scheduled for %s\n\r", (char *) ctime( &dailybackup ) );
+        send_to_char( buf, ch );
+        send_to_char( "Type BACKUP NOW to run a backup now.\n\rType BACKUP DAILY to trigger the daily archive immediately.\n\r", ch );
+        return;
+    }
+
+    if ( !str_cmp( arg1, "now" ) || !str_cmp( arg1, "NOW" ) )
+    {
+        run_backup_job( ch != NULL ? ch->name : "system", FALSE );
+        send_to_char( "Manual pfile backup requested.\n\r", ch );
+        return;
+    }
+
+    if ( !str_cmp( arg1, "daily" ) || !str_cmp( arg1, "DAILY" ) )
+    {
+        run_backup_job( ch != NULL ? ch->name : "system", TRUE );
+        send_to_char( "Daily archive triggered.\n\r", ch );
+        return;
+    }
+
+    send_to_char( "Syntax: backup [now|daily]\n\r", ch );
+    return;
 }
 
 /* Pfile backup command fixed on 12/17/97 - Ricochet */
 void do_dailybackup( void )
 {
-    extern long backup;
-    wizinfo("Daily backup complete.",62);
-    log_string("Daily backup complete.");
-    dailybackup = current_time + (60*60*24);
-  /*  system("tar cfz ../backups/`date +%b.%d`.tar.gz ../player"); */
-    system("tar cf ../backups/`date +%b.%d`.tar.gz ../player");
-    return;
-
+    run_backup_job( "system", TRUE );
 }
 
-void show_backup( CHAR_DATA *ch, char *argument )
+void check_backup_timers( void )
 {
-    extern long backup;
-    char arg1[MAX_INPUT_LENGTH];
-    char buf[MAX_STRING_LENGTH];
+    if ( backup == 0 )
+        backup = current_time + (60*60*4);
 
-    argument = one_argument( argument, arg1 );
+    if ( dailybackup == 0 )
+        dailybackup = current_time + (60*60*24);
 
-    if(IS_NPC(ch))
-        return;
+    if ( current_time >= backup )
+        run_backup_job( "scheduler", FALSE );
 
-    if ( arg1[0] == '\0' )
-    {
-      sprintf( buf, "Next pfile backup scheduled for %s\n\r",(char *)ctime(&backup));
-      send_to_char(buf,ch);
-      sprintf( buf, "Next daily backup scheduled for %s\n\r",(char *)ctime(&dailybackup));
-      send_to_char(buf,ch);
-      send_to_char("Type BACKUP NOW to run a backup now.\n\r",ch);
-      return;
-    }
-
-    if ( !str_cmp( arg1, "now" ) || !str_cmp( arg1, "NOW" ))
-      do_backup();
-    if ( !str_cmp( arg1, "daily" ) || !str_cmp( arg1, "DAILY" ))
-      do_dailybackup();
-
-      return;
-
-    return;
+    if ( current_time >= dailybackup )
+        run_backup_job( "scheduler", TRUE );
 }
 
 
@@ -950,10 +1000,7 @@ void weather_update( void )
 /*    if( time_info.hour == 11 || time_info.hour == 23)
        component_update(); */
 
-     if (current_time > dailybackup)
-
-
-    if(time_info.day == 0 || time_info.day < 10)
+     if(time_info.day == 0 || time_info.day < 10)
        weather_info.moon_phase = MOON_NEW;
     else if( time_info.day == 10 || time_info.day < 23)
        weather_info.moon_phase = MOON_WAXING;
@@ -2700,6 +2747,7 @@ void update_handler( void )
 	btick_update	();
 	obj_update	( );
 	room_aff_update ( );
+	check_backup_timers( );
 //	update_relics   ();  REMOVERELIC
     }
 

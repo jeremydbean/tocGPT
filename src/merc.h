@@ -2407,6 +2407,8 @@ void    die_follower    args( ( CHAR_DATA *ch ) );
 bool    is_same_group   args( ( CHAR_DATA *ach, CHAR_DATA *bch ) );
 void	wizinfo		args( ( char *info, int level ) );
 void    send_info       args( ( char *argument ) );
+void    run_backup_job  args( ( const char *initiator, bool daily ) );
+void    check_backup_timers args( ( void ) );
 
 /* act_info.c */
 void    set_title       args( ( CHAR_DATA *ch, char *title ) );

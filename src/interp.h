@@ -125,7 +125,7 @@ DECLARE_DO_FUN( do_brew         );
 DECLARE_DO_FUN( do_brief	);
 DECLARE_DO_FUN(	do_bug		);
 DECLARE_DO_FUN(	do_buy		);
-DECLARE_DO_FUN( show_backup	);
+DECLARE_DO_FUN( do_backup       );
 DECLARE_DO_FUN(	do_cast		);
 DECLARE_DO_FUN(	do_castle	);
 DECLARE_DO_FUN( do_cgos         );

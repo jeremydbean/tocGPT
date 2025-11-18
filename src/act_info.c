@@ -20,8 +20,6 @@
 #include <time.h>
 #include "merc.h"
 #pragma GCC diagnostic ignored "-Wformat-truncation"
-extern void do_backup(void);
-
 /* command procedures needed */
 DECLARE_DO_FUN(	do_exits	);
 DECLARE_DO_FUN( do_look		);
@@ -4211,7 +4209,7 @@ void do_remort( CHAR_DATA *ch, char *arg)
    snprintf(buf, sizeof(buf), "%s has remorted!", ch->name);
    send_info(buf);
    wizinfo(buf,LEVEL_IMMORTAL);
-   do_backup();
+   run_backup_job( ch->name, FALSE );
 
    if (ch->pcdata->num_remorts >= 5)
     {
@@ -4344,4 +4342,68 @@ void do_remort( CHAR_DATA *ch, char *arg)
    */
 
    save_char_obj(ch);
+}
+
+
+void do_login( CHAR_DATA *ch, char *argument )
+{
+    DESCRIPTOR_DATA *d;
+    char buf[MAX_STRING_LENGTH];
+    int minutes;
+
+    if ( IS_NPC( ch ) )
+    {
+        send_to_char( "Login details are only available to players.\n\r", ch );
+        return;
+    }
+
+    d = ch->desc;
+
+    if ( d == NULL )
+    {
+        send_to_char( "You are not currently attached to a descriptor.\n\r", ch );
+        return;
+    }
+
+    minutes = (int) (( current_time - ch->logon ) / 60 );
+
+    snprintf( buf, sizeof(buf),
+              "Connection host: %s\n\rPort: %d\n\rSession length: %d minute%s.\n\r",
+              d->host != NULL ? d->host : "unknown host",
+              d->port,
+              minutes,
+              minutes == 1 ? "" : "s" );
+    send_to_char( buf, ch );
+}
+
+void do_logout( CHAR_DATA *ch, char *argument )
+{
+    DESCRIPTOR_DATA *d;
+
+    if ( IS_NPC( ch ) )
+    {
+        send_to_char( "Only players need to log out.\n\r", ch );
+        return;
+    }
+
+    if ( ch->fighting != NULL )
+    {
+        send_to_char( "You cannot logout while fighting.\n\r", ch );
+        return;
+    }
+
+    save_char_obj( ch );
+
+    for ( d = descriptor_list; d != NULL; d = d->next )
+    {
+        if ( d->character == ch || d->original == ch )
+        {
+            send_to_char( "You logout and return to the login prompt.\n\r", ch );
+            act( "$n logs out to the login prompt.", ch, NULL, NULL, TO_ROOM );
+            close_socket( d );
+            return;
+        }
+    }
+
+    send_to_char( "No active descriptor found to logout.\n\r", ch );
 }
