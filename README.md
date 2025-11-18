@@ -109,17 +109,25 @@ Run these commands from inside the cloned `tocGPT` folder. Windows checkouts can
      -v $(pwd)/log:/app/log \
      toc
    ```
-4. Publish the web admin dashboard (port 9001) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
-   ```bash
-   docker run --rm -it \
-     -p 9000:9000 \   # game
-     -p 9001:9001 \   # web admin
-     -v $(pwd)/player:/app/player \
-     -v $(pwd)/backups:/app/backups \
-     -v $(pwd)/log:/app/log \
-     toc
-   ```
-6. Run without host persistence (not recommended): drop the `-v` flags to use container-local storage only:
+4. Publish the web admin dashboard (port 9001) alongside the game port (persistent storage). The dashboard now binds to `0.0.0.0` by default inside the container so it is reachable from the host; set `WEB_ADMIN_HOST` to `127.0.0.1` if you want to restrict it to container-local access only:
+    ```bash
+    docker run --rm -it \
+      -p 9000:9000 \   # game
+      -p 9001:9001 \   # web admin
+      -v $(pwd)/player:/app/player \
+      -v $(pwd)/backups:/app/backups \
+      -v $(pwd)/log:/app/log \
+      toc
+    ```
+    ```powershell
+    docker run --rm -it -p 9000:9000 `
+        -p 9001:9001 `
+        -v "${PWD}\player:/app/player" `
+        -v "${PWD}\backups:/app/backups" `
+        -v "${PWD}\log:/app/log" `
+        toc
+    ```
+5. Run without host persistence (not recommended): drop the `-v` flags to use container-local storage only:
    ```bash
    docker run --rm -it -p 9000:9000 toc
    ```
@@ -130,7 +138,7 @@ The container entrypoint accepts optional arguments if you need to pass flags di
 The container starts a lightweight FastAPI web dashboard alongside the game server. It provides a browser UI plus JSON endpoints so admins can queue in-game actions without logging in as an immortal. By default it listens on port `9001` inside the container and can be disabled with `WEB_ADMIN_ENABLED=0`.
 
 ### How to expose and open the dashboard
-1. Publish the admin port when launching the container (change host ports as desired). By default the service binds to `127.0.0.1:9001` inside the container; use `-e WEB_ADMIN_HOST=0.0.0.0` only if you must expose it outside the host:
+1. Publish the admin port when launching the container (change host ports as desired). By default the service binds to `0.0.0.0:9001` inside the container so the mapped port is reachable from the host; set `-e WEB_ADMIN_HOST=127.0.0.1` if you need to confine it to container-only access:
    ```bash
    docker run --rm -it \
      -p 9000:9000 \   # game
@@ -139,6 +147,14 @@ The container starts a lightweight FastAPI web dashboard alongside the game serv
      -v $(pwd)/backups:/app/backups \
      -v $(pwd)/log:/app/log \
      toc
+   ```
+   ```powershell
+   docker run --rm -it -p 9000:9000 `
+       -p 9001:9001 `
+       -v "${PWD}\player:/app/player" `
+       -v "${PWD}\backups:/app/backups" `
+       -v "${PWD}\log:/app/log" `
+       toc
    ```
 2. Open <http://localhost:9001/> in your browser to use the UI.
 
@@ -163,7 +179,7 @@ The container starts a lightweight FastAPI web dashboard alongside the game serv
 
 ### Configuration knobs
 - `WEB_ADMIN_PORT` (default `9001`): Port exposed inside the container.
-- `WEB_ADMIN_HOST` (default `127.0.0.1`): Bind address for the FastAPI server (set to `0.0.0.0` only if you need remote access).
+- `WEB_ADMIN_HOST` (default `0.0.0.0`): Bind address for the FastAPI server (set to `127.0.0.1` if you want to limit access to inside the container only).
 - `WEB_ADMIN_ENABLED` (default `1`): Set to `0` to skip starting the service.
 - `WEB_ADMIN_QUEUE` (default `/app/area/webadmin.queue`): Where requests are queued for the game loop.
 - `WEB_ADMIN_LOG_FILE` (default `/app/log/toc.log`): Log file used by `/api/logs`.
