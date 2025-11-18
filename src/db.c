@@ -3720,6 +3720,7 @@ void do_areas( CHAR_DATA *ch, char *argument )
  
 void do_memory( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
  
     sprintf( buf, "Affects %5d\n\r", top_affect    ); send_to_char( buf, ch );
@@ -4841,6 +4842,8 @@ void tail_chain( void )
 
 void do_dump_exits( CHAR_DATA *ch , char *argument )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
     ROOM_INDEX_DATA *in_room;
     ROOM_INDEX_DATA *to_room;
     FILE *fp;

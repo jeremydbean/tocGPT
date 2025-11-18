@@ -2903,6 +2903,7 @@ void disarm( CHAR_DATA *ch, CHAR_DATA *victim )
 
 void do_berserk( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     int chance, hp_percent;
 
     if ((chance = get_skill(ch,gsn_berserk)) == 0
@@ -3514,6 +3515,7 @@ void do_kill( CHAR_DATA *ch, char *argument )
 
 void do_murde( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     send_to_char( "If you want to MURDER, spell it out.\n\r", ch );
     return;
 }
@@ -3904,6 +3906,7 @@ void do_backstab( CHAR_DATA *ch, char *argument )
 
 void do_flee( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     ROOM_INDEX_DATA *was_in;
     ROOM_INDEX_DATA *now_in;
     CHAR_DATA *victim;
@@ -4060,6 +4063,7 @@ void do_rescue( CHAR_DATA *ch, char *argument )
 
 void do_kick( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *victim;
 
     if ( !IS_NPC(ch)
@@ -4099,6 +4103,7 @@ void do_kick( CHAR_DATA *ch, char *argument )
 
 void do_disarm( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *victim;
     OBJ_DATA *obj;
     int chance,hth,ch_weapon,vict_weapon,ch_vict_weapon;
@@ -4175,6 +4180,7 @@ void do_disarm( CHAR_DATA *ch, char *argument )
 
 void do_sla( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     send_to_char( "If you want to SLAY, spell it out.\n\r", ch );
     return;
 }

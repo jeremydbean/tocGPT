@@ -2458,6 +2458,7 @@ void do_owhere( CHAR_DATA *ch, char *argument )
 
 void do_reboot( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     extern bool merc_down;
     DESCRIPTOR_DATA *d,*d_next;
@@ -2483,6 +2484,7 @@ void do_reboot( CHAR_DATA *ch, char *argument )
 
 void do_shutdown( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     extern bool merc_down;
     DESCRIPTOR_DATA *d,*d_next;
@@ -2513,6 +2515,7 @@ void do_shutdown( CHAR_DATA *ch, char *argument )
 
 void do_forcesave(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *vch;
 
      for ( vch = char_list; vch != NULL; vch = vch->next )
@@ -2676,6 +2679,7 @@ void do_switch( CHAR_DATA *ch, char *argument )
 
 void do_return( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     bool found = FALSE;
 
     if ( ch->desc == NULL )
@@ -3531,6 +3535,7 @@ void do_noshout( CHAR_DATA *ch, char *argument )
 
 void do_peace( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *rch;
 
     for ( rch = ch->in_room->people; rch != NULL; rch = rch->next_in_room )
@@ -3652,6 +3657,7 @@ void do_allow( CHAR_DATA *ch, char *argument )
 
 void do_wizlock( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     extern bool wizlock;
     wizlock = !wizlock;
 
@@ -3667,6 +3673,7 @@ void do_wizlock( CHAR_DATA *ch, char *argument )
 
 void do_newlock( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     extern bool newlock;
     newlock = !newlock;
 
@@ -5458,6 +5465,7 @@ void do_cloak( CHAR_DATA *ch, char *argument )
 
 void do_holylight( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     if ( IS_NPC(ch) )
 	return;
 
@@ -5664,6 +5672,7 @@ void do_hpardon( CHAR_DATA *ch, char *argument )
 
 void do_pstat( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
    CHAR_DATA *victim;
    char buf[MAX_INPUT_LENGTH];
    DESCRIPTOR_DATA *d;
@@ -6233,6 +6242,7 @@ void do_itrans( CHAR_DATA *ch, char *argument )
 
 void do_component_update( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
   	component_update();
   	component_update();
   	component_update();

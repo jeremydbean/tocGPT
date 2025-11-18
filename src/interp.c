@@ -710,7 +710,8 @@ CMD_LIST *cmd_list_elem;
 
 
 int social_tab_sn_lookup(char *arg1, int trust) {
-int len;
+    UNUSED_PARAM(trust);
+    int len;
 int index1, index2;
 char index_char1,index_char2;
 SOCIAL_LIST *social_list_elem;
@@ -1179,6 +1180,7 @@ char *one_argument( char *argument, char *arg_first )
  */
 void do_commands( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     int cmd;
     int col;
@@ -1204,6 +1206,7 @@ void do_commands( CHAR_DATA *ch, char *argument )
 
 void do_wizhelp( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     int cmd;
     int col;

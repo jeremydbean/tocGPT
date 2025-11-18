@@ -2384,6 +2384,7 @@ void do_dns( CHAR_DATA *ch )
 
 void do_check_psi ( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
   int chance;
   int add;
 	int add2;
@@ -2607,6 +2608,7 @@ bool check_parse_name( char *name )
  */
 bool check_reconnect( DESCRIPTOR_DATA *d, char *name, bool fConn )
 {
+    UNUSED_PARAM(name);
     DESCRIPTOR_DATA *dch;
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
@@ -3632,7 +3634,11 @@ void config_prompt( CHAR_DATA *ch )
    return;
 }
 
-void do_outfit(CHAR_DATA *ch, char *argument) { send_to_char("Outfit command is not available.\n\r", ch); }
+void do_outfit(CHAR_DATA *ch, char *argument)
+{
+    UNUSED_PARAM(argument);
+    send_to_char("Outfit command is not available.\n\r", ch);
+}
 
 static CHAR_DATA *find_best_admin( void )
 {

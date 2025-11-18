@@ -806,6 +806,7 @@ void spell_burning_hands( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_call_lightning( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(vo);
     CHAR_DATA *vch;
     CHAR_DATA *vch_next;
     int dam;
@@ -854,6 +855,7 @@ void spell_call_lightning( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_calm( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(vo);
     CHAR_DATA *vch;
     int mlevel = 0;
     int count = 0;
@@ -921,6 +923,7 @@ void spell_calm( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_cancellation( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     bool found = FALSE;
 
@@ -1399,6 +1402,9 @@ void spell_colour_spray( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_continual_light( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
     OBJ_DATA *light;
 
     light = create_object( get_obj_index( OBJ_VNUM_LIGHT_BALL ), -1 );
@@ -1412,6 +1418,8 @@ void spell_continual_light( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_control_weather( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     if ( !str_cmp( target_name, "better" ) )
     {
        weather_info.change += dice( level / 3, 4 );
@@ -1435,6 +1443,8 @@ void spell_control_weather( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_create_food( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     OBJ_DATA *mushroom;
 
     mushroom = create_object( get_obj_index( OBJ_VNUM_MUSHROOM ), -1 );
@@ -1449,6 +1459,8 @@ void spell_create_food( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_create_spring( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     OBJ_DATA *spring;
 
     spring = create_object( get_obj_index( OBJ_VNUM_SPRING ), -1 );
@@ -1463,6 +1475,7 @@ void spell_create_spring( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_create_water( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     OBJ_DATA *obj = (OBJ_DATA *) vo;
     int water;
 
@@ -1504,6 +1517,7 @@ void spell_create_water( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_cure_blindness( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
 
     if ( !is_affected( victim, gsn_blindness ) )
@@ -1528,6 +1542,7 @@ void spell_cure_blindness( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_cure_critical( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     int heal;
 
@@ -1550,6 +1565,7 @@ void spell_cure_critical( int sn, int level, CHAR_DATA *ch, void *vo )
 /* RT added to cure plague */
 void spell_cure_disease( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
 
     if ( !is_affected( victim, gsn_plague ) )
@@ -1577,6 +1593,7 @@ void spell_cure_disease( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_cure_light( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     int heal;
 
@@ -1593,6 +1610,7 @@ void spell_cure_light( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_cure_poison( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
 
     if ( !is_affected( victim, gsn_poison ) )
@@ -1615,6 +1633,7 @@ void spell_cure_poison( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_cure_serious( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     int heal;
 
@@ -1842,6 +1861,8 @@ void spell_detect_magic( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_detect_poison( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     OBJ_DATA *obj = (OBJ_DATA *) vo;
 
     if ( obj->item_type == ITEM_DRINK_CON || obj->item_type == ITEM_FOOD )
@@ -1926,6 +1947,7 @@ void spell_dispel_good( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_dispel_magic( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     bool found = FALSE;
 
@@ -2089,6 +2111,7 @@ void spell_dispel_magic( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_earthquake( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(vo);
     CHAR_DATA *vch;
     CHAR_DATA *vch_next;
 
@@ -2121,6 +2144,7 @@ void spell_earthquake( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_enchant_item( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     OBJ_DATA *obj = (OBJ_DATA *) vo;
     AFFECT_DATA *paf, *del_paf;
     int result, fail, found, do_extract;
@@ -2650,6 +2674,8 @@ void spell_faerie_fire( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_faerie_fog( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     CHAR_DATA *ich;
 
     act( "$n conjures a cloud of purple smoke.", ch, NULL, NULL, TO_ROOM );
@@ -2770,6 +2796,8 @@ if(!IS_IMMORTAL(ch) )
 
 void spell_gate( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     CHAR_DATA *victim;
     bool gate_pet;
     char buf[MAX_STRING_LENGTH];
@@ -3035,6 +3063,8 @@ void spell_heat_metal( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_heal( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     int heal;
 
@@ -3057,6 +3087,7 @@ void spell_heal( int sn, int level, CHAR_DATA *ch, void *vo )
 /* RT really nasty high-level attack spell */
 void spell_holy_word(int sn, int level, CHAR_DATA *ch, void *vo)
 {
+    UNUSED_PARAM(vo);
     CHAR_DATA *vch;
     CHAR_DATA *vch_next;
     int dam;
@@ -3113,6 +3144,8 @@ void spell_holy_word(int sn, int level, CHAR_DATA *ch, void *vo)
 
 void spell_identify( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     OBJ_DATA *obj = (OBJ_DATA *) vo;
     char buf[MAX_STRING_LENGTH];
     AFFECT_DATA *paf;
@@ -3281,6 +3314,7 @@ void spell_infravision( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_invis( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(ch);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     AFFECT_DATA af;
 
@@ -3304,6 +3338,8 @@ void spell_invis( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_know_alignment( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     char *msg;
     int ap;
@@ -3351,6 +3387,8 @@ void spell_lightning_bolt( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_locate_object( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     char buf[MAX_INPUT_LENGTH];
     char buffer[4*MAX_STRING_LENGTH];
     OBJ_DATA *obj;
@@ -3459,6 +3497,8 @@ void spell_magic_missile( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_mana_convert( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     int vitalize;
     int counter;
 
@@ -3541,6 +3581,8 @@ void spell_mana_convert( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_mass_healing(int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     CHAR_DATA *gch;
     int heal_num, refresh_num;
 
@@ -3561,6 +3603,7 @@ void spell_mass_healing(int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_mass_invis( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(vo);
     AFFECT_DATA af;
     CHAR_DATA *gch;
 
@@ -3587,6 +3630,7 @@ void spell_mass_invis( int sn, int level, CHAR_DATA *ch, void *vo )
 /* added by Eclipse */
 void spell_mass_sanctuary( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(vo);
     AFFECT_DATA af;
     CHAR_DATA *gch;
 
@@ -3614,6 +3658,9 @@ void spell_mass_sanctuary( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_null( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
     send_to_char( "That's not a spell!\n\r", ch );
     return;
 }
@@ -3823,6 +3870,7 @@ void spell_divine_protection( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_refresh( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     victim->move = UMIN( victim->move + level, victim->max_move );
     if (victim->max_move == victim->move)
@@ -3838,6 +3886,7 @@ void spell_refresh( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_remove_curse( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     bool found = FALSE;
     OBJ_DATA *obj;
@@ -3890,7 +3939,10 @@ void spell_remove_curse( int sn, int level, CHAR_DATA *ch, void *vo )
 }
 void spell_restore_mana( int sn, int level, CHAR_DATA *ch, void *vo )
 {
-  CHAR_DATA *victim = (CHAR_DATA *) vo;
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(ch);
+    CHAR_DATA *victim = (CHAR_DATA *) vo;
   int vitalize;
 
   vitalize = dice(5,10);
@@ -4149,6 +4201,8 @@ void spell_stone_skin( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_summon( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     OBJ_INDEX_DATA *pObjIndex;
     CHAR_DATA *victim;
     OBJ_DATA *obj;
@@ -4244,6 +4298,7 @@ void spell_summon( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_teleport( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     ROOM_INDEX_DATA *pRoomIndex;
 
@@ -4287,6 +4342,8 @@ void spell_teleport( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_ventriloquate( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     char buf1[MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     char speaker[MAX_INPUT_LENGTH];
@@ -4347,6 +4404,9 @@ void spell_weaken( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_word_of_recall( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(ch);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     ROOM_INDEX_DATA *location;
 
@@ -4585,6 +4645,7 @@ void spell_frost_breath( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_gas_breath( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(vo);
     CHAR_DATA *vch;
     CHAR_DATA *vch_next;
     int dam;
@@ -4718,6 +4779,9 @@ void spell_icicle( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_waterfall( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
 
     send_to_char("Nothing happens.\n\r",ch);
     return;
@@ -4725,6 +4789,8 @@ void spell_waterfall( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_portal( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     OBJ_INDEX_DATA *pObjIndex;

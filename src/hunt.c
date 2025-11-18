@@ -400,6 +400,7 @@ int get_hunting_status( CHAR_DATA *hunter)
 
 void do_danger_sense( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
