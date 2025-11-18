@@ -2453,7 +2453,11 @@ void do_pose( CHAR_DATA *ch, char *argument )
     if ( IS_NPC(ch) )
 	return;
 
-    level = UMIN( ch->level, sizeof(pose_table) / sizeof(pose_table[0]) - 1 );
+    {
+        const int max_pose = (int)(sizeof(pose_table) / sizeof(pose_table[0]) - 1);
+
+        level = UMIN( ch->level, max_pose );
+    }
     pose  = number_range(0, level);
 
     act( pose_table[pose].message[2*ch->class+0], ch, NULL, NULL, TO_CHAR );
