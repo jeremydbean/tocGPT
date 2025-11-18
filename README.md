@@ -119,7 +119,7 @@ Run these commands from inside the cloned `tocGPT` folder. Windows checkouts can
      -v $(pwd)/log:/app/log \
      toc
    ```
-5. Run without host persistence (not recommended): drop the `-v` flags to use container-local storage only:
+6. Run without host persistence (not recommended): drop the `-v` flags to use container-local storage only:
    ```bash
    docker run --rm -it -p 9000:9000 toc
    ```
