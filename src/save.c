@@ -18,6 +18,9 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#if defined(unix) && defined(CHGRP_TO)
+#include <grp.h>
+#endif
 
 #if !defined(macintosh)
 extern  int     _filbuf         args( (FILE *) );
@@ -45,6 +48,34 @@ void	fread_char	args( ( CHAR_DATA *ch,  FILE *fp ) );
 void    fread_pet	args( ( CHAR_DATA *ch,  FILE *fp ) );
 void	fread_obj	args( ( CHAR_DATA *ch,  FILE *fp ) );
 
+#if defined(unix) && defined(CHGRP_TO)
+static bool can_chgrp      args( ( void ) );
+#endif
+
+
+#if defined(unix) && defined(CHGRP_TO)
+static bool can_chgrp( void )
+{
+    static int checked = 0;
+    static bool available = FALSE;
+
+    if (!checked)
+    {
+        checked = 1;
+        if (getgrnam(CHGRP_TO) != NULL)
+            available = TRUE;
+        else
+        {
+            sprintf(log_buf,
+                    "save_char_obj: configured CHGRP_TO group '%s' missing; skipping chgrp",
+                    CHGRP_TO);
+            log_string(log_buf);
+        }
+    }
+
+    return available;
+}
+#endif
 
 
 /*
@@ -65,7 +96,10 @@ void save_char_obj( CHAR_DATA *ch )
     ch->pcdata->ignore = str_dup(" ");
 
     if ( ch->desc != NULL && ch->desc->original != NULL )
-	ch = ch->desc->original;
+        ch = ch->desc->original;
+
+    ch->pcdata->has_saved = TRUE;
+    ch->pcdata->confirm_unsaved_quit = FALSE;
 
 #if defined(unix)
     /* create god log */
@@ -79,8 +113,8 @@ void save_char_obj( CHAR_DATA *ch )
 	    perror(strsave);
  	}
 
-	fprintf(fp,"Lev %2d Trust %2d  %s%s\n",
-	    ch->level, get_trust(ch), ch->name, ch->pcdata->title);
+        fprintf(fp,"Lev %2d Trust %2d  %s%s\n",
+            ch->level, get_trust(ch), ch->name, ch->pcdata->title);
 	fclose( fp );
 #ifdef CHGRP_TO
         sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
@@ -138,7 +172,10 @@ void save_char_obj( CHAR_DATA *ch )
     fclose( fp );
     /* move the file */
 #ifdef CHGRP_TO
-    sprintf(buf,"mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
+    if (can_chgrp())
+        sprintf(buf,"mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
+    else
+        sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
 #else
     sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
 #endif
@@ -177,6 +214,8 @@ void fwrite_char( CHAR_DATA *ch, FILE *fp )
     fprintf( fp, "Cla  %d\n",	ch->class		);
     fprintf( fp, "Gui  %d\n",	ch->pcdata->guild	);
     fprintf( fp, "Psionic  %d\n", ch->pcdata->psionic );
+    fprintf( fp, "PsiGrant %d\n", ch->pcdata->psionic_grant_pending ? 1 : 0 );
+    fprintf( fp, "PsiSpec %s~\n", ch->pcdata->psionic_grant_spec );
     fprintf( fp, "Cast %s\n",	get_castlename( ch->pcdata->castle) );
     fprintf( fp, "Levl %d\n",	ch->level		);
     if (ch->trust != 0)
@@ -204,11 +243,12 @@ void fwrite_char( CHAR_DATA *ch, FILE *fp )
     fprintf( fp, "NewPlat %ld\n",	ch->new_platinum	);
     fprintf( fp, "NewCopp %ld\n",	ch->new_copper		);
     fprintf( fp, "NewSilv %ld\n",	ch->new_silver		);
-    fprintf( fp, "Bank %d\n",	        ch->pcdata->bank	);
+    fprintf( fp, "BankCP %ld\n",	        ch->pcdata->bank	);
     if (ch->pcdata->dcount > 0)
 	fprintf( fp, "Dcount %ld\n",	ch->pcdata->dcount	);
     else
 	fprintf( fp, "Dcount %d\n", 0			);
+    fprintf( fp, "SavedOnce %d\n", ch->pcdata->has_saved ? 1 : 0 );
     fprintf( fp, "Corpses	%d\n",	ch->pcdata->corpses	);
     fprintf( fp, "PkRec %ld\n",ch->pcdata->pkills_received );
     fprintf( fp, "PkGiv %ld\n",ch->pcdata->pkills_given );
@@ -432,12 +472,13 @@ void fwrite_pet( CHAR_DATA *pet, FILE *fp)
     if (pet->act != pet->pIndexData->act)
 	fprintf(fp, "Act  %ld\n", pet->act);
     if (pet->affected_by != pet->pIndexData->affected_by)
-	fprintf(fp, "AfBy %d\n", pet->affected_by);
-     if (pet->affected_by != pet->pIndexData->affected_by2)
-	fprintf(fp, "AfBy %d\n", pet->affected_by2);
-   if (pet->comm != 0)
-	fprintf(fp, "Comm %ld\n", pet->comm);
-    fprintf(fp,"Pos  %d\n", pet->position = POS_FIGHTING ? POS_STANDING : pet->position);
+        fprintf(fp, "AfBy %d\n", pet->affected_by);
+    if (pet->affected_by2 != pet->pIndexData->affected_by2)
+        fprintf(fp, "AfBy2 %d\n", pet->affected_by2);
+    if (pet->comm != 0)
+        fprintf(fp, "Comm %ld\n", pet->comm);
+    fprintf(fp,"Pos  %d\n",
+            pet->position == POS_FIGHTING ? POS_STANDING : pet->position);
     if (pet->saving_throw != 0)
 	fprintf(fp, "Save %d\n", pet->saving_throw);
     if (pet->alignment != pet->pIndexData->alignment)
@@ -695,6 +736,7 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     ch->pcdata->confirm_pkill		= FALSE;
     ch->pcdata->guild			= GUILD_NONE;
     ch->pcdata->psionic                 = 0;
+    ch->pcdata->psionic_grant_pending   = FALSE;
     ch->pcdata->castle			= 0;
     ch->pcdata->bank			= 0;
     ch->pcdata->dcount			= 0;
@@ -708,6 +750,7 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     ch->pcdata->arrive			= str_dup( "" );
     ch->pcdata->depart			= str_dup( "" );
     ch->pcdata->title			= str_dup( "" );
+    ch->pcdata->psionic_grant_spec      = str_dup( "" );
     ch->pcdata->list_remorts            = str_dup( "" );
     ch->pcdata->num_remorts             = 0;
     for (stat =0; stat < MAX_STATS; stat++)
@@ -719,6 +762,8 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     ch->pcdata->last_level		= 0;
     ch->pcdata->condition[COND_THIRST]	= 48;
     ch->pcdata->condition[COND_FULL]	= 48;
+    ch->pcdata->has_saved		= FALSE;
+    ch->pcdata->confirm_unsaved_quit	= FALSE;
 
     for (i=0; i<MAX_ALIASES; i++)
     {
@@ -814,11 +859,14 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
 
     if (found && ch->version < 2)  /* need to add the new skills */
     {
-	group_add(ch,"rom basics",FALSE);
-	group_add(ch,class_table[ch->class].base_group,FALSE);
-	group_add(ch,class_table[ch->class].default_group,TRUE);
-	ch->pcdata->learned[gsn_recall] = 50;
+        group_add(ch,"rom basics",FALSE);
+        group_add(ch,class_table[ch->class].base_group,FALSE);
+        group_add(ch,class_table[ch->class].default_group,TRUE);
+        ch->pcdata->learned[gsn_recall] = 50;
     }
+
+    if (found && !ch->pcdata->has_saved)
+        ch->pcdata->has_saved = TRUE;
 
     return found;
 }
@@ -954,7 +1002,13 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 	case 'B':
 	    KEY( "Bamfin",	ch->pcdata->bamfin,	fread_string( fp ) );
 	    KEY( "Bamfout",	ch->pcdata->bamfout,	fread_string( fp ) );
-	    KEY( "Bank",	ch->pcdata->bank,	fread_number( fp ) );
+	    if ( !str_cmp( word, "Bank" ) )
+	    {
+	        ch->pcdata->bank = fread_long( fp ) * COPPER_PER_PLATINUM;
+	        fMatch = TRUE;
+	        break;
+	    }
+	    KEY( "BankCP",	ch->pcdata->bank,	fread_long( fp ) );
 	    KEY( "Bin",		ch->pcdata->bamfin,	fread_string( fp ) );
 	    KEY( "Bout",	ch->pcdata->bamfout,	fread_string( fp ) );
 	    break;
@@ -1124,6 +1178,8 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
             KEY( "Prompt",      ch->prompt,             fread_string( fp ) );
             KEY( "Prom",        ch->prompt,             fread_string( fp ) );
 	    KEY( "Psionic",     ch->pcdata->psionic,    fread_number( fp ) );
+            KEY( "PsiGrant",    ch->pcdata->psionic_grant_pending, fread_number( fp ) );
+            KEY( "PsiSpec",     ch->pcdata->psionic_grant_spec, fread_string( fp ) );
 	    break;
 
 	case 'Q':
@@ -1168,6 +1224,7 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 	case 'S':
 	    KEY( "SavingThrow",	ch->saving_throw,	fread_number( fp ) );
 	    KEY( "Save",	ch->saving_throw,	fread_number( fp ) );
+	    KEY( "SavedOnce",	ch->pcdata->has_saved,	fread_number( fp ) );
 	    KEY( "Scro",	ch->lines,		fread_number( fp ) );
 	    KEY( "Sex",		ch->sex,		fread_number( fp ) );
 	    KEY( "ShortDescr",	ch->short_descr,	fread_string( fp ) );
