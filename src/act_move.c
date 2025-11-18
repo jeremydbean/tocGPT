@@ -17,6 +17,7 @@
 #include <string.h>
 #include <strings.h> /* for bzero() */
 #include "merc.h"
+#include "interp.h"
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_look		);
@@ -109,7 +110,7 @@ ROOM_INDEX_DATA *get_random_room(CHAR_DATA *ch)
 }
 
 /* Mob is type M - Haiku */
-void do_mob_action(CHAR_DATA *mobile, CHAR_DATA *vict)
+static void do_mob_action(CHAR_DATA *mobile, CHAR_DATA *vict)
 {
     MOB_ACTION_DATA *action;
 
@@ -876,6 +877,7 @@ void move_char( CHAR_DATA *ch, int door, bool skip_special_check )
 
 void do_north( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_NORTH, FALSE );
     return;
 }
@@ -884,6 +886,7 @@ void do_north( CHAR_DATA *ch, char *argument )
 
 void do_east( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_EAST, FALSE );
     return;
 }
@@ -892,6 +895,7 @@ void do_east( CHAR_DATA *ch, char *argument )
 
 void do_south( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_SOUTH, FALSE );
     return;
 }
@@ -900,6 +904,7 @@ void do_south( CHAR_DATA *ch, char *argument )
 
 void do_west( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_WEST, FALSE );
     return;
 }
@@ -908,6 +913,7 @@ void do_west( CHAR_DATA *ch, char *argument )
 
 void do_up( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_UP, FALSE );
     return;
 }
@@ -916,30 +922,35 @@ void do_up( CHAR_DATA *ch, char *argument )
 
 void do_down( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_DOWN, FALSE );
     return;
 }
 
 void do_northeast( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_NORTHEAST, FALSE );
     return;
 }
 
 void do_northwest( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_NORTHWEST, FALSE );
     return;
 }
 
 void do_southeast( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_SOUTHEAST, FALSE );
     return;
 }
 
 void do_southwest( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_SOUTHWEST, FALSE );
     return;
 }
@@ -1785,6 +1796,7 @@ void do_pick( CHAR_DATA *ch, char *argument )
 
 void do_stand( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
 
     if(!IS_NPC(ch) && ch->pcdata->mounted)
     {
@@ -1842,6 +1854,7 @@ void do_stand( CHAR_DATA *ch, char *argument )
 
 void do_rest( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
 
     if(!IS_NPC(ch) && ch->pcdata->mounted)
     {
@@ -1889,6 +1902,7 @@ void do_rest( CHAR_DATA *ch, char *argument )
 
 void do_sit (CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     if(!IS_NPC(ch) && ch->pcdata->mounted)
     {
       send_to_char("You must dismount first.\n\r",ch);
@@ -1928,6 +1942,7 @@ void do_sit (CHAR_DATA *ch, char *argument )
 
 void do_sleep( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     int chance = 0;
 
     if(!IS_NPC(ch) && ch->pcdata->mounted)
@@ -2011,6 +2026,7 @@ void do_wake( CHAR_DATA *ch, char *argument )
 
 void do_sneak( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     AFFECT_DATA af;
     OBJ_DATA *obj;
     int iWear, chance;
@@ -2103,6 +2119,7 @@ void recheck_sneak( CHAR_DATA *ch)
 
 void do_hide( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     send_to_char( "You attempt to hide.\n\r", ch );
 
     if ( IS_AFFECTED(ch, AFF_HIDE) )
@@ -2126,6 +2143,7 @@ void do_hide( CHAR_DATA *ch, char *argument )
  */
 void do_visible( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     affect_strip ( ch, gsn_invis			);
     affect_strip ( ch, gsn_mass_invis			);
     affect_strip ( ch, gsn_sneak			);
@@ -2144,6 +2162,7 @@ void do_visible( CHAR_DATA *ch, char *argument )
 /*
 void do_recall( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     ROOM_INDEX_DATA *location;
@@ -2270,6 +2289,7 @@ void do_recall( CHAR_DATA *ch, char *argument )
 /* New recall function recoded by Rico 8/2/98 */
 void do_recall( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     ROOM_INDEX_DATA *location;
     int lose, skill, chance;
@@ -3561,6 +3581,7 @@ void do_ride( CHAR_DATA *ch, char *argument)
 
 void do_dismount(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *mount;
 
@@ -3734,6 +3755,7 @@ void do_riding(CHAR_DATA *ch, int door, bool skip_special_check)
 
 void do_stealth( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     AFFECT_DATA af;
     OBJ_DATA *obj;
     int iWear, chance;
@@ -3802,6 +3824,7 @@ void do_stealth( CHAR_DATA *ch, char *argument )
 
 void do_levitate( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     AFFECT_DATA af;
 
     if ( IS_AFFECTED(ch, AFF_FLYING) )

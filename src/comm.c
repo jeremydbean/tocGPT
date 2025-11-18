@@ -40,6 +40,15 @@
 #include <sys/syscall.h>
 
 #include "merc.h"
+#include "interp.h"
+
+static void fix_sex(CHAR_DATA *ch);
+static void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
+              const void *arg2, int type, int min_pos );
+static char *swedish_speak( const char *str );
+static bool str_prefix_c( const char *astr, const char *bstr );
+static bool str_infix_c( const char *astr, const char *bstr );
+static char *str_replace_c( char *astr, char *bstr, char *cstr );
 
 #define WNOHANG 1
 #define WEB_ADMIN_QUEUE "../webadmin.queue"
@@ -452,7 +461,7 @@ int main( int argc, char **argv )
 
 
 #if defined(unix)
-int init_socket( int port )
+int init_socket( int listen_port )
 {
     static struct sockaddr_in sa_zero;
     struct sockaddr_in sa;
@@ -493,7 +502,7 @@ int init_socket( int port )
 
     sa              = sa_zero;
     sa.sin_family   = AF_INET;
-    sa.sin_port     = htons( port );
+    sa.sin_port     = htons( listen_port );
 
     if ( bind( fd, (struct sockaddr *) &sa, sizeof(sa) ) < 0 )
     {
@@ -683,7 +692,7 @@ void game_loop_mac_msdos( void )
 
 
 #if defined(unix)
-void game_loop_unix( int control )
+void game_loop_unix( int control_fd )
 {
     static struct timeval null_time;
     struct timeval last_time;
@@ -720,8 +729,8 @@ void game_loop_unix( int control )
 	FD_ZERO( &in_set  );
 	FD_ZERO( &out_set );
 	FD_ZERO( &exc_set );
-	FD_SET( control, &in_set );
-	maxdesc = control;
+        FD_SET( control_fd, &in_set );
+        maxdesc = control_fd;
 	for ( d = descriptor_list; d != NULL; d = d->next )
 	{
 	    maxdesc = UMAX( maxdesc, d->descriptor );
@@ -744,8 +753,8 @@ void game_loop_unix( int control )
 	/*
 	 * New connection?
 	 */
-	if ( FD_ISSET( control, &in_set ) )
-	    new_descriptor( control );
+        if ( FD_ISSET( control_fd, &in_set ) )
+            new_descriptor( control_fd );
 
 	/*
 	 * Kick out the freaky folks.
@@ -910,7 +919,7 @@ void make_descriptor( DESCRIPTOR_DATA *dnew, int desc )
 }
 
 #if defined(unix)
-void new_descriptor( int control )
+void new_descriptor( int control_fd )
 {
     char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
@@ -922,8 +931,8 @@ void new_descriptor( int control )
     socklen_t size;
 
     size = sizeof(sock);
-    getsockname( control, (struct sockaddr *) &sock, &size );
-    if ( ( desc = accept( control, (struct sockaddr *) &sock, &size) ) < 0 )
+    getsockname( control_fd, (struct sockaddr *) &sock, &size );
+    if ( ( desc = accept( control_fd, (struct sockaddr *) &sock, &size) ) < 0 )
     {
 	perror( "New_descriptor: accept" );
 	return;
@@ -1619,7 +1628,7 @@ bool write_to_descriptor( int desc, char *txt, int length )
  */
 void nanny( DESCRIPTOR_DATA *d, char *argument )
 {
-    DESCRIPTOR_DATA *d_old, *d_next;
+    DESCRIPTOR_DATA *d_old, *d_next_local;
     DESCRIPTOR_DATA *dch;
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
@@ -1851,9 +1860,9 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	switch( *argument )
 	{
 	case 'y' : case 'Y':
-	    for ( d_old = descriptor_list; d_old != NULL; d_old = d_next )
-	    {
-		d_next = d_old->next;
+            for ( d_old = descriptor_list; d_old != NULL; d_old = d_next_local )
+            {
+                d_next_local = d_old->next;
 		if (d_old == d || d_old->character == NULL)
 		    continue;
 
@@ -2354,9 +2363,10 @@ case CON_GET_ALIGNMENT:
    just search for the word DNS in this file to find
    the rest of the code */
 
-void do_dns( CHAR_DATA *ch )
+void do_dns( CHAR_DATA *ch, char *argument )
 {
     extern bool dns;
+    UNUSED_PARAM(argument);
 
     if(IS_NPC(ch))
         return;
@@ -2384,6 +2394,7 @@ void do_dns( CHAR_DATA *ch )
 
 void do_check_psi ( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
   int chance;
   int add;
 	int add2;
@@ -2607,6 +2618,7 @@ bool check_parse_name( char *name )
  */
 bool check_reconnect( DESCRIPTOR_DATA *d, char *name, bool fConn )
 {
+    UNUSED_PARAM(name);
     DESCRIPTOR_DATA *dch;
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
@@ -2896,21 +2908,21 @@ void show_string(struct descriptor_data *d, char *input)
 
 
 /* quick sex fixer */
-void fix_sex(CHAR_DATA *ch)
+static void __attribute__((unused)) fix_sex(CHAR_DATA *ch)
 {
     if (ch->sex < 0 || ch->sex > 2)
 	ch->sex = IS_NPC(ch) ? 0 : ch->pcdata->true_sex;
 }
 
 void act (const char *format, CHAR_DATA *ch, const void *arg1, const void *arg2,
-	  int type)
+          int type)
 {
     /* to be compatible with older code */
     act_new(format,ch,arg1,arg2,type,POS_RESTING);
 }
 
 void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
-	      const void *arg2, int type, int min_pos)
+              const void *arg2, int type, int min_pos)
 {
     static char * const he_she  [] = { "it",  "he",  "she" };
     static char * const him_her [] = { "it",  "him", "her" };
@@ -2920,9 +2932,9 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
     buf[0] = '0';
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
-    CHAR_DATA *vch = (CHAR_DATA *) arg2;
-    OBJ_DATA *obj1 = (OBJ_DATA  *) arg1;
-    OBJ_DATA *obj2 = (OBJ_DATA  *) arg2;
+    const CHAR_DATA *vch = arg2;
+    const OBJ_DATA *obj1 = arg1;
+    const OBJ_DATA *obj2 = arg2;
     const char *str;
     const char *i;
     char *point;
@@ -2977,22 +2989,22 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 	    }
 	    ++str;
 
-	    if ( arg2 == NULL && *str >= 'A' && *str <= 'Z' )
-	    {
-		bug( "Act: missing arg2 for code %d.", *str );
-		i = " <@@@> ";
-	    }
-	    else
-	    {
-		switch ( *str )
-		{
-		default:  bug( "Act: bad code %d.", *str );
-			  i = " <@@@> ";                                break;
-		/* Thx alex for 't' idea */
-		case 't': i = (char *) arg1;                            break;
-		case 'T': i = (char *) arg2;                            break;
-		case 'n': i = PERS( ch,  to  );                         break;
-		case 'N': i = PERS( vch, to  );                         break;
+            if ( arg2 == NULL && *str >= 'A' && *str <= 'Z' )
+            {
+                bug( "Act: missing arg2 for code %d.", *str );
+                i = " <@@@> ";
+            }
+            else
+            {
+                switch ( *str )
+                {
+                default:  bug( "Act: bad code %d.", *str );
+                          i = " <@@@> ";                                break;
+                /* Thx alex for 't' idea */
+                case 't': i = (const char *) arg1;                      break;
+                case 'T': i = (const char *) arg2;                      break;
+                case 'n': i = PERS( ch,  to  );                         break;
+                case 'N': i = PERS( vch, to  );                         break;
 		case 'e': i = he_she  [URANGE(0, ch  ->sex, 2)];        break;
 		case 'E': i = he_she  [URANGE(0, vch ->sex, 2)];        break;
 		case 'm': i = him_her [URANGE(0, ch  ->sex, 2)];        break;
@@ -3000,30 +3012,34 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 		case 's': i = his_her [URANGE(0, ch  ->sex, 2)];        break;
 		case 'S': i = his_her [URANGE(0, vch ->sex, 2)];        break;
 
-		case 'p':
-		    i = can_see_obj( to, obj1 )
-			    ? obj1->short_descr
-			    : "something";
-		    break;
+                case 'p':
+                    i = can_see_obj( to, obj1 )
+                            ? obj1->short_descr
+                            : "something";
+                    break;
 
-		case 'P':
-		    i = can_see_obj( to, obj2 )
-			    ? obj2->short_descr
-			    : "something";
-		    break;
+                case 'P':
+                    i = can_see_obj( to, obj2 )
+                            ? obj2->short_descr
+                            : "something";
+                    break;
 
-		case 'd':
-		    if ( arg2 == NULL || ((char *) arg2)[0] == '\0' )
-		    {
-			i = "door";
-		    }
-		    else
-		    {
-			one_argument( (char *) arg2, fname );
-			i = fname;
-		    }
-		    break;
-		}
+                case 'd':
+                    if ( arg2 == NULL || ((const char *) arg2)[0] == '\0' )
+                    {
+                        i = "door";
+                    }
+                    else
+                    {
+                        char arg2_copy[MAX_INPUT_LENGTH];
+
+                        strncpy(arg2_copy, (const char *) arg2, sizeof(arg2_copy) - 1);
+                        arg2_copy[sizeof(arg2_copy) - 1] = '\0';
+                        one_argument( arg2_copy, fname );
+                        i = fname;
+                    }
+                    break;
+                }
 	    }
 
 	    ++str;
@@ -3047,8 +3063,8 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 }
 
 /* for use with public chat channels */
-void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
-	      const void *arg2, int type, int min_pos)
+static void __attribute__((unused)) act_public( const char *format, CHAR_DATA *ch, const void *arg1,
+              const void *arg2, int type, int min_pos)
 {
     static char * const he_she  [] = { "it",  "he",  "she" };
     static char * const him_her [] = { "it",  "him", "her" };
@@ -3058,9 +3074,9 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
     buf[0] = '0';
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
-    CHAR_DATA *vch = (CHAR_DATA *) arg2;
-    OBJ_DATA *obj1 = (OBJ_DATA  *) arg1;
-    OBJ_DATA *obj2 = (OBJ_DATA  *) arg2;
+    const CHAR_DATA *vch = arg2;
+    const OBJ_DATA *obj1 = arg1;
+    const OBJ_DATA *obj2 = arg2;
     const char *str;
     const char *i;
     char *point;
@@ -3154,10 +3170,10 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
 		default:  bug( "Act: bad code %d.", *str );
 			  i = " <@@@> ";                                break;
 		/* Thx alex for 't' idea */
-		case 't': i = (char *) arg1;                            break;
-		case 'T': i = (char *) arg2;                            break;
-		case 'n': i = PERS( ch,  to  );                         break;
-		case 'N': i = PERS( vch, to  );                         break;
+                case 't': i = (const char *) arg1;                      break;
+                case 'T': i = (const char *) arg2;                      break;
+                case 'n': i = PERS( ch,  to  );                         break;
+                case 'N': i = PERS( vch, to  );                         break;
 		case 'e': i = he_she  [URANGE(0, ch  ->sex, 2)];        break;
 		case 'E': i = he_she  [URANGE(0, vch ->sex, 2)];        break;
 		case 'm': i = him_her [URANGE(0, ch  ->sex, 2)];        break;
@@ -3165,30 +3181,34 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
 		case 's': i = his_her [URANGE(0, ch  ->sex, 2)];        break;
 		case 'S': i = his_her [URANGE(0, vch ->sex, 2)];        break;
 
-		case 'p':
-		    i = can_see_obj( to, obj1 )
-			    ? obj1->short_descr
+                case 'p':
+                    i = can_see_obj( to, obj1 )
+                            ? obj1->short_descr
 			    : "something";
 		    break;
 
-		case 'P':
-		    i = can_see_obj( to, obj2 )
-			    ? obj2->short_descr
-			    : "something";
-		    break;
+                case 'P':
+                    i = can_see_obj( to, obj2 )
+                            ? obj2->short_descr
+                            : "something";
+                    break;
 
-		case 'd':
-		    if ( arg2 == NULL || ((char *) arg2)[0] == '\0' )
-		    {
-			i = "door";
-		    }
-		    else
-		    {
-			one_argument( (char *) arg2, fname );
-			i = fname;
-		    }
-		    break;
-		}
+                case 'd':
+                    if ( arg2 == NULL || ((const char *) arg2)[0] == '\0' )
+                    {
+                        i = "door";
+                    }
+                    else
+                    {
+                        char arg2_copy[MAX_INPUT_LENGTH];
+
+                        strncpy(arg2_copy, (const char *) arg2, sizeof(arg2_copy) - 1);
+                        arg2_copy[sizeof(arg2_copy) - 1] = '\0';
+                        one_argument( arg2_copy, fname );
+                        i = fname;
+                    }
+                    break;
+                }
 	    }
 
 	    ++str;
@@ -3263,7 +3283,7 @@ char *drunk_speak( const char *str )
 
 
 
-char *swedish_speak( const char *str )
+static char *swedish_speak( const char *str )
 {
     static char buf[512];
     int iSyl;
@@ -3409,7 +3429,7 @@ int gettimeofday( struct timeval *tp, void *tzp )
 }
 #endif
 
-bool str_prefix_c( const char *astr, const char *bstr )
+static bool str_prefix_c( const char *astr, const char *bstr )
 {
     if ( astr == NULL ) {
         bug( "Strn_cmp: null astr.", 0 );
@@ -3430,7 +3450,7 @@ bool str_prefix_c( const char *astr, const char *bstr )
 }
 
 
-bool str_infix_c( const char *astr, const char *bstr )
+static bool str_infix_c( const char *astr, const char *bstr )
 {
     int sstr1;
     int sstr2;
@@ -3451,7 +3471,7 @@ bool str_infix_c( const char *astr, const char *bstr )
     return TRUE;
 }
 
-char *str_replace_c( char *astr, char *bstr, char *cstr )
+static char *str_replace_c( char *astr, char *bstr, char *cstr )
 {
     char newstr[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
@@ -3510,17 +3530,6 @@ void config_prompt( CHAR_DATA *ch )
     char buf[MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
-    size_t used = 0;
-
-#define APPEND_TO_PROMPT(...) do { \
-    int _written = snprintf(buf + used, sizeof(buf) - used, __VA_ARGS__); \
-    if (_written < 0) _written = 0; \
-    if ((size_t)_written >= sizeof(buf) - used) { \
-        used = sizeof(buf) - 1; \
-    } else { \
-        used += (size_t)_written; \
-    } \
-} while (0)
 
     buf[0] = '\0';
     buf2[0] = '\0';
@@ -3640,12 +3649,14 @@ void config_prompt( CHAR_DATA *ch )
    else
         send_to_char( buf2, ch );
 
-#undef APPEND_TO_PROMPT
-
    return;
 }
 
-void do_outfit(CHAR_DATA *ch, char *argument) { send_to_char("Outfit command is not available.\n\r", ch); }
+void do_outfit(CHAR_DATA *ch, char *argument)
+{
+    UNUSED_PARAM(argument);
+    send_to_char("Outfit command is not available.\n\r", ch);
+}
 
 static CHAR_DATA *find_best_admin( void )
 {
@@ -3702,6 +3713,7 @@ static void handle_web_admin_command( const char *line )
     {
         CHAR_DATA *admin = find_best_admin();
         const char *command_text = line + 8;
+        char command_buf[MAX_INPUT_LENGTH];
 
         if ( admin == NULL || admin->desc == NULL )
         {
@@ -3709,10 +3721,13 @@ static void handle_web_admin_command( const char *line )
             return;
         }
 
+        strncpy( command_buf, command_text, sizeof(command_buf) - 1 );
+        command_buf[sizeof(command_buf) - 1] = '\0';
+
         sprintf( log_buf_local, "Web admin executing command via %s: %s",
             admin->name, command_text );
         log_string( log_buf_local );
-        interpret( admin, (char *) command_text );
+        interpret( admin, command_buf );
         return;
     }
 
