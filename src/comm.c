@@ -1125,7 +1125,10 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 
             ch->desc = NULL;
             if ( !IS_NPC(ch) )
-                save_char_obj( ch );
+            {
+                if ( ch->pcdata->has_saved || ch->level > 3 )
+                    save_char_obj( ch );
+            }
         }
         else
         {

@@ -245,10 +245,16 @@ void advance_level( CHAR_DATA *ch, bool is_advance )
 
 
     sprintf( buf, "the %s",
-	title_table [ch->class] [ch->level] [ch->sex == SEX_FEMALE ? 1 : 0] );
+        title_table [ch->class] [ch->level] [ch->sex == SEX_FEMALE ? 1 : 0] );
     set_title( ch, buf );
 
     guild = ch->pcdata->guild;
+
+    if (ch->level == 1)
+    {
+      send_to_char("\n\r*** Congratulations on reaching level 1! You can now SAVE your character with the 'save' command. ***\n\r", ch);
+      send_to_char("Type 'save' anytime to protect your progress (see 'help save' for details).\n\r\n\r", ch);
+    }
 
     if(ch->level == 5)
     {

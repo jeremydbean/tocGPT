@@ -2554,6 +2554,21 @@ void do_quit( CHAR_DATA *ch, char *argument )
       ch->pcdata->mounted = FALSE;
     }
 
+    if ( ch->level >= 1 && !ch->pcdata->has_saved )
+    {
+        if ( !ch->pcdata->confirm_unsaved_quit )
+        {
+            send_to_char(
+                "\n\rYou haven't saved your character yet. Use 'save' now (see 'help save') to keep your progress.\n\r"
+                "Quitting now will delete your character. Type QUIT again to confirm or SAVE to preserve your adventurer.\n\r",
+                ch );
+            ch->pcdata->confirm_unsaved_quit = TRUE;
+            return;
+        }
+
+        send_to_char("Quitting without saving. This will delete your character.\n\r", ch);
+    }
+
     send_to_char("Come back soon now, ya hear!\n\r",ch);
     if(!IS_SET(ch->act, PLR_WIZINVIS) )
        act( "$n has left the game.", ch, NULL, NULL, TO_ROOM );
@@ -2567,9 +2582,8 @@ void do_quit( CHAR_DATA *ch, char *argument )
     /*
      * After extract_char the ch is no longer valid!
      */
-    /* Save everyone who is at least level 1 so fledgling characters keep progress. */
-    if ( ch->level >= 1 )
-      save_char_obj( ch );
+    if ( ch->pcdata->has_saved && ch->level >= 1 )
+        save_char_obj( ch );
     id = ch->pcdata->id;
     d = ch->desc;
     extract_char( ch, TRUE );

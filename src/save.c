@@ -96,7 +96,10 @@ void save_char_obj( CHAR_DATA *ch )
     ch->pcdata->ignore = str_dup(" ");
 
     if ( ch->desc != NULL && ch->desc->original != NULL )
-	ch = ch->desc->original;
+        ch = ch->desc->original;
+
+    ch->pcdata->has_saved = TRUE;
+    ch->pcdata->confirm_unsaved_quit = FALSE;
 
 #if defined(unix)
     /* create god log */
@@ -251,6 +254,7 @@ void fwrite_char( CHAR_DATA *ch, FILE *fp )
 	fprintf( fp, "Dcount %ld\n",	ch->pcdata->dcount	);
     else
 	fprintf( fp, "Dcount %d\n", 0			);
+    fprintf( fp, "SavedOnce %d\n", ch->pcdata->has_saved ? 1 : 0 );
     fprintf( fp, "Corpses	%d\n",	ch->pcdata->corpses	);
     fprintf( fp, "PkRec %ld\n",ch->pcdata->pkills_received );
     fprintf( fp, "PkGiv %ld\n",ch->pcdata->pkills_given );
@@ -764,6 +768,8 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     ch->pcdata->last_level		= 0;
     ch->pcdata->condition[COND_THIRST]	= 48;
     ch->pcdata->condition[COND_FULL]	= 48;
+    ch->pcdata->has_saved		= FALSE;
+    ch->pcdata->confirm_unsaved_quit	= FALSE;
 
     for (i=0; i<MAX_ALIASES; i++)
     {
@@ -859,11 +865,14 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
 
     if (found && ch->version < 2)  /* need to add the new skills */
     {
-	group_add(ch,"rom basics",FALSE);
-	group_add(ch,class_table[ch->class].base_group,FALSE);
-	group_add(ch,class_table[ch->class].default_group,TRUE);
-	ch->pcdata->learned[gsn_recall] = 50;
+        group_add(ch,"rom basics",FALSE);
+        group_add(ch,class_table[ch->class].base_group,FALSE);
+        group_add(ch,class_table[ch->class].default_group,TRUE);
+        ch->pcdata->learned[gsn_recall] = 50;
     }
+
+    if (found && !ch->pcdata->has_saved)
+        ch->pcdata->has_saved = TRUE;
 
     return found;
 }
@@ -1215,6 +1224,7 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 	case 'S':
 	    KEY( "SavingThrow",	ch->saving_throw,	fread_number( fp ) );
 	    KEY( "Save",	ch->saving_throw,	fread_number( fp ) );
+	    KEY( "SavedOnce",	ch->pcdata->has_saved,	fread_number( fp ) );
 	    KEY( "Scro",	ch->lines,		fread_number( fp ) );
 	    KEY( "Sex",		ch->sex,		fread_number( fp ) );
 	    KEY( "ShortDescr",	ch->short_descr,	fread_string( fp ) );
