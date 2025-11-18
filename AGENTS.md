@@ -47,3 +47,4 @@
 - Bit-name helpers now take `long` flag parameters to match the character flag storage, eliminating long-to-int conversion warnings in wizstat outputs and database dumps when building with the full `-Wconversion` set.
 - Additional conversion cleanup in `act_wiz.c`: clamp trust, stat, resource, and object edits through a shared `clamp_sh_int` helper so wizard-set commands assign within `sh_int` bounds without triggering `-Wconversion`.
 - Network I/O pass (`src/comm.c`): validate ports before `htons`, widen descriptor handles to `int`, compute buffer lengths with size-aware casts, and convert string helper lengths to unsigned-safe sizes so the strict warning set builds cleanly under the current flags.
+- Began converting loader paths in `src/db.c` to clamp integers before storing in `sh_int` fields, adding reusable `fread_sh_int`/clamp helpers, casting time initialization, and tightening string readers to avoid `getc` truncation and size_t-to-int warnings.
