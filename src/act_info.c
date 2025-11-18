@@ -3044,9 +3044,10 @@ void do_practice(CHAR_DATA *ch, char *argument)
         else
         {
             ch->practice--;
-            ch->pcdata->learned[sn] +=
+            ch->pcdata->learned[sn] = (sh_int)(
+                ch->pcdata->learned[sn] +
                 int_app[get_curr_stat(ch,STAT_INT)].learn /
-                skill_table[sn].rating[ch->class];
+                skill_table[sn].rating[ch->class]);
             if ( ch->pcdata->learned[sn] < adept )
             {
                 act( "You practice $T.",
@@ -3056,7 +3057,7 @@ void do_practice(CHAR_DATA *ch, char *argument)
             }
             else
             {
-                ch->pcdata->learned[sn] = adept;
+                ch->pcdata->learned[sn] = (sh_int)adept;
 		act( "You are now learned at $T.",
                     ch, NULL, skill_table[sn].name, TO_CHAR );
                 act( "$n is now learned at $T.",
@@ -3100,7 +3101,7 @@ void do_wimpy( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    ch->wimpy	= wimpy;
+    ch->wimpy   = (sh_int)wimpy;
     snprintf(buf, sizeof(buf), "Wimpy set to %d hit points.\n\r", wimpy );
     send_to_char( buf, ch );
     return;
@@ -4324,9 +4325,9 @@ void do_remort( CHAR_DATA *ch, char *arg)
    ch->pcdata->num_remorts += 1;
    free_string(ch->pcdata->list_remorts);
    ch->pcdata->list_remorts = str_dup(saveclass);
-   ch->pcdata->perm_hit  = (200) * UMAX(1,ch->pcdata->num_remorts);
-   ch->pcdata->perm_mana = (200) * UMAX(1,ch->pcdata->num_remorts);
-   ch->pcdata->perm_move = (200) * UMAX(1,ch->pcdata->num_remorts);
+    ch->pcdata->perm_hit  = (sh_int)(200 * UMAX(1,ch->pcdata->num_remorts));
+    ch->pcdata->perm_mana = (sh_int)(200 * UMAX(1,ch->pcdata->num_remorts));
+    ch->pcdata->perm_move = (sh_int)(200 * UMAX(1,ch->pcdata->num_remorts));
    ch->pcdata->psionic = 0;
    ch->pcdata->pk_state = 0;
    if (ch->pcdata->num_remorts >= 1)
@@ -4338,13 +4339,13 @@ void do_remort( CHAR_DATA *ch, char *arg)
    ch->max_hit  = ch->pcdata->perm_hit;
    ch->max_mana = ch->pcdata->perm_mana;
    ch->max_move = ch->pcdata->perm_move;
-   ch->practice = 15 + (2 * UMAX(1,ch->pcdata->num_remorts));
-   ch->train    = 8 + (2 * UMAX(1,ch->pcdata->num_remorts));
+    ch->practice = (sh_int)(15 + (2 * UMAX(1,ch->pcdata->num_remorts)));
+    ch->train    = (sh_int)(8 + (2 * UMAX(1,ch->pcdata->num_remorts)));
    ch->hit      = ch->max_hit;
    ch->mana     = ch->max_mana;
    ch->move     = ch->max_move;
-   ch->class    = requested_class;
-   ch->race     = requested_race;
+    ch->class    = (sh_int)requested_class;
+    ch->race     = (sh_int)requested_race;
    if (ch->class == CLASS_MONK)
      ch->pcdata->guild = GUILD_MONK;
    else
@@ -4352,7 +4353,7 @@ void do_remort( CHAR_DATA *ch, char *arg)
        ch->pcdata->guild = GUILD_NECRO;
      else
        if (requested_guild >= 0)
-           ch->pcdata->guild = requested_guild;
+            ch->pcdata->guild = (sh_int)requested_guild;
        else
            ch->pcdata->guild = GUILD_NONE;
    ch->size = pc_race_table[ch->race].size;

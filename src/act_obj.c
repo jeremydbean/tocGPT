@@ -1224,7 +1224,7 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 void do_convert(CHAR_DATA *ch, char *argument)
 {
     UNUSED_PARAM(argument);
-    int temp, left;
+    long temp, left;
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
 	send_to_char("Your not in the bank!\n\r",ch);
