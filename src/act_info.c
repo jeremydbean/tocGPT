@@ -556,6 +556,8 @@ void do_scroll(CHAR_DATA *ch, char *argument)
 /* RT does socials */
 void do_socials(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     char buf[MAX_STRING_LENGTH];
     int iSocial;
     int col;
@@ -581,36 +583,50 @@ void do_socials(CHAR_DATA *ch, char *argument)
 
 void do_news(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     do_help(ch,"news");
 }
 
 void do_motd(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     do_help(ch,"motd");
 }
 
 void do_imotd(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     do_help(ch,"imotd");
 }
 
 void do_rules(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     do_help(ch,"rules");
 }
 
 void do_story(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     do_help(ch,"story");
 }
 
 void do_changes(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     do_help(ch,"changes");
 }
 
 void do_wizlist(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     do_help(ch,"wizlist");
 }
 
@@ -619,6 +635,8 @@ void do_wizlist(CHAR_DATA *ch, char *argument)
 
 void do_autolist(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     /* lists most player flags */
     if (IS_NPC(ch))
       return;
@@ -692,8 +710,10 @@ void do_autolist(CHAR_DATA *ch, char *argument)
 
 void do_autoassist(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
-      return;
+        return;
 
     if (IS_SET(ch->act,PLR_AUTOASSIST))
     {
@@ -709,8 +729,10 @@ void do_autoassist(CHAR_DATA *ch, char *argument)
 
 void do_autoexit(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
-      return;
+        return;
 
     if (IS_SET(ch->act,PLR_AUTOEXIT))
     {
@@ -726,8 +748,10 @@ void do_autoexit(CHAR_DATA *ch, char *argument)
 
 void do_autogold(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
-      return;
+        return;
 
     if (IS_SET(ch->act,PLR_AUTOGOLD))
     {
@@ -743,8 +767,10 @@ void do_autogold(CHAR_DATA *ch, char *argument)
 
 void do_autoloot(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
-      return;
+        return;
 
     if (IS_SET(ch->act,PLR_AUTOLOOT))
     {
@@ -760,8 +786,10 @@ void do_autoloot(CHAR_DATA *ch, char *argument)
 
 void do_autosac(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
-      return;
+        return;
 
     if (IS_SET(ch->act,PLR_AUTOSAC))
     {
@@ -777,6 +805,8 @@ void do_autosac(CHAR_DATA *ch, char *argument)
 
 void do_autosplit(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
       return;
 
@@ -794,6 +824,8 @@ void do_autosplit(CHAR_DATA *ch, char *argument)
 
 void do_brief(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_SET(ch->comm,COMM_BRIEF))
     {
       send_to_char("Full descriptions activated.\n\r",ch);
@@ -808,6 +840,8 @@ void do_brief(CHAR_DATA *ch, char *argument)
 
 void do_compact(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_SET(ch->comm,COMM_COMPACT))
     {
       send_to_char("Compact mode removed.\n\r",ch);
@@ -860,6 +894,8 @@ void do_prompt(CHAR_DATA *ch, char *argument)
 
 void do_old_prompt(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_SET(ch->comm,COMM_PROMPT))
     {
       send_to_char("You will no longer see prompts.\n\r",ch);
@@ -888,6 +924,8 @@ void do_combine(CHAR_DATA *ch, char *argument)
 */
 void do_noloot(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
       return;
 
@@ -905,6 +943,8 @@ void do_noloot(CHAR_DATA *ch, char *argument)
 
 void do_damagenumbers(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
       return;
 
@@ -922,6 +962,8 @@ void do_damagenumbers(CHAR_DATA *ch, char *argument)
 
 void do_nofollow(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
       return;
 
@@ -940,6 +982,8 @@ void do_nofollow(CHAR_DATA *ch, char *argument)
 
 void do_nosummon(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
     {
       if (IS_SET(ch->imm_flags,IMM_SUMMON))
@@ -1085,6 +1129,8 @@ void do_exits( CHAR_DATA *ch, char *argument )
 
 void do_worth( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     char buf[MAX_STRING_LENGTH];
 
     if (IS_NPC(ch) || (IS_IMMORTAL(ch)))
@@ -1103,6 +1149,8 @@ void do_worth( CHAR_DATA *ch, char *argument )
 
 void do_score( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     char buf[MAX_STRING_LENGTH];
     char kader[MAX_STRING_LENGTH];
     int i = 0;
@@ -1372,6 +1420,8 @@ void do_score( CHAR_DATA *ch, char *argument )
 
 void do_attribute( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     char buf[MAX_STRING_LENGTH];
 
     snprintf(buf, sizeof(buf),
@@ -1393,6 +1443,8 @@ void do_attribute( CHAR_DATA *ch, char *argument )
 
 void do_affect( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
+
     char buf[MAX_STRING_LENGTH];
     AFFECT_DATA *paf;
     int count;
@@ -1444,6 +1496,8 @@ void do_affect( CHAR_DATA *ch, char *argument)
 
 void do_afk( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     if (IS_NPC(ch))
     return;
 
@@ -1476,6 +1530,8 @@ char *	const	month_name	[] =
 
 void do_time( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     extern char str_boot_time[];
     char buf[MAX_STRING_LENGTH];
     char *suf;
@@ -1525,6 +1581,8 @@ void do_time( CHAR_DATA *ch, char *argument )
 
 void do_weather( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     char buf[MAX_STRING_LENGTH];
 
     static char * const sky_look[4] =
@@ -1957,6 +2015,8 @@ void do_who( CHAR_DATA *ch, char *argument )
 
 void do_count ( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     int count;
     DESCRIPTOR_DATA *d;
     char buf[MAX_STRING_LENGTH];
@@ -1981,6 +2041,8 @@ void do_count ( CHAR_DATA *ch, char *argument )
 
 void do_inventory( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     send_to_char( "You are carrying:\n\r", ch );
     show_list_to_char( ch->carrying, ch, TRUE, TRUE );
     return;
@@ -1990,6 +2052,8 @@ void do_inventory( CHAR_DATA *ch, char *argument )
 
 void do_equipment( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     OBJ_DATA *obj;
     int iWear;
     bool found;
@@ -2132,6 +2196,8 @@ void do_compare( CHAR_DATA *ch, char *argument )
 
 void do_credits( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     do_help( ch, "diku" );
     return;
 }
@@ -2619,6 +2685,8 @@ and either a $t or a $T where you want the direction placed.\n\r", ch );
 
 void do_report( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
+
     char buf[MAX_INPUT_LENGTH];
 
     snprintf(buf, sizeof(buf),
@@ -2643,6 +2711,8 @@ void do_report( CHAR_DATA *ch, char *argument )
 
 void do_teachlist(CHAR_DATA *ch, char *argument)
 {
+   UNUSED_PARAM(argument);
+
    MOB_INDEX_DATA *pMobIndex;
    char buf[MAX_STRING_LENGTH];
    struct guildmaster_type gmdata;
@@ -2712,6 +2782,8 @@ void do_teachlist(CHAR_DATA *ch, char *argument)
 
 void do_gainlist(CHAR_DATA *ch, char *argument)
 {
+   UNUSED_PARAM(argument);
+
    MOB_INDEX_DATA *pMobIndex;
    char buf[MAX_STRING_LENGTH];
    bool isgroup;
@@ -3188,6 +3260,8 @@ void do_join( CHAR_DATA *ch, char *arg )
 void do_scan( CHAR_DATA *ch, char *argument )
 {
 
+    UNUSED_PARAM(argument);
+
     ROOM_INDEX_DATA *was_in_room, *scan_room;
     CHAR_DATA *rch;
     CHAR_DATA *list;
@@ -3625,27 +3699,42 @@ bool we_want_this_obj ( OBJ_DATA *obj, char *key_type, char *key_word)
 
 void do_exchange( CHAR_DATA *ch, char *argument )
 {
-  return;
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
+
+    return;
 }
 
 void do_heroquest( CHAR_DATA *ch, char *argument )
 {
-  return;
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
+
+    return;
 }
 
 void do_retrieved( CHAR_DATA *ch, char *argument )
 {
-  return;
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
+
+    return;
 }
 
 void do_endquest( CHAR_DATA *ch, char *argument )
 {
-  return;
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
+
+    return;
 }
 
 void do_listclue( CHAR_DATA *ch, char *argument )
 {
-  return;
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
+
+    return;
 }
 
 /* This is the old danger sense skill.  It was recoded on 12/27/97 by Ricochet
