@@ -91,3 +91,22 @@ If you don't see updates on GitHub after working locally, verify that your commi
 4. Open a pull request on GitHub from the pushed branch. Once the PR is merged into your default branch (often `main` or `master`), the changes will appear on GitHub.
 
 If `git push` reports authentication issues, sign in with a GitHub token or SSH key and rerun the push command.
+
+## Applying patches with `git apply`
+To apply a patch file or an inline diff, run the command from the repository root so Git can find the correct paths. For example, using three-way merge to reduce conflicts:
+
+```
+cd /path/to/tocGPT
+git apply --3way /path/to/change.diff
+```
+
+If you're pasting an inline diff (like one provided in chat), wrap it with a here-doc while in the repo root:
+
+```
+cd /path/to/tocGPT
+git apply --3way <<'EOF'
+<paste the diff here>
+EOF
+```
+
+If the patch applies cleanly, rerun `git status` to review the changes before committing.
