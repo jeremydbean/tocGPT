@@ -230,7 +230,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
         "level 51 hero! (remort)       5000qp\n\r"
     "To buy an item, type 'AQUEST BUY <item>'.\n\r", ch);
 
-        if (ch->level >= MAX_LEVEL)
+        if (ch->level >= LEVEL_HERO)
         {
             send_to_char("\n\rEnd-game rewards for maxed heroes:\n\r"
                 "Legendary boon (gold + pracs)       750qp\n\r"
@@ -337,7 +337,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
         }
         else if (is_name(arg2, "boon"))
         {
-            if (ch->level < MAX_LEVEL)
+            if (ch->level < LEVEL_HERO)
             {
                 sprintf(buf, "That favor is reserved for maxed heroes, %s.", ch->name);
                 do_say(questman, buf);
@@ -367,7 +367,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
         {
             OBJ_INDEX_DATA *trophy_index;
 
-            if (ch->level < MAX_LEVEL)
+            if (ch->level < LEVEL_HERO)
             {
                 sprintf(buf, "Keepsakes are only for legendary heroes, %s.", ch->name);
                 do_say(questman, buf);
@@ -396,7 +396,7 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
         }
         else if (is_name(arg2, "cache"))
         {
-            if (ch->level < MAX_LEVEL)
+            if (ch->level < LEVEL_HERO)
             {
                 sprintf(buf, "That cache is sealed to all but the greatest heroes, %s.", ch->name);
                 do_say(questman, buf);
