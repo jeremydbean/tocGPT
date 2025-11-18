@@ -754,7 +754,7 @@ void read_m_mob_extras( FILE *fp, MOB_INDEX_DATA *pMobIndex )
     {
         switch (letter)
         {
-            default : bug("Load_mobiles: vnum %d, unknown field in M-stye secion.", pMobIndex->vnum); 
+            default : bug("Load_mobiles: vnum %d, unknown field in M-style section.", pMobIndex->vnum);
                       exit ( 1 );
  
             case ('A')  : new_action = read_mob_action(fp);

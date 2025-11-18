@@ -1553,10 +1553,10 @@ void equip_char( CHAR_DATA *ch, OBJ_DATA *obj, int iWear )
        {
 	  if(!IS_SET(ch->affected_by, AFF_INVISIBLE) )
 	  {
-	    send_to_char("You slowly fade out of existance.\n\r",ch);
-	    SET_BIT(ch->affected_by, AFF_INVISIBLE);
-	    act("$n fades out of existance.",ch,NULL,NULL,TO_ROOM);
-	  }
+            send_to_char("You slowly fade out of existence.\n\r",ch);
+            SET_BIT(ch->affected_by, AFF_INVISIBLE);
+            act("$n fades out of existence.",ch,NULL,NULL,TO_ROOM);
+          }
        }
 
        if(IS_SET(obj->extra_flags2, ITEM2_ADD_DETECT_INVIS) )
@@ -1664,10 +1664,10 @@ void unequip_char( CHAR_DATA *ch, OBJ_DATA *obj )
        {
 	  if(!is_affected(ch,skill_lookup("invis") ) )
 	  {
-	    send_to_char("You slowly fade into existance.\n\r",ch);
-	    REMOVE_BIT(ch->affected_by, AFF_INVISIBLE);
-	    act("$n fades into existance.",ch,NULL,NULL,TO_ROOM);
-	  }
+            send_to_char("You slowly fade into existence.\n\r",ch);
+            REMOVE_BIT(ch->affected_by, AFF_INVISIBLE);
+            act("$n fades into existence.",ch,NULL,NULL,TO_ROOM);
+          }
        }
 
        if(IS_SET(obj->extra_flags2, ITEM2_ADD_DETECT_INVIS) )

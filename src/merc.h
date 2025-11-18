@@ -351,6 +351,7 @@ struct  descriptor_data
     char                incomm          [MAX_INPUT_LENGTH];
     char                inlast          [MAX_INPUT_LENGTH];
     int                 repeat;
+    sh_int              login_attempts;
     char *              outbuf;
     int                 outsize;
     int                 outtop;
