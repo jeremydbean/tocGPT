@@ -51,13 +51,13 @@ Use Git to clone the repository into a working folder.
 
 - **macOS / Linux (bash/zsh):**
   ```bash
-  git clone https://github.com/jgmeiner/tocGPT.git
+  git clone https://github.com/jeremydbean/tocGPT.git
   cd tocGPT
   ```
 
 - **Windows PowerShell:**
   ```powershell
-  git clone https://github.com/jgmeiner/tocGPT.git
+  git clone https://github.com/jeremydbean/tocGPT.git
   cd tocGPT
   ```
 
