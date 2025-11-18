@@ -17,11 +17,23 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
 #include "merc.h"
 #include "interp.h"
 #pragma GCC diagnostic ignored "-Wcomment"
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 extern void component_update(void);
+
+static sh_int clamp_sh_int( int value )
+{
+    if ( value > SHRT_MAX )
+        return SHRT_MAX;
+
+    if ( value < SHRT_MIN )
+        return SHRT_MIN;
+
+    return (sh_int) value;
+}
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_rstat         );
@@ -3229,7 +3241,7 @@ void do_trust( CHAR_DATA *ch, char *argument )
 
     snprintf(buf, sizeof(buf),"%s is now trusted at level %d.\n\r",victim->name, level);
     send_to_char(buf,ch);
-    victim->trust = level;
+    victim->trust = clamp_sh_int( level );
     return;
 }
 
@@ -3839,7 +3851,7 @@ void do_sset( CHAR_DATA *ch, char *argument )
 	{
 	  if ( skill_table[sn].name != NULL )
 	  {
-	     victim->pcdata->learned[sn]     = value;
+        victim->pcdata->learned[sn]     = clamp_sh_int( value );
 	  }
 	}
         snprintf(buf, sizeof(buf),"All %s skills set to %d.\n\r",victim->name,value);
@@ -3847,7 +3859,7 @@ void do_sset( CHAR_DATA *ch, char *argument )
     }
     else
     {
-	victim->pcdata->learned[sn] = value;
+   victim->pcdata->learned[sn] = clamp_sh_int( value );
 	if(ch != victim)
 	  snprintf(buf, sizeof(buf),"%s %s skill set to %d.\n\r",victim->name,skill_table[sn].name,value);
 	else
@@ -3908,7 +3920,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->perm_stat[STAT_STR] = value;
+   victim->perm_stat[STAT_STR] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Strength value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
@@ -3929,7 +3941,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->perm_stat[STAT_INT] = value;
+   victim->perm_stat[STAT_INT] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Inteligence value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
@@ -3948,7 +3960,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->perm_stat[STAT_WIS] = value;
+   victim->perm_stat[STAT_WIS] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Wisdom value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
@@ -3968,7 +3980,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->perm_stat[STAT_DEX] = value;
+   victim->perm_stat[STAT_DEX] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Dexterity value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
@@ -3988,7 +4000,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->perm_stat[STAT_CON] = value;
+   victim->perm_stat[STAT_CON] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Constitution value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
@@ -4004,7 +4016,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    send_to_char( "Sex range is 0 to 2.\n\r", ch );
 	    return;
 	}
-	victim->sex = value;
+   victim->sex = clamp_sh_int( value );
 
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Sex on %s set to %s.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,
@@ -4016,7 +4028,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	 victim->sex == SEX_FEMALE  ? "female" : "sex-less");
 	send_to_char(buf,ch);
 	if (!IS_NPC(victim))
-	    victim->pcdata->true_sex = value;
+      victim->pcdata->true_sex = clamp_sh_int( value );
 	return;
     }
 
@@ -4046,7 +4058,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
             return;
         }
 
-	victim->class = class;
+        victim->class = clamp_sh_int( class );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"%s Class now set to %s.\n\r",victim->name,class_table[class].name);
 	else
@@ -4082,7 +4094,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
             return;
         }
 
-	victim->pcdata->guild = guild;
+        victim->pcdata->guild = clamp_sh_int( guild );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"%s Guild now set to %s.\n\r",victim->name,get_guildname(victim->pcdata->guild));
 	else
@@ -4110,7 +4122,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
             return;
         }
 
-	victim->pcdata->castle = castle;
+        victim->pcdata->castle = clamp_sh_int( castle );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"%s Castle now set to %s.\n\r",victim->name,get_castlename(victim->pcdata->castle));
 	else
@@ -4168,7 +4180,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->level = value;
+   victim->level = clamp_sh_int( value );
 	snprintf(buf, sizeof(buf),"Level on %s now set to %d.\n\r",victim->short_descr,value);
 	send_to_char(buf,ch);
 	return;
@@ -4225,14 +4237,14 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    send_to_char( "Hp range is -10 to 30,000 hit points.\n\r", ch );
 	    return;
 	}
-	victim->max_hit = value;
+        victim->max_hit = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Hit Points on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
 	  snprintf(buf, sizeof(buf),"You now have %d Hit Points.\n\r",value);
 	send_to_char(buf,ch);
 	if (!IS_NPC(victim))
-	    victim->pcdata->perm_hit = value;
+            victim->pcdata->perm_hit = clamp_sh_int( value );
 	return;
     }
 
@@ -4243,14 +4255,14 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    send_to_char( "Mana range is 0 to 15,000 mana points.\n\r", ch );
 	    return;
 	}
-	victim->max_mana = value;
+        victim->max_mana = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Mana value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
 	  snprintf(buf, sizeof(buf),"You now have %d Mana.\n\r",value);
 	send_to_char(buf,ch);
 	if (!IS_NPC(victim))
-	    victim->pcdata->perm_mana = value;
+            victim->pcdata->perm_mana = clamp_sh_int( value );
 	return;
     }
 
@@ -4261,14 +4273,14 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    send_to_char( "Endurance range is 0 to 15,000 points.\n\r", ch );
 	    return;
 	}
-	victim->max_move = value;
+        victim->max_move = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Endurance value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
 	  snprintf(buf, sizeof(buf),"You now have %d Endurance.\n\r",value);
 	send_to_char(buf,ch);
 	if (!IS_NPC(victim))
-	    victim->pcdata->perm_move = value;
+            victim->pcdata->perm_move = clamp_sh_int( value );
 	return;
     }
 
@@ -4279,7 +4291,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    send_to_char( "Practice range is 0 to 250 sessions.\n\r", ch );
 	    return;
 	}
-	victim->practice = value;
+        victim->practice = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"%s Practices now set to %d.\n\r",victim->name,value);
 	else
@@ -4295,7 +4307,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    send_to_char("Training session range is 0 to 50 sessions.\n\r",ch);
 	    return;
 	}
-	victim->train = value;
+        victim->train = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"%s Trains now set to %d.\n\r",victim->name,value);
 	else
@@ -4311,7 +4323,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    send_to_char( "Alignment range is -1000 to 1000.\n\r", ch );
 	    return;
 	}
-	victim->alignment = value;
+        victim->alignment = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Alignment value on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
@@ -4334,7 +4346,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->pcdata->condition[COND_THIRST] = value;
+        victim->pcdata->condition[COND_THIRST] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Thirst value on %s now set to %d.\n\r",victim->name,value);
 	else
@@ -4357,7 +4369,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->pcdata->condition[COND_DRUNK] = value;
+        victim->pcdata->condition[COND_DRUNK] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Drunk value on %s now set to %d.\n\r",victim->name,value);
 	else
@@ -4400,7 +4412,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->pcdata->condition[COND_FULL] = value;
+        victim->pcdata->condition[COND_FULL] = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Hunger value on %s now set to %d.\n\r",victim->name,value);
 	else
@@ -4417,7 +4429,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	  return;
 	}
 
-	victim->timer = value;
+        victim->timer = clamp_sh_int( value );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Timer on %s now set to %d.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,value);
 	else
@@ -4444,7 +4456,7 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	victim->race = race;
+        victim->race = clamp_sh_int( race );
 	if(victim != ch)
 	  snprintf(buf, sizeof(buf),"Race on %s now set to %s.\n\r",IS_NPC(victim) ? victim->short_descr : victim->name,race_table[victim->race].name);
 	else
@@ -4862,7 +4874,7 @@ void do_oset( CHAR_DATA *ch, char *argument )
 
     if ( !str_prefix( arg2, "extra" ) )
     {
-	obj->extra_flags = value;
+   obj->extra_flags = clamp_sh_int( value );
 	snprintf(buf, sizeof(buf),"Extra flags on %s set to %d.\n\r",obj->short_descr,value);
 	send_to_char(buf, ch);
 	return;
@@ -4870,7 +4882,7 @@ void do_oset( CHAR_DATA *ch, char *argument )
 
     if ( !str_prefix( arg2, "wear" ) )
     {
-	obj->wear_flags = value;
+   obj->wear_flags = clamp_sh_int( value );
 	snprintf(buf, sizeof(buf),"Wear flags on %s set to %d.\n\r",obj->short_descr,value);
 	send_to_char(buf, ch);
 	return;
@@ -4878,7 +4890,7 @@ void do_oset( CHAR_DATA *ch, char *argument )
 
     if ( !str_prefix( arg2, "level" ) )
     {
-	obj->level = value;
+   obj->level = clamp_sh_int( value );
 	snprintf(buf, sizeof(buf),"Level on %s set to %d.\n\r",obj->short_descr,value);
 	send_to_char(buf, ch);
 	return;
@@ -4886,7 +4898,7 @@ void do_oset( CHAR_DATA *ch, char *argument )
 
     if ( !str_prefix( arg2, "weight" ) )
     {
-	obj->weight = value;
+   obj->weight = clamp_sh_int( value );
 	snprintf(buf, sizeof(buf),"Weight on %s set to %d.\n\r",obj->short_descr,value);
 	send_to_char(buf, ch);
 	return;
@@ -4902,7 +4914,7 @@ void do_oset( CHAR_DATA *ch, char *argument )
 
     if ( !str_prefix( arg2, "timer" ) )
     {
-	obj->timer = value;
+   obj->timer = clamp_sh_int( value );
 	snprintf(buf, sizeof(buf),"Timer on %s set to %d.\n\r",obj->short_descr,value);
 	send_to_char(buf, ch);
 	return;
@@ -4916,7 +4928,7 @@ void do_oset( CHAR_DATA *ch, char *argument )
 	return;
       }
 
-      obj->item_type = value;
+      obj->item_type = clamp_sh_int( value );
       snprintf(buf, sizeof(buf),"Type on %s set to %d.\n\r",obj->short_descr,value);
       send_to_char(buf,ch);
       return;
@@ -4982,7 +4994,7 @@ void do_rset( CHAR_DATA *ch, char *argument )
 
     if ( !str_prefix( arg2, "sector" ) )
     {
-	location->sector_type   = value;
+   location->sector_type   = clamp_sh_int( value );
 	snprintf(buf, sizeof(buf),"Sector set to %d.\n\r",value);
 	send_to_char(buf,ch);
 	return;
@@ -5381,7 +5393,7 @@ void do_invis( CHAR_DATA *ch, char *argument )
       else
       {
 	  SET_BIT(ch->act, PLR_WIZINVIS);
-	  ch->invis_level = get_trust(ch);
+          ch->invis_level = clamp_sh_int( get_trust(ch) );
 	  act( "There is a strange shimmering in the air",
 	  NULL, NULL, NULL, TO_ROOM );
 	  send_to_char( "You slowly vanish into thin air.\n\r", ch );
@@ -5399,7 +5411,7 @@ void do_invis( CHAR_DATA *ch, char *argument )
       {
 	  ch->reply = NULL;
 	  SET_BIT(ch->act, PLR_WIZINVIS);
-	  ch->invis_level = level;
+          ch->invis_level = clamp_sh_int( level );
 	  act( "There is a strange shimmering in the air",
 	  NULL, NULL, NULL, TO_ROOM );
 	  send_to_char( "You slowly vanish into thin air.\n\r", ch );
@@ -5438,7 +5450,7 @@ void do_cloak( CHAR_DATA *ch, char *argument )
     else
     {
 	SET_BIT( ch->act, PLR_CLOAKED );
-	ch->cloak_level = get_trust(ch);
+        ch->cloak_level = clamp_sh_int( get_trust(ch) );
 	send_to_char("Cloaking device engaged.\n\r",ch);
 	act("The air shimmers and ripples.",ch,NULL,NULL,TO_ROOM);
     }
@@ -5454,7 +5466,7 @@ void do_cloak( CHAR_DATA *ch, char *argument )
 	{
 	    ch->reply = NULL;
 	    SET_BIT(ch->act, PLR_CLOAKED);
-	    ch->cloak_level = level;
+            ch->cloak_level = clamp_sh_int( level );
 	    act("The air shimmers and ripples.",ch,NULL,NULL,TO_ROOM);
 	    send_to_char("Cloaking device re-aligned.\n\r",ch);
 	}

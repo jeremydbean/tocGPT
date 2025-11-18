@@ -2812,7 +2812,7 @@ char *affect_loc_name( int location )
 /*
  * Return ascii name of an affect bit vector.
  */
-char *affect_bit_name( int vector )
+char *affect_bit_name( long vector )
 {
     static char buf[512];
 
@@ -2842,7 +2842,7 @@ char *affect_bit_name( int vector )
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *affect2_bit_name( int vector )
+char *affect2_bit_name( long vector )
 {
     static char buf[512];
 
@@ -2917,7 +2917,7 @@ char *extra2_bit_name( int extra_flags )
 
 }
 /* return ascii name of an act vector */
-char *act_bit_name( int act_flags )
+char *act_bit_name( long act_flags )
 {
     static char buf[512];
 
@@ -2969,7 +2969,7 @@ char *act_bit_name( int act_flags )
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *act2_bit_name( int act_flags, int act_flags2 )
+char *act2_bit_name( long act_flags, long act_flags2 )
 {
     static char buf[512];
 
@@ -2988,7 +2988,7 @@ char *act2_bit_name( int act_flags, int act_flags2 )
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *comm_bit_name(int comm_flags)
+char *comm_bit_name(long comm_flags)
 {
     static char buf[512];
 
@@ -3013,7 +3013,7 @@ char *comm_bit_name(int comm_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *imm_bit_name(int imm_flags)
+char *imm_bit_name(long imm_flags)
 {
     static char buf[512];
 
@@ -3042,7 +3042,7 @@ char *imm_bit_name(int imm_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *res_bit_name(int res_flags)
+char *res_bit_name(long res_flags)
 {
     static char buf[512];
 
@@ -3072,7 +3072,7 @@ char *res_bit_name(int res_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 
 }
-char *vuln_bit_name(int vuln_flags)
+char *vuln_bit_name(long vuln_flags)
 {
     static char buf[512];
 
@@ -3104,7 +3104,7 @@ char *vuln_bit_name(int vuln_flags)
 
 }
 
-char *imm2_bit_name(int imm_flags)
+char *imm2_bit_name(long imm_flags)
 {
     static char buf[512];
 
@@ -3137,7 +3137,7 @@ char *wear_bit_name(int wear_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *form_bit_name(int form_flags)
+char *form_bit_name(long form_flags)
 {
     static char buf[512];
 
@@ -3172,7 +3172,7 @@ char *form_bit_name(int form_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *part_bit_name(int part_flags)
+char *part_bit_name(long part_flags)
 {
     static char buf[512];
 
@@ -3217,7 +3217,7 @@ char *weapon_bit_name(int weapon_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *off_bit_name(int off_flags)
+char *off_bit_name(long off_flags)
 {
     static char buf[512];
 
@@ -3252,7 +3252,7 @@ char *off_bit_name(int off_flags)
 }
 
 
-char *off2_bit_name(int off_flags)
+char *off2_bit_name(long off_flags)
 {
     static char buf[512];
 
