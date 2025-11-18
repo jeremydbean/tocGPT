@@ -1016,18 +1016,17 @@ void do_transfer( CHAR_DATA *ch, char *argument )
 
     if ( !str_cmp( arg1, "all" ) )
     {
-	for ( d = descriptor_list; d != NULL; d = d->next )
-	{
-	    if ( d->connected == CON_PLAYING
-	    &&   d->character != ch
-	    &&   d->character->in_room != NULL
-	    &&   can_see( ch, d->character ) )
-	    {
-		char buf[MAX_STRING_LENGTH];
-		sprintf( buf, "%s %s", d->character->name, arg2 );
-		do_transfer( ch, buf );
-	    }
-	}
+        for ( d = descriptor_list; d != NULL; d = d->next )
+        {
+            if ( d->connected == CON_PLAYING
+            &&   d->character != ch
+            &&   d->character->in_room != NULL
+            &&   can_see( ch, d->character ) )
+            {
+                sprintf( buf, "%s %s", d->character->name, arg2 );
+                do_transfer( ch, buf );
+            }
+        }
 	return;
     }
 
@@ -2459,6 +2458,7 @@ void do_owhere( CHAR_DATA *ch, char *argument )
 
 void do_reboot( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     extern bool merc_down;
     DESCRIPTOR_DATA *d,*d_next;
@@ -2484,6 +2484,7 @@ void do_reboot( CHAR_DATA *ch, char *argument )
 
 void do_shutdown( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     extern bool merc_down;
     DESCRIPTOR_DATA *d,*d_next;
@@ -2514,6 +2515,7 @@ void do_shutdown( CHAR_DATA *ch, char *argument )
 
 void do_forcesave(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *vch;
 
      for ( vch = char_list; vch != NULL; vch = vch->next )
@@ -2677,6 +2679,7 @@ void do_switch( CHAR_DATA *ch, char *argument )
 
 void do_return( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     bool found = FALSE;
 
     if ( ch->desc == NULL )
@@ -3532,6 +3535,7 @@ void do_noshout( CHAR_DATA *ch, char *argument )
 
 void do_peace( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *rch;
 
     for ( rch = ch->in_room->people; rch != NULL; rch = rch->next_in_room )
@@ -3653,6 +3657,7 @@ void do_allow( CHAR_DATA *ch, char *argument )
 
 void do_wizlock( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     extern bool wizlock;
     wizlock = !wizlock;
 
@@ -3668,6 +3673,7 @@ void do_wizlock( CHAR_DATA *ch, char *argument )
 
 void do_newlock( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     extern bool newlock;
     newlock = !newlock;
 
@@ -4023,23 +4029,21 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	class = class_lookup(arg3);
-	if ( class == -1 )
-	{
-	    char buf[MAX_STRING_LENGTH];
+        class = class_lookup(arg3);
+        if ( class == -1 )
+        {
+            strcpy( buf, "Possible classes are: " );
+            for ( class = 0; class < MAX_CLASS; class++ )
+            {
+                if ( class > 0 )
+                    strcat( buf, " " );
+                strcat( buf, class_table[class].name );
+            }
+            strcat( buf, ".\n\r" );
 
-		strcpy( buf, "Possible classes are: " );
-		for ( class = 0; class < MAX_CLASS; class++ )
-		{
-		    if ( class > 0 )
-			strcat( buf, " " );
-		    strcat( buf, class_table[class].name );
-		}
-	    strcat( buf, ".\n\r" );
-
-	    send_to_char(buf,ch);
-	    return;
-	}
+            send_to_char(buf,ch);
+            return;
+        }
 
 	victim->class = class;
 	if(victim != ch)
@@ -4067,17 +4071,15 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	  return;
 	}
 
-	guild = guild_lookup(arg3);
-	if ( guild == -1 || guild == GUILD_ANY )
-	{
-	    char buf[MAX_STRING_LENGTH];
+        guild = guild_lookup(arg3);
+        if ( guild == -1 || guild == GUILD_ANY )
+        {
+            strcpy( buf, "Possible guilds are: mage, cleric, warrior, " );
+            strcat( buf, "thief, none.\n\r" );
 
-	    strcpy( buf, "Possible guilds are: mage, cleric, warrior, " );
-	    strcat( buf, "thief, none.\n\r" );
-
-	    send_to_char(buf,ch);
-	    return;
-	}
+            send_to_char(buf,ch);
+            return;
+        }
 
 	victim->pcdata->guild = guild;
 	if(victim != ch)
@@ -4098,16 +4100,14 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	castle = castle_lookup(arg3);
-	if ( castle == -1 )
-	{
-	    char buf[MAX_STRING_LENGTH];
+        castle = castle_lookup(arg3);
+        if ( castle == -1 )
+        {
+            strcpy( buf, "Possible castles are: none, valhalla and rogue." );
 
-	    strcpy( buf, "Possible castles are: none, valhalla and rogue." );
-
-	    send_to_char(buf,ch);
-	    return;
-	}
+            send_to_char(buf,ch);
+            return;
+        }
 
 	victim->pcdata->castle = castle;
 	if(victim != ch)
@@ -5465,6 +5465,7 @@ void do_cloak( CHAR_DATA *ch, char *argument )
 
 void do_holylight( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     if ( IS_NPC(ch) )
 	return;
 
@@ -5671,6 +5672,7 @@ void do_hpardon( CHAR_DATA *ch, char *argument )
 
 void do_pstat( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
    CHAR_DATA *victim;
    char buf[MAX_INPUT_LENGTH];
    DESCRIPTOR_DATA *d;
@@ -6240,6 +6242,7 @@ void do_itrans( CHAR_DATA *ch, char *argument )
 
 void do_component_update( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
   	component_update();
   	component_update();
   	component_update();

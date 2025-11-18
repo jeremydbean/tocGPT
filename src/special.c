@@ -1816,20 +1816,20 @@ bool spec_castle_guard( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
  
     for ( d = descriptor_list; d != NULL; d = d->next )
     {
-	CHAR_DATA *victim;
- 
-	victim = d->original ? d->original : d->character;
- 
-	if ( d->connected == CON_PLAYING &&
-	     d->character != ch &&
-	     !IS_NPC(victim) &&
-	     !IS_SET(victim->comm,COMM_NOCASTLE) &&
-	     !IS_SET(victim->comm,COMM_QUIET) &&
-	     cg_table[i].castle == victim->pcdata->castle)
-	{
-	    act_new("$n castle chats '$t just tried to enter the castle!'",
-		    mob,ch->name,d->character,TO_VICT,POS_DEAD);
-	}
+        CHAR_DATA *listener;
+
+        listener = d->original ? d->original : d->character;
+
+        if ( d->connected == CON_PLAYING &&
+             d->character != ch &&
+             !IS_NPC(listener) &&
+             !IS_SET(listener->comm,COMM_NOCASTLE) &&
+             !IS_SET(listener->comm,COMM_QUIET) &&
+             cg_table[i].castle == listener->pcdata->castle)
+        {
+            act_new("$n castle chats '$t just tried to enter the castle!'",
+                    mob,ch->name,d->character,TO_VICT,POS_DEAD);
+        }
     }
  
     return TRUE;

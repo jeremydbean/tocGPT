@@ -486,17 +486,17 @@ void boot_db( void )
 /*
  * Load Area File loads the whole file
  */
-void load_area_file( char *strArea )
+void load_area_file( char *area_filename )
 {
-    if ( strArea[0] == '-' )
+    if ( area_filename[0] == '-' )
     {
         fpArea = stdin;
     }
     else
     {
-        if ( ( fpArea = fopen( strArea, "r" ) ) == NULL )
+        if ( ( fpArea = fopen( area_filename, "r" ) ) == NULL )
         {
-            perror( strArea );
+            perror( area_filename );
             exit( 1 );
         }
     }
@@ -1037,12 +1037,12 @@ void load_objects( FILE *fp )
  
         for ( ; ; )
         {
-            char letter;
- 
-            letter = fread_letter( fp );
+            char letter_inner;
+
+            letter_inner = fread_letter( fp );
 
  
-            if ( letter == 'A' )
+            if ( letter_inner == 'A' )
             {
                 AFFECT_DATA *paf;
  
@@ -1059,7 +1059,7 @@ void load_objects( FILE *fp )
                 top_affect++;
             }
  
-            else if ( letter == 'E' )
+            else if ( letter_inner == 'E' )
             {
                 EXTRA_DESCR_DATA *ed;
  
@@ -1071,9 +1071,9 @@ void load_objects( FILE *fp )
                 top_ed++;
             }
 	    
-	    else if ( letter == 'T' )
-	    {
-		OBJ_ACTION_DATA *new_action;
+            else if ( letter_inner == 'T' )
+            {
+                OBJ_ACTION_DATA *new_action;
 
 		new_action 		= alloc_perm( sizeof(*new_action) );
 		new_action->not_vict_action	= fread_string(fp);
@@ -1085,7 +1085,7 @@ void load_objects( FILE *fp )
  
             else
             {
-                ungetc( letter, fp );
+                ungetc( letter_inner, fp );
                 break;
             }
         }
@@ -2107,14 +2107,14 @@ void reset_area( AREA_DATA *pArea )
              && !IS_SET(pRoomIndex->room_flags, ROOM_NEWBIES_ONLY)
              && number_percent () <= 1
              && number_range(1,200) <= 1)
-             {
-               char buf[MAX_STRING_LENGTH];
+            {
+               char trap_buf[MAX_STRING_LENGTH];
                if(IS_SET(pexit->exit_info, EX_PICKPROOF) )
                  REMOVE_BIT(pexit->exit_info, EX_PICKPROOF);
                SET_BIT( pexit->exit_info, EX_TRAPPED);
                pexit->trap = dice(1,10);
-               sprintf(buf,"New Trap: [Room: %d]",pRoomIndex->vnum);
-               wizinfo(buf,LEVEL_IMMORTAL);
+               sprintf(trap_buf,"New Trap: [Room: %d]",pRoomIndex->vnum);
+               wizinfo(trap_buf,LEVEL_IMMORTAL);
              }
             last = TRUE;
             break;
@@ -3720,6 +3720,7 @@ void do_areas( CHAR_DATA *ch, char *argument )
  
 void do_memory( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
  
     sprintf( buf, "Affects %5d\n\r", top_affect    ); send_to_char( buf, ch );
@@ -4841,6 +4842,8 @@ void tail_chain( void )
 
 void do_dump_exits( CHAR_DATA *ch , char *argument )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
     ROOM_INDEX_DATA *in_room;
     ROOM_INDEX_DATA *to_room;
     FILE *fp;

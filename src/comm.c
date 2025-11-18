@@ -452,7 +452,7 @@ int main( int argc, char **argv )
 
 
 #if defined(unix)
-int init_socket( int port )
+int init_socket( int listen_port )
 {
     static struct sockaddr_in sa_zero;
     struct sockaddr_in sa;
@@ -493,7 +493,7 @@ int init_socket( int port )
 
     sa              = sa_zero;
     sa.sin_family   = AF_INET;
-    sa.sin_port     = htons( port );
+    sa.sin_port     = htons( listen_port );
 
     if ( bind( fd, (struct sockaddr *) &sa, sizeof(sa) ) < 0 )
     {
@@ -683,7 +683,7 @@ void game_loop_mac_msdos( void )
 
 
 #if defined(unix)
-void game_loop_unix( int control )
+void game_loop_unix( int control_fd )
 {
     static struct timeval null_time;
     struct timeval last_time;
@@ -720,8 +720,8 @@ void game_loop_unix( int control )
 	FD_ZERO( &in_set  );
 	FD_ZERO( &out_set );
 	FD_ZERO( &exc_set );
-	FD_SET( control, &in_set );
-	maxdesc = control;
+        FD_SET( control_fd, &in_set );
+        maxdesc = control_fd;
 	for ( d = descriptor_list; d != NULL; d = d->next )
 	{
 	    maxdesc = UMAX( maxdesc, d->descriptor );
@@ -744,8 +744,8 @@ void game_loop_unix( int control )
 	/*
 	 * New connection?
 	 */
-	if ( FD_ISSET( control, &in_set ) )
-	    new_descriptor( control );
+        if ( FD_ISSET( control_fd, &in_set ) )
+            new_descriptor( control_fd );
 
 	/*
 	 * Kick out the freaky folks.
@@ -910,7 +910,7 @@ void make_descriptor( DESCRIPTOR_DATA *dnew, int desc )
 }
 
 #if defined(unix)
-void new_descriptor( int control )
+void new_descriptor( int control_fd )
 {
     char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
@@ -922,8 +922,8 @@ void new_descriptor( int control )
     socklen_t size;
 
     size = sizeof(sock);
-    getsockname( control, (struct sockaddr *) &sock, &size );
-    if ( ( desc = accept( control, (struct sockaddr *) &sock, &size) ) < 0 )
+    getsockname( control_fd, (struct sockaddr *) &sock, &size );
+    if ( ( desc = accept( control_fd, (struct sockaddr *) &sock, &size) ) < 0 )
     {
 	perror( "New_descriptor: accept" );
 	return;
@@ -1619,7 +1619,7 @@ bool write_to_descriptor( int desc, char *txt, int length )
  */
 void nanny( DESCRIPTOR_DATA *d, char *argument )
 {
-    DESCRIPTOR_DATA *d_old, *d_next;
+    DESCRIPTOR_DATA *d_old, *d_next_local;
     DESCRIPTOR_DATA *dch;
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
@@ -1851,9 +1851,9 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	switch( *argument )
 	{
 	case 'y' : case 'Y':
-	    for ( d_old = descriptor_list; d_old != NULL; d_old = d_next )
-	    {
-		d_next = d_old->next;
+            for ( d_old = descriptor_list; d_old != NULL; d_old = d_next_local )
+            {
+                d_next_local = d_old->next;
 		if (d_old == d || d_old->character == NULL)
 		    continue;
 
@@ -2384,6 +2384,7 @@ void do_dns( CHAR_DATA *ch )
 
 void do_check_psi ( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
   int chance;
   int add;
 	int add2;
@@ -2607,6 +2608,7 @@ bool check_parse_name( char *name )
  */
 bool check_reconnect( DESCRIPTOR_DATA *d, char *name, bool fConn )
 {
+    UNUSED_PARAM(name);
     DESCRIPTOR_DATA *dch;
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
@@ -3510,17 +3512,6 @@ void config_prompt( CHAR_DATA *ch )
     char buf[MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
-    size_t used = 0;
-
-#define APPEND_TO_PROMPT(...) do { \
-    int _written = snprintf(buf + used, sizeof(buf) - used, __VA_ARGS__); \
-    if (_written < 0) _written = 0; \
-    if ((size_t)_written >= sizeof(buf) - used) { \
-        used = sizeof(buf) - 1; \
-    } else { \
-        used += (size_t)_written; \
-    } \
-} while (0)
 
     buf[0] = '\0';
     buf2[0] = '\0';
@@ -3640,12 +3631,14 @@ void config_prompt( CHAR_DATA *ch )
    else
         send_to_char( buf2, ch );
 
-#undef APPEND_TO_PROMPT
-
    return;
 }
 
-void do_outfit(CHAR_DATA *ch, char *argument) { send_to_char("Outfit command is not available.\n\r", ch); }
+void do_outfit(CHAR_DATA *ch, char *argument)
+{
+    UNUSED_PARAM(argument);
+    send_to_char("Outfit command is not available.\n\r", ch);
+}
 
 static CHAR_DATA *find_best_admin( void )
 {
