@@ -1144,40 +1144,70 @@ void do_give( CHAR_DATA *ch, char *argument )
  * Written by Gravestone.
  * Adapted by Ungrim to work with monetary system.
  */
+static long coins_to_copper(const CHAR_DATA *ch)
+{
+    if (ch == NULL)
+        return 0;
+
+    return ch->new_copper
+        + (ch->new_silver * COPPER_PER_SILVER)
+        + (ch->new_gold * COPPER_PER_GOLD)
+        + (ch->new_platinum * COPPER_PER_PLATINUM);
+}
+
+static void normalize_coins(CHAR_DATA *ch, long total_copper)
+{
+    if (ch == NULL)
+        return;
+
+    if (total_copper < 0)
+        total_copper = 0;
+
+    ch->new_platinum = total_copper / COPPER_PER_PLATINUM;
+    total_copper %= COPPER_PER_PLATINUM;
+
+    ch->new_gold = total_copper / COPPER_PER_GOLD;
+    total_copper %= COPPER_PER_GOLD;
+
+    ch->new_silver = total_copper / COPPER_PER_SILVER;
+    ch->new_copper = total_copper % COPPER_PER_SILVER;
+}
+
 void do_deposit( CHAR_DATA *ch, char *argument )
 {
     char arg1[MAX_INPUT_LENGTH];
     char buf[MAX_STRING_LENGTH];
-    int amount;
+    char *endptr;
+    long amount;
 
     argument = one_argument( argument, arg1 );
 
-    if( arg1[0] == '\0' || !is_number(arg1)) {
-	send_to_char( "Syntax is: Deposit <$>.\n\r", ch );
-	return;
+    if( arg1[0] == '\0' ) {
+        send_to_char( "Syntax is: Deposit <$>.\n\r", ch );
+        return;
     }
 
-    amount = atoi(arg1);
-    if(amount <= 0) {
-	send_to_char( "You can't do that.\n\r", ch );
-	return;
+    amount = strtol(arg1, &endptr, 10);
+    if (*endptr != '\0' || amount <= 0) {
+        send_to_char( "You can't do that.\n\r", ch );
+        return;
     }
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
-	send_to_char( "Your not in the bank!\n\r", ch );
-	return;
+        send_to_char( "You're not in the bank!\n\r", ch );
+        return;
     }
 
     if(ch->new_platinum < amount) {
-	send_to_char( "You dont have that much platinum. Convert first?\n\r", ch );
-	return;
+        send_to_char( "You don't have that much platinum. Convert first?\n\r", ch );
+        return;
     }
 
     ch->new_platinum -= amount;
     ch->pcdata->bank += amount;
-    sprintf(buf,"You have deposited %d platinum in the bank.\n\r",amount);
+    sprintf(buf,"You have deposited %ld platinum in the bank.\n\r",amount);
     send_to_char(buf,ch);
-    sprintf(buf,"Your new balance is %d platinum.\n\r",ch->pcdata->bank);
+    sprintf(buf,"Your new balance is %ld platinum.\n\r",ch->pcdata->bank);
     send_to_char(buf,ch);
 }
 
@@ -1185,28 +1215,29 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 {
     char arg1[MAX_INPUT_LENGTH];
     char buf[MAX_STRING_LENGTH];
-    int amount;
+    char *endptr;
+    long amount;
 
     argument = one_argument( argument, arg1 );
 
-    if(arg1[0] == '\0' || !is_number(arg1)) {
-	send_to_char( "Syntax is withdraw <$>.\n\r",ch );
-	return;
+    if(arg1[0] == '\0') {
+        send_to_char( "Syntax is withdraw <$>.\n\r",ch );
+        return;
     }
 
-    amount = atoi(arg1);
-    if(amount <= 0) {
-	send_to_char( "You can't do that.\n\r", ch );
+    amount = strtol(arg1, &endptr, 10);
+    if (*endptr != '\0' || amount <= 0) {
+        send_to_char( "You can't do that.\n\r", ch );
         return;
     }
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
-	send_to_char("Your not in the bank!\n\r",ch);
-	return;
+        send_to_char("You're not in the bank!\n\r",ch);
+        return;
     }
 
     if(ch->pcdata->bank < amount) {
-        send_to_char ( "You dont have that much platinum in the bank.\n\r", ch);
+        send_to_char ( "You don't have that much platinum in the bank.\n\r", ch);
         return;
     }
 
@@ -1217,49 +1248,22 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 
     ch->pcdata->bank -= amount;
     ch->new_platinum += amount;
-    sprintf( buf,"You withdrew %d platinum from your account.\n\r",amount);
+    sprintf( buf,"You withdrew %ld platinum from your account.\n\r",amount);
     send_to_char(buf,ch);
-    sprintf( buf,"Your new balance is %d platinum.\n\r", ch->pcdata->bank);
+    sprintf( buf,"Your new balance is %ld platinum.\n\r", ch->pcdata->bank);
     send_to_char( buf, ch );
 }
 
 void do_convert(CHAR_DATA *ch, char *argument)
 {
     UNUSED_PARAM(argument);
-    long temp, left;
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
-	send_to_char("Your not in the bank!\n\r",ch);
-	return;
+        send_to_char("You're not in the bank!\n\r",ch);
+        return;
     }
 
-    temp = ch->new_copper/500;
-    left = ch->new_copper - temp*500;
-    ch->new_platinum += temp;
-    ch->new_copper = left;
-    temp = ch->new_copper/100;
-    left = ch->new_copper - temp*100;
-    ch->new_gold += temp;
-    ch->new_copper = left;
-    temp = ch->new_copper/10;
-    left = ch->new_copper - temp*10;
-    ch->new_silver += temp;
-    ch->new_copper = left;
-
-    temp = ch->new_silver/50;
-    left = ch->new_silver - temp*50;
-    ch->new_platinum += temp;
-    ch->new_silver = left;
-    temp = ch->new_silver/10;
-    left = ch->new_silver - temp*10;
-    ch->new_gold += temp;
-    ch->new_silver = left;
-
-    temp = ch->new_gold/5;
-    left = ch->new_gold - temp*5;
-    ch->new_platinum += temp;
-    ch->new_gold = left;
-
+    normalize_coins(ch, coins_to_copper(ch));
     send_to_char("Your money has been converted into platinum as much as possible.\n\r",ch);
     return;
 }
@@ -1277,7 +1281,7 @@ void do_balance( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    sprintf(buf,"Your current balance is %d.\n\r",ch->pcdata->bank);
+    sprintf(buf,"Your current balance is %ld.\n\r",ch->pcdata->bank);
     send_to_char(buf,ch);
     return;
 }
@@ -3709,14 +3713,9 @@ void do_repair( CHAR_DATA *ch, char *argument )
 
 long query_gold(CHAR_DATA *ch)
 {
-  long total;
-
   if (ch == NULL) return 0;
 
-  total = (5 * ch->new_platinum) + ch->new_gold;
-  total += ch->new_silver / 10;
-  total += ch->new_copper / 100;
-  return total;
+  return coins_to_copper(ch) / COPPER_PER_GOLD;
 }
 
 int query_carry_coins(CHAR_DATA *ch, long amount)
@@ -3752,81 +3751,41 @@ int query_carry_weight(CHAR_DATA *ch)
 void add_money(CHAR_DATA *ch, long amount)
 {
   char buf[1000];
-  long has_money;
-  long i;
-  if (amount > 0)
-  {  ch->new_platinum += amount/5;
-     ch->new_gold += amount%5;
-     return;
-  }
-  if (amount == 0)
-  {  return;
-  }
-  amount *= -1;
-  has_money = query_gold(ch);
-  if (has_money < amount)
-  { sprintf(buf,"[ADD_MONEY] Trying to substract %ld money while char %s has only %ld.\n\r",
-            amount,ch->name,has_money);
-    log_string(buf);
-    ch->new_gold = 0;
-    ch->new_platinum = 0;
-    ch->new_silver = 0;
-    ch->new_copper = 0;
+  long total_copper;
+  long delta_copper;
+
+  if (ch == NULL || amount == 0)
     return;
+
+  delta_copper = amount * COPPER_PER_GOLD;
+  total_copper = coins_to_copper(ch);
+
+  if (delta_copper > 0)
+  {
+    if (delta_copper > LONG_MAX - total_copper)
+      total_copper = LONG_MAX;
+    else
+      total_copper += delta_copper;
   }
-  i = 100 * amount;
-  if ((i > 0) && (ch->new_copper >= 100))
-  { if (ch->new_copper >= i)
-    { ch->new_copper -= i;
+  else
+  {
+    long required = -delta_copper;
+
+    if (total_copper < required)
+    { sprintf(buf,"[ADD_MONEY] Trying to subtract %ld money while char %s has only %ld.\n\r",
+              amount * -1,ch->name,total_copper / COPPER_PER_GOLD);
+      log_string(buf);
+      ch->new_gold = 0;
+      ch->new_platinum = 0;
+      ch->new_silver = 0;
+      ch->new_copper = 0;
       return;
     }
-    amount = amount - (ch->new_copper/100);
-    ch->new_copper = ch->new_copper % 100;
-    add_money(ch,-1 * amount);
-    return;
+
+    total_copper -= required;
   }
-  i = 10 * amount;
-  if ((i > 0) && (ch->new_silver >= 10))
-  { if (ch->new_silver >= i)
-    { ch->new_silver -= i;
-      return;
-    }
-    amount = amount - (ch->new_silver/10);
-    ch->new_silver = ch->new_silver % 10;
-    add_money(ch,-1 * amount);
-    return;
-  }
-  i = amount;
-  if ((i > 0) && (ch->new_gold >= 1))
-  { if (ch->new_gold >= i)
-    { ch->new_gold -= i;
-      return;
-    }
-    amount = amount - ch->new_gold;
-    ch->new_gold = 0;
-    add_money(ch,-1 * amount);
-    return;
-  }
-  i = amount/5;
-  if ((i > 0) && (ch->new_platinum >= 1))
-  { if (ch->new_platinum >= i)
-    { ch->new_platinum -= i;
-      add_money(ch,-1 * (amount % 5));
-      return;
-    }
-    amount = amount - (5 * ch->new_platinum);
-    ch -> new_platinum = 0;
-    add_money(ch,-1 * amount);
-    return;
-  }
-  if (ch->new_platinum > 0)
-  { ch->new_platinum -= 1;
-    ch->new_gold += 5 - amount;
-    return;
-  }
-  sprintf(buf,"[ADD_MONEY] Trying to substract %ld money while char %s has no money left.\n\r",
-          amount,ch->name);
-  log_string(buf);
+
+  normalize_coins(ch, total_copper);
 }
 
 void add_gold(CHAR_DATA *ch, long amount)
