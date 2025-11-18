@@ -30,6 +30,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
@@ -54,6 +55,12 @@ DECLARE_DO_FUN( do_return );
 extern struct col_disp_table_type col_disp_table [];
 
 bool dns;
+
+#define CONNECTION_LOG_FILE "log/connection.log"
+
+static void log_to_file(const char *filename, const char *message);
+static void log_connection_event(const char *fmt, ...);
+static const char *connection_state_name(int connected);
 
 /*
  * Malloc debugging stuff.
@@ -341,6 +348,65 @@ bool    process_output          args( ( DESCRIPTOR_DATA *d, bool fPrompt ) );
 void    read_from_buffer        args( ( DESCRIPTOR_DATA *d ) );
 void    stop_idling             args( ( CHAR_DATA *ch ) );
 void    config_prompt           args( ( CHAR_DATA *ch ) );
+
+static void log_to_file(const char *filename, const char *message)
+{
+    FILE *fp = fopen(filename, "a");
+    if (fp == NULL)
+    {
+        perror(filename);
+        return;
+    }
+
+    {
+        char time_buf[32];
+        time_t now = current_time;
+        struct tm *tm_info = localtime(&now);
+
+        if (tm_info != NULL && strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M:%S", tm_info) > 0)
+            fprintf(fp, "%s %s\n", time_buf, message);
+        else
+            fprintf(fp, "%ld %s\n", (long) now, message);
+    }
+
+    fclose(fp);
+}
+
+static void log_connection_event(const char *fmt, ...)
+{
+    char message[MAX_STRING_LENGTH];
+    va_list args;
+
+    va_start(args, fmt);
+    vsnprintf(message, sizeof(message), fmt, args);
+    va_end(args);
+
+    log_string(message);
+    log_to_file(CONNECTION_LOG_FILE, message);
+}
+
+static const char *connection_state_name(int connected)
+{
+    switch (connected)
+    {
+        case CON_PLAYING: return "playing";
+        case CON_GET_NAME: return "get_name";
+        case CON_GET_OLD_PASSWORD: return "old_password";
+        case CON_CONFIRM_NEW_NAME: return "confirm_name";
+        case CON_GET_NEW_PASSWORD: return "new_password";
+        case CON_CONFIRM_NEW_PASSWORD: return "confirm_pass";
+        case CON_GET_NEW_RACE: return "choose_race";
+        case CON_GET_NEW_SEX: return "choose_sex";
+        case CON_GET_NEW_CLASS: return "choose_class";
+        case CON_GET_ALIGNMENT: return "choose_align";
+        case CON_DEFAULT_CHOICE: return "default_choice";
+        case CON_GEN_GROUPS: return "groups";
+        case CON_PICK_WEAPON: return "weapon";
+        case CON_READ_IMOTD: return "imotd";
+        case CON_READ_MOTD: return "motd";
+        default: return "connecting";
+    }
+}
 
 int port;
 #if defined(unix)
@@ -920,8 +986,8 @@ void new_descriptor( int control )
     getsockname( control, (struct sockaddr *) &sock, &size );
     if ( ( desc = accept( control, (struct sockaddr *) &sock, &size) ) < 0 )
     {
-	perror( "New_descriptor: accept" );
-	return;
+        perror( "New_descriptor: accept" );
+        return;
     }
 
 #if !defined(FNDELAY)
@@ -952,8 +1018,8 @@ void new_descriptor( int control )
     size = sizeof(sock);
     if ( getpeername( desc, (struct sockaddr *) &sock, &size ) < 0 )
     {
-	perror( "New_descriptor: getpeername" );
-	dnew->host = str_dup( "(unknown)" );
+        perror( "New_descriptor: getpeername" );
+        dnew->host = str_dup( "(unknown)" );
     }
     else
     {
@@ -969,16 +1035,18 @@ void new_descriptor( int control )
 	ipaddr[1] = ( addr >> 16 ) & 0xFF;
 	ipaddr[2] = ( addr >> 8 ) & 0xFF;
 	ipaddr[3] = ( addr ) & 0xFF;
-	sprintf( buf, "%d.%d.%d.%d",
-	    ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF,
-	    ( addr >>  8 ) & 0xFF, ( addr       ) & 0xFF
-	    );
-	sprintf( log_buf, "Sock.sinaddr:  %s", buf );
-	log_string( log_buf );
+        sprintf( buf, "%d.%d.%d.%d",
+            ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF,
+            ( addr >>  8 ) & 0xFF, ( addr       ) & 0xFF
+            );
+        sprintf( log_buf, "Sock.sinaddr:  %s", buf );
+        log_string( log_buf );
+        dnew->ip = addr;
+        dnew->port = ntohs(sock.sin_port);
 
         if (dns == 0)
-	from = gethostbyaddr( (char *) &sock.sin_addr,
-	    sizeof(sock.sin_addr), AF_INET );
+        from = gethostbyaddr( (char *) &sock.sin_addr,
+            sizeof(sock.sin_addr), AF_INET );
 
 /*      if (from && (!str_cmp(from->h_name,"ursula.uoregon.edu")
 		 ||  !str_cmp(from->h_name,"monet.ucdavis.edu")))
@@ -992,6 +1060,8 @@ EC: What the hell is this for?
             else
             dnew->host = str_dup(buf);
     }
+
+    log_connection_event("[CONNECT] desc=%d host=%s ip=%s port=%d state=%s", desc, dnew->host, buf, dnew->port, connection_state_name(dnew->connected));
 
     /*
      * Swiftest: I added the following to ban sites.  I don't
@@ -1090,10 +1160,14 @@ void close_socket( DESCRIPTOR_DATA *dclose )
     if(dclose->original != NULL)
        do_return(dclose->character,"");
 
+    log_connection_event("[DISCONNECT] desc=%d host=%s state=%s player=%s", dclose->descriptor, dclose->host,
+        connection_state_name(dclose->connected),
+        (dclose->character && dclose->character->name) ? dclose->character->name : "(none)");
+
     if ( ( ch = dclose->character ) != NULL )
     {
-	sprintf( log_buf, "Closing link to %s.", ch->name );
-	log_string( log_buf );
+        sprintf( log_buf, "Closing link to %s.", ch->name );
+        log_string( log_buf );
 // ... (inside close_socket, after (ch = dclose->character) != NULL check) ...
     	if ( dclose->connected == CON_PLAYING )
     	{
@@ -2167,11 +2241,11 @@ case CON_GET_ALIGNMENT:
 	    sprintf( buf, "the %s",
 		title_table [ch->class] [ch->level]
 		[ch->sex == SEX_FEMALE ? 1 : 0] );
-	    set_title( ch, buf );
+            set_title( ch, buf );
 
-	    do_outfit(ch,"");
-	    ch->new_silver = 50;
-	    obj_to_char(create_object(get_obj_index(OBJ_VNUM_MAP),-1),ch);
+            do_outfit(ch,"");
+            ch->new_silver = 50;
+            obj_to_char(create_object(get_obj_index(OBJ_VNUM_MAP),-1),ch);
 
 	    for(weapon = 1;weapon < 9; weapon++)
 	    {
@@ -2185,14 +2259,15 @@ case CON_GET_ALIGNMENT:
 		case(WEAPON_FLAIL):     sn = gsn_flail;          break;
 		case(WEAPON_WHIP):      sn = gsn_whip;           break;
 		case(WEAPON_POLEARM):   sn = gsn_polearm;        break;
-	      }
+              }
      ch->pcdata->learned[sn] = class_table[ch->class].weapon_prof[weapon - 1];
-	    }
-	    char_to_room( ch, get_room_index( ROOM_VNUM_SCHOOL ) );
-	    send_to_char("\n\r",ch);
-	    do_help(ch,"NEWBIE INFO");
-	    send_to_char("\n\r",ch);
-	}
+            }
+            save_char_obj(ch);
+            char_to_room( ch, get_room_index( ROOM_VNUM_SCHOOL ) );
+            send_to_char("\n\r",ch);
+            do_help(ch,"NEWBIE INFO");
+            send_to_char("\n\r",ch);
+        }
 	else if ( ch->in_room != NULL )
 	{
 	  if(ch->in_room == get_room_index( 9 ) )
@@ -2239,10 +2314,12 @@ case CON_GET_ALIGNMENT:
 		do_check_psi(ch, "");
 	    }
 
-	}
+        }
         if(!IS_SET(ch->act, PLR_WIZINVIS) )
           act( "$n has entered the game.", ch, NULL, NULL, TO_ROOM );
-	do_look( ch, "auto" );
+        log_connection_event("[LOGIN] %s@%s desc=%d level=%d room=%d", ch->name, d->host, d->descriptor, ch->level,
+            ch->in_room ? ch->in_room->vnum : 0);
+        do_look( ch, "auto" );
 
         if( (ch->pcdata->jw_timer < current_time) &&
           IS_SET( ch->act, PLR_JAILED ) )

@@ -1205,24 +1205,53 @@ void do_commands( CHAR_DATA *ch, char *argument )
 void do_wizhelp( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
+    char arg[MAX_INPUT_LENGTH];
     int cmd;
     int col;
+    int min_level;
+    bool filter_by_name;
 
     col = 0;
-    for ( cmd = 0; cmd_table[cmd].name[0] != '\0'; cmd++ )
+    min_level = LEVEL_HERO;
+    filter_by_name = FALSE;
+
+    argument = one_argument(argument, arg);
+
+    if (arg[0] != '\0')
     {
-	if ( cmd_table[cmd].level >= LEVEL_HERO
-	&&   cmd_table[cmd].level <= get_trust( ch )
-	&&   cmd_table[cmd].show)
-	{
-	    sprintf( buf, "[%d] %-12s", cmd_table[cmd].level, cmd_table[cmd].name );
-	    send_to_char( buf, ch );
-	    if ( ++col % 4 == 0 )   /*6*/
-		send_to_char( "\n\r", ch );
-	}
+        if (is_number(arg))
+        {
+            min_level = UMAX(atoi(arg), LEVEL_HERO);
+        }
+        else
+        {
+            filter_by_name = TRUE;
+        }
     }
 
-    if ( col % 6 != 0 )
-	send_to_char( "\n\r", ch );
+    if (filter_by_name)
+        snprintf(buf, sizeof(buf), "[wizhelp] listing commands matching %s\n\r", arg);
+    else
+        snprintf(buf, sizeof(buf), "[wizhelp] listing commands at or above %d\n\r", min_level);
+    send_to_char(buf, ch);
+
+    for ( cmd = 0; cmd_table[cmd].name[0] != '\0'; cmd++ )
+    {
+        if ( cmd_table[cmd].level < min_level
+        ||   cmd_table[cmd].level > get_trust( ch )
+        ||   !cmd_table[cmd].show)
+            continue;
+
+        if (filter_by_name && str_infix(arg, cmd_table[cmd].name))
+            continue;
+
+        sprintf( buf, "[%d] %-12s", cmd_table[cmd].level, cmd_table[cmd].name );
+        send_to_char( buf, ch );
+        if ( ++col % 4 == 0 )
+            send_to_char( "\n\r", ch );
+    }
+
+    if ( col % 4 != 0 )
+        send_to_char( "\n\r", ch );
     return;
 }
