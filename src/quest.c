@@ -802,39 +802,38 @@ void quest_update(void)
 
 	if (IS_NPC(ch)) continue;
 
-	if (ch->nextquest > 0)
-	{
-	    ch->nextquest--;
+        if (ch->nextquest > 0)
+        {
+            ch->nextquest--;
 
-	    if (ch->nextquest == 0)
-	    {
-	        send_to_char("You may now quest again.\n\r",ch);
-	        return;
-	    }
-	}
+            if (ch->nextquest == 0)
+            {
+                send_to_char("You may now quest again.\n\r",ch);
+                continue;
+            }
+        }
         else if (IS_SET(ch->act,PLR_QUESTOR))
         {
-	    if (--ch->countdown <= 0)
+            if (--ch->countdown <= 0)
 	    {
     	        char buf [MAX_STRING_LENGTH];
 
 	        if(ch->level == 50)
-		    ch->nextquest = 5;
-		else
-		    ch->nextquest = 15;
-	        sprintf(buf, "You have run out of time for your quest!\n\rYou may quest again in %d minutes.\n\r",ch->nextquest);
-	        send_to_char(buf, ch);
-	        REMOVE_BIT(ch->act, PLR_QUESTOR);
+                    ch->nextquest = 5;
+                else
+                    ch->nextquest = 15;
+                sprintf(buf, "You have run out of time for your quest!\n\rYou may quest again in %d minutes.\n\r",ch->nextquest);
+                send_to_char(buf, ch);
+                REMOVE_BIT(ch->act, PLR_QUESTOR);
                 ch->questgiver = NULL;
                 ch->countdown = 0;
                 ch->questmob = 0;
-	    }
-	    if (ch->countdown > 0 && ch->countdown < 6)
-	    {
-	        send_to_char("Better hurry, you're almost out of time for your quest!\n\r",ch);
-	        return;
-	    }
+            }
+            if (ch->countdown > 0 && ch->countdown < 6)
+            {
+                send_to_char("Better hurry, you're almost out of time for your quest!\n\r",ch);
+                continue;
+            }
         }
     }
-    return;
 }
