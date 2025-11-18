@@ -13,6 +13,7 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include "merc.h"
+#include "interp.h"
 #include "magic.h"
 
 /* command procedures needed */
@@ -302,6 +303,7 @@ void do_gain(CHAR_DATA *ch, char *argument)
 
 void do_spells(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     char spell_list[LEVEL_HERO1][MAX_STRING_LENGTH];
     char spell_columns[LEVEL_HERO1];
     int sn,lev,mana;
@@ -370,6 +372,7 @@ void do_spells(CHAR_DATA *ch, char *argument)
 
 void do_skills(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     char skill_list[LEVEL_HERO1][MAX_STRING_LENGTH];
     char skill_columns[LEVEL_HERO1];
     int sn,lev;
@@ -499,7 +502,7 @@ void list_group_costs(CHAR_DATA *ch)
 }
 
 
-void list_group_chosen(CHAR_DATA *ch)
+static void list_group_chosen(CHAR_DATA *ch)
 {
     char buf[100];
     int gn,sn,col;
@@ -565,6 +568,7 @@ void list_group_chosen(CHAR_DATA *ch)
 /*
 int exp_per_level(CHAR_DATA *ch, int points)
 {
+    UNUSED_PARAM(points);
     int inc;
 
     if (IS_NPC(ch))
@@ -598,6 +602,7 @@ int exp_per_level(CHAR_DATA *ch, int points)
 */
 int exp_per_level(CHAR_DATA *ch, int points)
 {
+    UNUSED_PARAM(points);
     int inc;
 
     if (IS_NPC(ch))
