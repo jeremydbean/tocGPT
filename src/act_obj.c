@@ -1181,7 +1181,7 @@ static void copper_to_breakdown(long total_copper, long *platinum, long *gold,
         *copper = total_copper % COPPER_PER_SILVER;
 }
 
-static long coins_to_copper(const CHAR_DATA *ch)
+long coins_to_copper(const CHAR_DATA *ch)
 {
     if (ch == NULL)
         return 0;
@@ -3082,10 +3082,10 @@ void do_buy( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    if(query_gold(ch) < cost) {
-	act( "$n tells you 'You can't afford to buy $p'.",
-	    keeper, obj, ch, TO_VICT );
-	return;
+     if(!has_enough_gold(ch, cost)) {
+         act( "$n tells you 'You can't afford to buy $p'.",
+             keeper, obj, ch, TO_VICT );
+         return;
     }
 
     if(obj->level > ch->level) {
@@ -3808,7 +3808,7 @@ void do_repair( CHAR_DATA *ch, char *argument )
 
     cost = ((100 - obj->condition) * obj->level) * 5;
 
-    if(query_gold(ch) < cost) {
+    if(!has_enough_gold(ch, cost)) {
       sprintf(buf,"It will cost you %d to repair %s.  This has been repaired %d times now...\n\r",cost,
               obj->short_descr, obj->number_repair);
       send_to_char(buf,ch);
@@ -3846,6 +3846,20 @@ long query_gold(CHAR_DATA *ch)
   if (ch == NULL) return 0;
 
   return coins_to_copper(ch) / COPPER_PER_GOLD;
+}
+
+bool has_enough_gold(const CHAR_DATA *ch, long gold_cost)
+{
+  long cost_copper;
+
+  if (ch == NULL || gold_cost <= 0)
+    return FALSE;
+
+  if (gold_cost > LONG_MAX / COPPER_PER_GOLD)
+    return FALSE;
+
+  cost_copper = gold_cost * COPPER_PER_GOLD;
+  return coins_to_copper(ch) >= cost_copper;
 }
 
 int query_carry_coins(CHAR_DATA *ch, long amount)

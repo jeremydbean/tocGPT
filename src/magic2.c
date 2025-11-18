@@ -83,7 +83,7 @@ void do_lore( CHAR_DATA *ch, char *argument )
     if( (chance = ch->pcdata->learned[gsn_lore]) < 1)
        return;
 
-    if (query_gold(ch) < (obj->level * 20 - (chance * 2 + ch->level/2)))
+    if (!has_enough_gold(ch, obj->level * 20 - (chance * 2 + ch->level/2)))
     {
       send_to_char("You don't have enough gold for the research.\n\r",ch);
       return;

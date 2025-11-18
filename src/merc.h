@@ -2433,6 +2433,8 @@ void    get_obj         args( ( CHAR_DATA *ch, OBJ_DATA *obj,
 void    do_bounce	args( (OBJ_DATA *obj) );
 void    add_money       args( (CHAR_DATA *ch, long amount) );
 long    query_gold      args( (CHAR_DATA *ch) );
+long    coins_to_copper args( (const CHAR_DATA *ch) );
+bool    has_enough_gold args( (const CHAR_DATA *ch, long gold_cost) );
 int     query_carry_weight args( ( CHAR_DATA *ch) );
 int     query_carry_coins  args( ( CHAR_DATA *ch, long amount) );
 void    add_gold        args( (CHAR_DATA *ch, long amount) );

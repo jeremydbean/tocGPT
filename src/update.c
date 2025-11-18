@@ -282,7 +282,7 @@ void advance_level( CHAR_DATA *ch, bool is_advance )
 
     if(ch->level == 6 && ch->pcdata->guild == GUILD_NONE)
     {
-      if(query_gold(ch) < 50)
+      if(!has_enough_gold(ch, 50))
       { ch->new_gold = 0;
         ch->new_copper = 0;
         ch->new_silver = 0;
