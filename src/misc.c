@@ -27,6 +27,7 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include "merc.h"
+#include "interp.h"
 #include "magic.h"
 
 void do_heal(CHAR_DATA *ch, char *argument)

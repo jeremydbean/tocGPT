@@ -36,6 +36,7 @@
 
 #include "maxload.h"
 #include "merc.h"
+#include "interp.h"
 
 /* -------------------------------------------------------------------------- */
 /*                               GLOBAL STATE                                 */
@@ -79,7 +80,7 @@ ITEM_MAX_LOAD *get_maxload_index(int vnum)
  * This is done with a shell grep; failures simply return zero so the
  * command remains robust even when the external call fails.
  */
-int get_maxload_with_players(int vnum)
+static int get_maxload_with_players(int vnum)
 {
     FILE *fp;
     char buf[1000];

@@ -10,15 +10,12 @@
  */
 /* Simplified for modern ANSI C */
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #define args(list) list
 #define DECLARE_DO_FUN(fun) DO_FUN fun
 #define DECLARE_SPEC_FUN(fun) SPEC_FUN fun
 #define DECLARE_SPELL_FUN(fun) SPELL_FUN fun
-
-
-/* system calls */
-int unlink();
-int system();
 
 
 
@@ -45,6 +42,8 @@ typedef int                             bool;
 typedef short   int                     sh_int;
 typedef unsigned char                   bool;
 #endif
+
+#define UNUSED_PARAM(x) ((void)(x))
 
 
 
@@ -2429,7 +2428,7 @@ int     query_carry_coins  args( ( CHAR_DATA *ch, long amount) );
 void    add_gold        args( (CHAR_DATA *ch, long amount) );
 void    add_copper      args( (CHAR_DATA *ch, long amount) );
 void    add_silver      args( (CHAR_DATA *ch, long amount) );
-void    add_platinumi   args( (CHAR_DATA *ch, long amount) );
+void    add_platinum    args( (CHAR_DATA *ch, long amount) );
 
 /* act_wiz.c */
 
@@ -2508,6 +2507,7 @@ void	respawn_relic	args( ( int i ) );
 /* fight.c */
 bool    check_aggrostab  args( (CHAR_DATA *ch, CHAR_DATA *victim ) );
 void    aggrostab        args( (CHAR_DATA *ch, CHAR_DATA *victim ) );
+bool    check_hate       args( (CHAR_DATA *ch, CHAR_DATA *vict ) );
 bool    is_safe         args( (CHAR_DATA *ch, CHAR_DATA *victim ) );
 bool    is_safe_spell   args( (CHAR_DATA *ch, CHAR_DATA *victim, bool area ) );
 void    violence_update args( ( void ) );
@@ -2534,7 +2534,7 @@ char*   get_guildname   args( ( const int guild ) );
 int     castle_lookup   args( ( const char *name) );
 char*   get_castlename  args( ( const int guild ) );
 bool    is_old_mob      args ( (CHAR_DATA *ch) );
-int     get_skill       args( ( CHAR_DATA *ch, int sn ) );
+int     get_skill       args( ( const CHAR_DATA *ch, int sn ) );
 int     get_weapon_sn   args( ( CHAR_DATA *ch ) );
 int     get_weapon_skill args(( CHAR_DATA *ch, int sn ) );
 int     get_age         args( ( CHAR_DATA *ch ) );
@@ -2544,7 +2544,7 @@ int     get_curr_stat   args( ( CHAR_DATA *ch, int stat ) );
 int     get_max_train   args( ( CHAR_DATA *ch, int stat ) );
 int     can_carry_n     args( ( CHAR_DATA *ch ) );
 int     can_carry_w     args( ( CHAR_DATA *ch ) );
-bool    is_name         args( ( char *str, char *namelist ) );
+bool    is_name         args( ( const char *str, const char *namelist ) );
 bool    is_full_name	args( ( char *str, char *namelist ) );
 void    affect_to_char  args( ( CHAR_DATA *ch, AFFECT_DATA *paf ) );
 void    affect_to_obj   args( ( OBJ_DATA *obj, AFFECT_DATA *paf ) );
@@ -2585,29 +2585,29 @@ int     get_obj_number  args( ( OBJ_DATA *obj ) );
 int     get_obj_weight  args( ( OBJ_DATA *obj ) );
 bool    room_is_dark    args( ( ROOM_INDEX_DATA *pRoomIndex ) );
 bool    room_is_private args( ( ROOM_INDEX_DATA *pRoomIndex ) );
-bool    can_see         args( ( CHAR_DATA *ch, CHAR_DATA *victim ) );
-bool    can_see_obj     args( ( CHAR_DATA *ch, OBJ_DATA *obj ) );
+bool    can_see         args( ( CHAR_DATA *ch, const CHAR_DATA *victim ) );
+bool    can_see_obj     args( ( CHAR_DATA *ch, const OBJ_DATA *obj ) );
 bool    can_see_room    args( ( CHAR_DATA *ch, ROOM_INDEX_DATA *pRoomIndex) );
 bool    can_drop_obj    args( ( CHAR_DATA *ch, OBJ_DATA *obj ) );
 char *  item_type_name  args( ( OBJ_DATA *obj ) );
 char *  affect_loc_name args( ( int location ) );
-char *  affect_bit_name args( ( int vector ) );
-char *  affect2_bit_name args( ( int vector ) );
+char *  affect_bit_name args( ( long vector ) );
+char *  affect2_bit_name args( ( long vector ) );
 char *  extra_bit_name  args( ( int extra_flags ) );
 char *  extra2_bit_name  args( ( int extra_flags ) );
 char *  wear_bit_name   args( ( int wear_flags ) );
-char *  act_bit_name    args( ( int act_flags ) );
-char *  act2_bit_name   args( ( int act_flags, int act_flags2 ) );
-char *  off_bit_name    args( ( int off_flags ) );
-char *  off2_bit_name   args( ( int off_flags ) );
-char *  imm_bit_name    args( ( int imm_flags ) );
-char *  imm2_bit_name    args( ( int imm_flags ) );
-char *  vuln_bit_name   args( ( int vuln_flags) );
-char *  res_bit_name    args( ( int res_flags) );
-char *  form_bit_name   args( ( int form_flags ) );
-char *  part_bit_name   args( ( int part_flags ) );
+char *  act_bit_name    args( ( long act_flags ) );
+char *  act2_bit_name   args( ( long act_flags, long act_flags2 ) );
+char *  off_bit_name    args( ( long off_flags ) );
+char *  off2_bit_name   args( ( long off_flags ) );
+char *  imm_bit_name    args( ( long imm_flags ) );
+char *  imm2_bit_name    args( ( long imm_flags ) );
+char *  vuln_bit_name   args( ( long vuln_flags) );
+char *  res_bit_name    args( ( long res_flags) );
+char *  form_bit_name   args( ( long form_flags ) );
+char *  part_bit_name   args( ( long part_flags ) );
 char *  weapon_bit_name args( ( int weapon_flags ) );
-char *  comm_bit_name   args( ( int comm_flags ) );
+char *  comm_bit_name   args( ( long comm_flags ) );
 char *  room_flag_name  args( ( int room_flag  ) );
 char *  room_flag2_name  args( ( int room_flag  ) );
 void    affect_to_room  args( ( ROOM_INDEX_DATA *pRoom, ROOM_AFF_DATA *raf ) );
@@ -2653,6 +2653,10 @@ char * first_arg	args( ( char *argument, char *arg_first, bool fCase ) );
 void update_pkills      args( ( CHAR_DATA *ch ) );
 void load_pkills        args( ( void ) );
 void save_pkills        args( ( void ) );
+
+/* wizlist.c */
+void load_wizlist      args( ( void ) );
+void save_wizlist      args( ( void ) );
 
 /* save.c */
 void    save_char_obj   args( ( CHAR_DATA *ch ) );

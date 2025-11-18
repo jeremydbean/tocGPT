@@ -16,6 +16,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #include <stdlib.h>
 #include <stdlib.h>
 
@@ -231,7 +232,7 @@ bool is_old_mob(CHAR_DATA *ch)
 }
 
 /* for returning skill information */
-int get_skill(CHAR_DATA *ch, int sn)
+int get_skill(const CHAR_DATA *ch, int sn)
 {
     int skill;
 
@@ -734,35 +735,41 @@ bool is_name( const char *str, char *namelist )
 }
 */
 
-bool is_name ( char *str, char *namelist )
+bool is_name ( const char *str, const char *namelist )
 {
     char name[MAX_INPUT_LENGTH], part[MAX_INPUT_LENGTH];
-    char *list, *string;
+    char list[MAX_STRING_LENGTH];
+    char string[MAX_STRING_LENGTH];
+    char *list_ptr, *string_ptr;
 
+    strncpy( string, str, sizeof(string) - 1 );
+    string[sizeof(string) - 1] = '\0';
+    strncpy( list, namelist, sizeof(list) - 1 );
+    list[sizeof(list) - 1] = '\0';
 
-    string = str;
+    string_ptr = string;
     /* we need ALL parts of string to match part of namelist */
     for ( ; ; )  /* start parsing string */
     {
-	str = one_argument(str,part);
+        string_ptr = one_argument(string_ptr,part);
 
-	if (part[0] == '\0' )
-	    return TRUE;
+        if (part[0] == '\0' )
+            return TRUE;
 
 	/* check to see if this is part of namelist */
-	list = namelist;
-	for ( ; ; )  /* start parsing namelist */
-	{
-	    list = one_argument(list,name);
-	    if (name[0] == '\0')  /* this name was not found */
-		return FALSE;
+        list_ptr = list;
+        for ( ; ; )  /* start parsing namelist */
+        {
+            list_ptr = one_argument(list_ptr,name);
+            if (name[0] == '\0')  /* this name was not found */
+                return FALSE;
 
-	    if (!str_cmp(string,name))
-		return TRUE; /* full pattern match */
+            if (!str_cmp(string,name))
+                return TRUE; /* full pattern match */
 
-	    if (!str_prefix(part,name))
-		break;
-	}
+            if (!str_prefix(part,name))
+                break;
+        }
     }
 }
 
@@ -1472,7 +1479,7 @@ OBJ_DATA *get_eq_char( CHAR_DATA *ch, int iWear )
 }
 
 /* Check and do the obj_actions... -Graves */
-void do_obj_action(CHAR_DATA *ch, OBJ_DATA *obj)
+static void do_obj_action(CHAR_DATA *ch, OBJ_DATA *obj)
 {
     OBJ_ACTION_DATA *action;
 
@@ -2600,7 +2607,7 @@ bool can_see_room( CHAR_DATA *ch, ROOM_INDEX_DATA *pRoomIndex )
 /*
  * True if char can see victim.
  */
-bool can_see( CHAR_DATA *ch, CHAR_DATA *victim )
+bool can_see( CHAR_DATA *ch, const CHAR_DATA *victim )
 {
 /* RT changed so that WIZ_INVIS has levels */
     if ( ch == victim )
@@ -2673,10 +2680,10 @@ bool can_see( CHAR_DATA *ch, CHAR_DATA *victim )
 /*
  * True if char can see obj.
  */
-bool can_see_obj( CHAR_DATA *ch, OBJ_DATA *obj )
+bool can_see_obj( CHAR_DATA *ch, const OBJ_DATA *obj )
 {
     if ( !IS_NPC(ch) && IS_SET(ch->act, PLR_HOLYLIGHT) )
-	return TRUE;
+        return TRUE;
 
     if ( IS_SET(obj->extra_flags,ITEM_VIS_DEATH))
 	return FALSE;
@@ -2805,7 +2812,7 @@ char *affect_loc_name( int location )
 /*
  * Return ascii name of an affect bit vector.
  */
-char *affect_bit_name( int vector )
+char *affect_bit_name( long vector )
 {
     static char buf[512];
 
@@ -2835,7 +2842,7 @@ char *affect_bit_name( int vector )
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *affect2_bit_name( int vector )
+char *affect2_bit_name( long vector )
 {
     static char buf[512];
 
@@ -2910,7 +2917,7 @@ char *extra2_bit_name( int extra_flags )
 
 }
 /* return ascii name of an act vector */
-char *act_bit_name( int act_flags )
+char *act_bit_name( long act_flags )
 {
     static char buf[512];
 
@@ -2962,7 +2969,7 @@ char *act_bit_name( int act_flags )
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *act2_bit_name( int act_flags, int act_flags2 )
+char *act2_bit_name( long act_flags, long act_flags2 )
 {
     static char buf[512];
 
@@ -2981,7 +2988,7 @@ char *act2_bit_name( int act_flags, int act_flags2 )
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *comm_bit_name(int comm_flags)
+char *comm_bit_name(long comm_flags)
 {
     static char buf[512];
 
@@ -3006,7 +3013,7 @@ char *comm_bit_name(int comm_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *imm_bit_name(int imm_flags)
+char *imm_bit_name(long imm_flags)
 {
     static char buf[512];
 
@@ -3035,7 +3042,7 @@ char *imm_bit_name(int imm_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *res_bit_name(int res_flags)
+char *res_bit_name(long res_flags)
 {
     static char buf[512];
 
@@ -3065,7 +3072,7 @@ char *res_bit_name(int res_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 
 }
-char *vuln_bit_name(int vuln_flags)
+char *vuln_bit_name(long vuln_flags)
 {
     static char buf[512];
 
@@ -3097,10 +3104,11 @@ char *vuln_bit_name(int vuln_flags)
 
 }
 
-char *imm2_bit_name(int imm_flags)
+char *imm2_bit_name(long imm_flags)
 {
     static char buf[512];
 
+    UNUSED_PARAM(imm_flags);
     buf[0] = '\0';
 
     return ( buf[0] != '\0' ) ? buf+1 : "none";
@@ -3129,7 +3137,7 @@ char *wear_bit_name(int wear_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *form_bit_name(int form_flags)
+char *form_bit_name(long form_flags)
 {
     static char buf[512];
 
@@ -3164,7 +3172,7 @@ char *form_bit_name(int form_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *part_bit_name(int part_flags)
+char *part_bit_name(long part_flags)
 {
     static char buf[512];
 
@@ -3209,7 +3217,7 @@ char *weapon_bit_name(int weapon_flags)
     return ( buf[0] != '\0' ) ? buf+1 : "none";
 }
 
-char *off_bit_name(int off_flags)
+char *off_bit_name(long off_flags)
 {
     static char buf[512];
 
@@ -3244,7 +3252,7 @@ char *off_bit_name(int off_flags)
 }
 
 
-char *off2_bit_name(int off_flags)
+char *off2_bit_name(long off_flags)
 {
     static char buf[512];
 
