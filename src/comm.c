@@ -918,10 +918,8 @@ void new_descriptor( int control )
     BAN_DATA *pban;
     struct sockaddr_in sock;
     struct hostent *from;
-    /* int ipaddr[4]; moved lower */
     int desc;
     socklen_t size;
-    int ipaddr[4];
 
     size = sizeof(sock);
     getsockname( control, (struct sockaddr *) &sock, &size );
@@ -971,15 +969,11 @@ void new_descriptor( int control )
 	int addr;
 
 /*	create_ident( dnew, sock.sin_addr.s_addr, ntohs( sock.sin_port ) ); */
-	addr = ntohl( sock.sin_addr.s_addr );
-	ipaddr[0] = ( addr >> 24 ) & 0xFF;
-	ipaddr[1] = ( addr >> 16 ) & 0xFF;
-	ipaddr[2] = ( addr >> 8 ) & 0xFF;
-	ipaddr[3] = ( addr ) & 0xFF;
-	sprintf( buf, "%d.%d.%d.%d",
-	    ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF,
-	    ( addr >>  8 ) & 0xFF, ( addr       ) & 0xFF
-	    );
+        addr = ntohl( sock.sin_addr.s_addr );
+        sprintf( buf, "%d.%d.%d.%d",
+            ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF,
+            ( addr >>  8 ) & 0xFF, ( addr       ) & 0xFF
+            );
 	sprintf( log_buf, "Sock.sinaddr:  %s", buf );
 	log_string( log_buf );
 
@@ -2837,7 +2831,7 @@ void show_string(struct descriptor_data *d, char *input)
 {
     char buffer[4*MAX_STRING_LENGTH];
     char buf[MAX_INPUT_LENGTH];
-    register char *scan, *chk;
+    register char *scan;
     int lines = 0, toggle = 1;
     int show_lines;
 
@@ -3532,7 +3526,7 @@ void config_prompt( CHAR_DATA *ch )
     }
 
     sprintf(buf2, "%s", ch->prompt);
-    if (buf2 == NULL || buf2[0] == '\0') {
+    if (buf2[0] == '\0') {
         if( IS_IMMORTAL( ch ) && ch->in_room ) {
             incl++;
             sprintf( buf, "<Room:%d", ch->in_room->vnum );
@@ -3722,7 +3716,7 @@ static void handle_web_admin_command( const char *line )
     log_string( log_buf_local );
 }
 
-static void process_web_admin_queue( void )
+__attribute__((unused)) static void process_web_admin_queue( void )
 {
     FILE *queue;
     char line[MAX_STRING_LENGTH * 2];

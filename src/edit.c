@@ -179,7 +179,6 @@ void edit_exit( CHAR_DATA *ch, char *argument )
     ROOM_INDEX_DATA *location;
     EXIT_DATA *pexit;
     int door;
-    int vnum;
     int type = 0, key=-1;
     sh_int exit_info=0;
     char arg1[MAX_INPUT_LENGTH];
@@ -220,11 +219,9 @@ void edit_exit( CHAR_DATA *ch, char *argument )
             send_to_char("Unknown location.\n\r", ch);
             return;
         }
-        vnum = location->vnum;
     } else
     {
         send_to_char("Deleteing exit.\n\r", ch);
-        vnum = -1;
         location = get_room_index( -1 );
     }
 

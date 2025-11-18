@@ -565,7 +565,7 @@ void list_group_chosen(CHAR_DATA *ch)
 /*
 int exp_per_level(CHAR_DATA *ch, int points)
 {
-    int expl,inc;
+    int inc;
 
     if (IS_NPC(ch))
 	return 1000;
@@ -598,12 +598,10 @@ int exp_per_level(CHAR_DATA *ch, int points)
 */
 int exp_per_level(CHAR_DATA *ch, int points)
 {
-    int expl,inc;
+    int inc;
 
     if (IS_NPC(ch))
 	return 1000;
-
-    expl = 2000;
 
     if(ch->pcdata->guild != GUILD_NONE)
       inc = pc_race_table[ch->race].class_mult2[ch->pcdata->guild];
