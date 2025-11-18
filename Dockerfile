@@ -14,7 +14,7 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app/area
 RUN apt-get update \
- && apt-get install -y --no-install-recommends libxcrypt1 python3 python3-pip \
+ && apt-get install -y --no-install-recommends libcrypt1 python3 python3-pip \
  && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir fastapi "uvicorn[standard]"
