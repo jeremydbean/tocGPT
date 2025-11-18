@@ -125,6 +125,16 @@ The container automatically creates the writable data directories (`player`, `ba
 
 The container entrypoint accepts optional arguments if you need to pass flags directly to the `merc` binary (for example, `newlock` to block new players). If no arguments are provided, it automatically starts the server on the configured port.
 
+## In-game help coverage (players and immortals)
+- `help summary` still lists the basics for players, but we have expanded several hidden/immortal topics:
+  - `help wizhelp` describes filtering immortal commands by name fragment or minimum level.
+  - `help sockets` documents the connection dashboard and how to filter by host/IP.
+  - `help ban` covers ban/allow/deny/undeny workflows and their logging.
+  - `help newlock` explains temporary login locks for new characters or the entire game.
+  - `help channel-policies` details communication restrictions (nochannels/noemote/noshout/notell/notitle) and the `warn` command.
+
+Immortal-only topics remain hidden from lower-level players; they will not show up unless your trust level allows the command.
+
 ## Publishing your changes to GitHub
 If you don't see updates on GitHub after working locally, verify that your commits are pushed to a remote. From the repository root:
 

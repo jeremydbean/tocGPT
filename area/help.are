@@ -179,6 +179,69 @@ Example:  PROMPT <%hhp %mm %vmv>
         Will set your prompt to "<10hp 100m 100mv>"
 ~
 
+60 WIZHELP~
+Syntax: wizhelp
+Syntax: wizhelp <name fragment>
+Syntax: wizhelp <minimum level>
+
+Lists immortal commands you have access to. You can filter by part of a
+command name (for example, "wizhelp ban" to see ban controls), or you can
+raise the floor with a level number to focus on higher-level tools (for
+example, "wizhelp 66" to see Archangel+ powers).
+
+If you do not have the level required for a command, it will not appear in
+the list or in this help.
+~
+
+63 SOCKETS KSOCK~
+Syntax: sockets
+Syntax: sockets ip <substring>
+Syntax: sockets <player>
+Syntax: ksock <descriptor|player>
+
+SOCKETS shows all current connections with state, host/IP, idle time, level,
+position, and room. Filter by IP/host ("sockets ip example.com") or by name
+("sockets bob"). It only shows what your trust allows you to see.
+
+KSOCK cleanly drops a specific descriptor (use the descriptor number from
+SOCKETS) or any connection for a named character.
+~
+
+67 BAN ALLOW DENY UNDENY~
+Syntax: ban <site|host>
+Syntax: allow <site|host>
+Syntax: deny <player>
+Syntax: undeny <player>
+
+BAN blocks future connections from a host or IP fragment. ALLOW removes a
+matching ban entry. DENY prevents a player from logging in until an UNDENY.
+All actions are logged for audit purposes alongside connection history.
+~
+
+66 NEWLOCK WIZLOCK~
+Syntax: newlock
+Syntax: wizlock
+
+NEWLOCK closes character creation to new accounts while allowing existing
+characters to play. WIZLOCK restricts logins to immortals only. Both are
+clearly announced to the game and written to the log.
+~
+
+64 CHANNEL-POLICIES NOCHANNELS NOEMOTE NOSHOUT NOTELL NOTITLE WARN~
+Syntax: nochannels <player>
+Syntax: noemote <player>
+Syntax: noshout <player>
+Syntax: notell <player>
+Syntax: notitle <player>
+Syntax: warn <player> <reason>
+
+Use these controls to curb abuse without disconnecting players. NOCHANNELS
+blocks global channels, NOEMOTE stops emotes, NOSHOUT stops shouts, and
+NOTELL prevents tells. NOTITLE removes the ability to change titles. WARN
+sends a recorded warning to the player. All actions should be used with a
+brief reason for future reference.
+~
+
 0 $~
 
 #$
