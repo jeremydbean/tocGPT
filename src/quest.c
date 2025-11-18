@@ -28,6 +28,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 
 DECLARE_DO_FUN( do_say );
 /* Object vnums for Quest Rewards */

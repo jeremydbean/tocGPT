@@ -20,8 +20,9 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #endif
- 
+
 #include "merc.h"
+#include "interp.h"
 #pragma GCC diagnostic ignored "-Wformat-security"
 #pragma GCC diagnostic ignored "-Wuse-after-free"
 #include "db.h"
@@ -296,7 +297,7 @@ void    reset_area      args( ( AREA_DATA * pArea ) );
 #if defined(unix)
 /* RT max open files fix */
  
-void maxfilelimit()
+static void maxfilelimit(void)
 {
 #ifndef linux
     struct rlimit r;
@@ -486,17 +487,17 @@ void boot_db( void )
 /*
  * Load Area File loads the whole file
  */
-void load_area_file( char *strArea )
+void load_area_file( char *area_filename )
 {
-    if ( strArea[0] == '-' )
+    if ( area_filename[0] == '-' )
     {
         fpArea = stdin;
     }
     else
     {
-        if ( ( fpArea = fopen( strArea, "r" ) ) == NULL )
+        if ( ( fpArea = fopen( area_filename, "r" ) ) == NULL )
         {
-            perror( strArea );
+            perror( area_filename );
             exit( 1 );
         }
     }
@@ -728,7 +729,7 @@ void load_socials( FILE *fp)
  * read_mob_action:  reads in a new action for M-style mobs
  * by Haiku
  */
-MOB_ACTION_DATA * read_mob_action( FILE *fp )
+static MOB_ACTION_DATA * read_mob_action( FILE *fp )
 {
     MOB_ACTION_DATA * new_action;
  
@@ -739,7 +740,7 @@ MOB_ACTION_DATA * read_mob_action( FILE *fp )
     return new_action;
 }
 
-void read_m_mob_extras( FILE *fp, MOB_INDEX_DATA *pMobIndex )
+static void read_m_mob_extras( FILE *fp, MOB_INDEX_DATA *pMobIndex )
 {
     MOB_ACTION_DATA *new_action, *prev_action = NULL;
     char letter;
@@ -1037,12 +1038,12 @@ void load_objects( FILE *fp )
  
         for ( ; ; )
         {
-            char letter;
- 
-            letter = fread_letter( fp );
+            char letter_inner;
+
+            letter_inner = fread_letter( fp );
 
  
-            if ( letter == 'A' )
+            if ( letter_inner == 'A' )
             {
                 AFFECT_DATA *paf;
  
@@ -1059,7 +1060,7 @@ void load_objects( FILE *fp )
                 top_affect++;
             }
  
-            else if ( letter == 'E' )
+            else if ( letter_inner == 'E' )
             {
                 EXTRA_DESCR_DATA *ed;
  
@@ -1071,9 +1072,9 @@ void load_objects( FILE *fp )
                 top_ed++;
             }
 	    
-	    else if ( letter == 'T' )
-	    {
-		OBJ_ACTION_DATA *new_action;
+            else if ( letter_inner == 'T' )
+            {
+                OBJ_ACTION_DATA *new_action;
 
 		new_action 		= alloc_perm( sizeof(*new_action) );
 		new_action->not_vict_action	= fread_string(fp);
@@ -1085,7 +1086,7 @@ void load_objects( FILE *fp )
  
             else
             {
-                ungetc( letter, fp );
+                ungetc( letter_inner, fp );
                 break;
             }
         }
@@ -2107,14 +2108,14 @@ void reset_area( AREA_DATA *pArea )
              && !IS_SET(pRoomIndex->room_flags, ROOM_NEWBIES_ONLY)
              && number_percent () <= 1
              && number_range(1,200) <= 1)
-             {
-               char buf[MAX_STRING_LENGTH];
+            {
+               char trap_buf[MAX_STRING_LENGTH];
                if(IS_SET(pexit->exit_info, EX_PICKPROOF) )
                  REMOVE_BIT(pexit->exit_info, EX_PICKPROOF);
                SET_BIT( pexit->exit_info, EX_TRAPPED);
                pexit->trap = dice(1,10);
-               sprintf(buf,"New Trap: [Room: %d]",pRoomIndex->vnum);
-               wizinfo(buf,LEVEL_IMMORTAL);
+               sprintf(trap_buf,"New Trap: [Room: %d]",pRoomIndex->vnum);
+               wizinfo(trap_buf,LEVEL_IMMORTAL);
              }
             last = TRUE;
             break;
@@ -2517,7 +2518,7 @@ int calc_modifier(int apply_stats, int item_type, int nr_rolls)
  * Modification, 21 March 1999, Blackbird
  * Roll dice to determine APPLY.
  */
-int calc_apply_stats()
+int calc_apply_stats(void)
 { int result;
 
   result = number_bits(5);
@@ -3720,6 +3721,7 @@ void do_areas( CHAR_DATA *ch, char *argument )
  
 void do_memory( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
  
     sprintf( buf, "Affects %5d\n\r", top_affect    ); send_to_char( buf, ch );
@@ -3748,7 +3750,7 @@ void do_memory( CHAR_DATA *ch, char *argument )
     return;
 }
  
-char* identify_obj(OBJ_DATA *obj)
+static char* identify_obj(OBJ_DATA *obj)
 {
     static char bigbuf[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
@@ -3924,7 +3926,7 @@ char* identify_obj(OBJ_DATA *obj)
     return bigbuf;
 }
  
-char* stat_mob(CHAR_DATA *victim)
+static char* stat_mob(CHAR_DATA *victim)
 {
     static char bigbuf[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
@@ -4438,7 +4440,7 @@ int number_bits( int width )
  */
 static  int     rgiState[2+55];
  
-void init_mm( )
+void init_mm(void)
 {
     int *piState;
     int iState;
@@ -4841,6 +4843,8 @@ void tail_chain( void )
 
 void do_dump_exits( CHAR_DATA *ch , char *argument )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
     ROOM_INDEX_DATA *in_room;
     ROOM_INDEX_DATA *to_room;
     FILE *fp;
@@ -4871,7 +4875,7 @@ void do_dump_exits( CHAR_DATA *ch , char *argument )
     return;
 }
 
-void load_relics()
+void load_relics(void)
 {
     RELIC_1 = create_object(get_obj_index(VNUM_RELIC_1),1);
     RELIC_ROOM_1 = get_room_index(RELIC_1->value[0]);
@@ -4910,7 +4914,7 @@ void load_relics()
     }
 }
 
-void update_relics()
+void update_relics(void)
 {
     	if(RELIC_1->in_room != RELIC_ROOM_1 &&
 	   RELIC_1->in_room != RELIC_ROOM_2 &&
