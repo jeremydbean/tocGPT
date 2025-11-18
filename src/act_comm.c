@@ -18,11 +18,14 @@
 #include <time.h>
 #include <ctype.h>
 #include "merc.h"
+#include "interp.h"
 extern void do_backup(void);
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_quit  );
 DECLARE_DO_FUN(do_drop  );
+
+static bool is_immnote_to( CHAR_DATA *ch, NOTE_DATA *pnote );
 
 const struct col_table_type col_table[] =
 {
@@ -79,7 +82,7 @@ void    note_remove     args( ( CHAR_DATA *ch, NOTE_DATA *pnote ) );
 void    note_delete     args( ( NOTE_DATA *pnote ) );
 bool    check_parse_name        args( ( char *name ) );
 
-bool is_immnote_to( CHAR_DATA *ch, NOTE_DATA *pnote )
+static bool is_immnote_to( CHAR_DATA *ch, NOTE_DATA *pnote )
 {
     if ( IS_IMMORTAL(ch) && is_name( "immortal", pnote->to_list ) )
         return TRUE;
@@ -724,6 +727,7 @@ void do_note( CHAR_DATA *ch, char *argument )
 
 void do_delet( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     send_to_char("You must type the full command to delete yourself.\n\r",ch);
 }
 /*
@@ -852,6 +856,7 @@ void do_delete( CHAR_DATA *ch, char *argument)
 
 void do_channels( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     /* lists all channels and their status */
     send_to_char("   channel     status\n\r",ch);
     send_to_char("---------------------\n\r",ch);
@@ -1171,6 +1176,7 @@ void do_hero( CHAR_DATA *ch, char *argument )
 
 void do_deaf( CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     if (IS_SET(ch->comm,COMM_NOSHOUT))
     {
       send_to_char("The gods have taken away your ability to shout.\n\r",ch);
@@ -1193,6 +1199,7 @@ void do_deaf( CHAR_DATA *ch, char *argument)
 
 void do_quiet ( CHAR_DATA *ch, char * argument)
 {
+    UNUSED_PARAM(argument);
     if (IS_SET(ch->comm,COMM_QUIET))
     {
 	 send_to_char("Quiet mode removed.\n\r",ch);
@@ -2447,6 +2454,7 @@ const   struct  pose_table_type pose_table      []      =
 
 void do_pose( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     int level;
     int pose;
 
@@ -2497,6 +2505,7 @@ void do_typo( CHAR_DATA *ch, char *argument )
 
 void do_roll( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     int chance;
   	chance = number_percent( );
     sprintf(log_buf,"[Roll]: \x02\x02%s rolls %d/100\x02\x01",ch->name,chance);
@@ -2506,6 +2515,7 @@ void do_roll( CHAR_DATA *ch, char *argument )
 
 void do_qui( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     send_to_char( "If you want to QUIT, you have to spell it out.\n\r", ch );
     return;
 }
@@ -2514,6 +2524,7 @@ void do_qui( CHAR_DATA *ch, char *argument )
 
 void do_quit( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     DESCRIPTOR_DATA *d, *d_next;
     int id;
 
@@ -2588,6 +2599,7 @@ void do_quit( CHAR_DATA *ch, char *argument )
 
 void do_save( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     if ( IS_NPC(ch) )
         return;
 
@@ -3320,10 +3332,10 @@ void do_color ( CHAR_DATA *ch, char *argument )
     sprintf (buf,"Color:  %s\n\r",ch->pcdata->color ? "ON":"OFF");
     send_to_char (buf,ch);
     for (t = 1; t <= COL_MAX; t++) {
-      odd = t % 2;
+      odd = (t % 2) != 0;
       sprintf (buf,"%-10s - [%3d] \x02%c%-16s\x02\x01",col_table[t].name,
-	ch->pcdata->col_table[col_table[t].num],  col_table[t].num,
-	col_disp_table[ch->pcdata->col_table[col_table[t].num]].type);
+        ch->pcdata->col_table[col_table[t].num],  col_table[t].num,
+        col_disp_table[ch->pcdata->col_table[col_table[t].num]].type);
       send_to_char (buf,ch);
       if (!odd) send_to_char ("\n\r",ch);
     }
@@ -3348,7 +3360,7 @@ void do_color ( CHAR_DATA *ch, char *argument )
   if (!str_cmp (arg,"list")) {
     send_to_char ("Available colors:\n\r",ch);
     for ( t = 0; t < 14; t++ ) {
-      odd = t % 2;
+      odd = (t % 2) != 0;
       sprintf (buf," [%2d] %-18s",t,col_disp_table[t].type);
       send_to_char (buf,ch);
       if (odd) send_to_char ("\n\r",ch);
@@ -3361,7 +3373,7 @@ void do_color ( CHAR_DATA *ch, char *argument )
     for ( t = 1; t <= COL_MAX; t++ ) {
       if (!col_table[t].name) break;
       ch->pcdata->col_table[col_table[t].num] =
-	col_table[t].def;
+        (sh_int) col_table[t].def;
     }
     send_to_char ("Color defaults loaded.\n\r",ch);
     return;
@@ -3391,9 +3403,9 @@ void do_color ( CHAR_DATA *ch, char *argument )
 	}
       }
       if ((col >= 0) && (col <= 14)) {
-	ch->pcdata->col_table[idx] = col;
-	send_to_char ("Ok.\n\r",ch);
-	return;
+        ch->pcdata->col_table[idx] = (sh_int) col;
+        send_to_char ("Ok.\n\r",ch);
+        return;
       }
       send_to_char ("Color not found.\n\r",ch);
       return;

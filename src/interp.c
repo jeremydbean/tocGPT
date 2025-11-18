@@ -710,7 +710,8 @@ CMD_LIST *cmd_list_elem;
 
 
 int social_tab_sn_lookup(char *arg1, int trust) {
-int len;
+    UNUSED_PARAM(trust);
+    int len;
 int index1, index2;
 char index_char1,index_char2;
 SOCIAL_LIST *social_list_elem;
@@ -775,7 +776,7 @@ SOCIAL_LIST *social_list_elem;
   return -1;
 }
 
-void fill_comm_table_index() {
+void fill_comm_table_index(void) {
 CMD_SECOND_CHAR *cmd_sec_char = NULL;
 CMD_LIST        *cmd_list_elem = NULL;
 CMD_LIST        *free_spot = NULL;
@@ -867,7 +868,7 @@ char buf[1000];
 } /* FILL_COMM_TABLE_INDEX */
 
 
-void fill_social_table_index() {
+void fill_social_table_index(void) {
 SOCIAL_SECOND_CHAR *social_sec_char = NULL;
 SOCIAL_LIST        *social_list_elem = NULL;
 SOCIAL_LIST        *free_spot = NULL;
@@ -1179,6 +1180,7 @@ char *one_argument( char *argument, char *arg_first )
  */
 void do_commands( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     int cmd;
     int col;
@@ -1204,6 +1206,7 @@ void do_commands( CHAR_DATA *ch, char *argument )
 
 void do_wizhelp( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     int cmd;
     int col;
