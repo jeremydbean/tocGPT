@@ -3510,17 +3510,6 @@ void config_prompt( CHAR_DATA *ch )
     char buf[MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
-    size_t used = 0;
-
-#define APPEND_TO_PROMPT(...) do { \
-    int _written = snprintf(buf + used, sizeof(buf) - used, __VA_ARGS__); \
-    if (_written < 0) _written = 0; \
-    if ((size_t)_written >= sizeof(buf) - used) { \
-        used = sizeof(buf) - 1; \
-    } else { \
-        used += (size_t)_written; \
-    } \
-} while (0)
 
     buf[0] = '\0';
     buf2[0] = '\0';
@@ -3639,8 +3628,6 @@ void config_prompt( CHAR_DATA *ch )
         send_to_char("You're AFK! ",ch);
    else
         send_to_char( buf2, ch );
-
-#undef APPEND_TO_PROMPT
 
    return;
 }
