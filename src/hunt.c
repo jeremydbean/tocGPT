@@ -10,6 +10,7 @@
 #include <time.h>
 #include <signal.h>
 #include "merc.h"
+#include "interp.h"
 
 
 #define BFS_ERROR               -1
@@ -400,6 +401,7 @@ int get_hunting_status( CHAR_DATA *hunter)
 
 void do_danger_sense( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
@@ -611,7 +613,7 @@ void hunt_victim(CHAR_DATA *ch, int ANNOY)
     int 	i, secret_cnt,  dir;
     int		distance;
     char        buf[MAX_STRING_LENGTH];
-    char	achOpenDir[10];		/* Maximum length of a dir_name_cmd. */
+    char	achOpenDir[16];		/* Maximum length of a dir_name_cmd. */
     const char	*dir_name_cmd[]	=
     {
 	"n", "e", "s", "w", "u", "d", "ne", "nw", "se", "sw"
@@ -800,11 +802,11 @@ void hunt_victim(CHAR_DATA *ch, int ANNOY)
 			    if (IS_SET(ch->in_room->exit[i]->exit_info,EX_SECRET))
 				secret_cnt++;
 		    }
-		    sprintf(achOpenDir, "%d.secret",secret_cnt);
+		    snprintf(achOpenDir, sizeof(achOpenDir), "%d.secret", secret_cnt);
 #endif
 		}
 		else
-		    sprintf(achOpenDir, "%s", dir_name_cmd[dir]);
+		    snprintf(achOpenDir, sizeof(achOpenDir), "%s", dir_name_cmd[dir]);
 		do_unlock(ch, achOpenDir);
 		do_open(ch, achOpenDir);
 	     }
@@ -833,11 +835,11 @@ void hunt_victim(CHAR_DATA *ch, int ANNOY)
 		       if (IS_SET(ch->in_room->exit[i]->exit_info,EX_SECRET))
 			   secret_cnt++;
 		}
-		sprintf(achOpenDir, "%d.secret",secret_cnt);
+		snprintf(achOpenDir, sizeof(achOpenDir), "%d.secret", secret_cnt);
 #endif
 	    }
 	    else
-		sprintf(achOpenDir, "%s", dir_name_cmd[dir]);
+		snprintf(achOpenDir, sizeof(achOpenDir), "%s", dir_name_cmd[dir]);
 	    do_open(ch, achOpenDir);
 	}
     }
