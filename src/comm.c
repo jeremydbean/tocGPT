@@ -2432,19 +2432,9 @@ static const char *const psionic_skill_options[] = {
 
 static bool is_valid_psionic_selection( const char *skill )
 {
-    UNUSED_PARAM(argument);
-  int chance;
-  int add;
-	int add2;
-	int add3;
-	int add4;
+    size_t idx;
 
-	if (ch->pcdata->num_remorts >= 2)
-		chance = 100;
-	else
-  	chance = number_percent( );
-
-    for ( idx = 0; idx < (int)(sizeof(psionic_skill_options) / sizeof(psionic_skill_options[0])); idx++ )
+    for ( idx = 0; idx < sizeof(psionic_skill_options) / sizeof(psionic_skill_options[0]); idx++ )
     {
         if ( !str_cmp( skill, psionic_skill_options[idx] ) )
         {

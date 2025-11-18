@@ -1201,6 +1201,26 @@ static void normalize_coins(CHAR_DATA *ch, long total_copper)
         &ch->new_silver, &ch->new_copper);
 }
 
+bool has_enough_gold( const CHAR_DATA *ch, long gold_cost )
+{
+    long total_copper;
+    long required_copper;
+
+    if (ch == NULL)
+        return FALSE;
+
+    if (gold_cost <= 0)
+        return TRUE;
+
+    if (gold_cost > LONG_MAX / COPPER_PER_GOLD)
+        return FALSE;
+
+    total_copper = coins_to_copper(ch);
+    required_copper = gold_cost * COPPER_PER_GOLD;
+
+    return total_copper >= required_copper;
+}
+
 static bool coin_amount_to_copper(long amount, int coin_type, long *copper)
 {
     long multiplier = coin_copper_value(coin_type);
@@ -1385,7 +1405,6 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 void do_convert(CHAR_DATA *ch, char *argument)
 {
     UNUSED_PARAM(argument);
-    long temp, left;
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
         send_to_char("You're not in the bank!\n\r",ch);
@@ -1400,7 +1419,7 @@ void do_convert(CHAR_DATA *ch, char *argument)
 void do_balance( CHAR_DATA *ch, char *argument )
 {
     UNUSED_PARAM(argument);
-    char buf[MAX_STRING_LENGTH];
+    char coins_buf[MAX_STRING_LENGTH];
 
     if(IS_NPC(ch))
         return;
