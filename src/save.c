@@ -65,7 +65,12 @@ static bool can_chgrp( void )
         if (getgrnam(CHGRP_TO) != NULL)
             available = TRUE;
         else
-            bug("save_char_obj: configured CHGRP_TO group missing; skipping chgrp", 0);
+        {
+            sprintf(log_buf,
+                    "save_char_obj: configured CHGRP_TO group '%s' missing; skipping chgrp",
+                    CHGRP_TO);
+            log_string(log_buf);
+        }
     }
 
     return available;
