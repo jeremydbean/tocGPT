@@ -2735,6 +2735,10 @@ void grant_psionics( CHAR_DATA *ch, int chance, bool force_grant )
         else
              group_add(ch,"nightmare",0);
 
+void do_check_psi ( CHAR_DATA *ch, char *argument )
+{
+    UNUSED_PARAM(argument);
+  int chance;
 
             ch->pcdata->last_level = 3;
         save_char_obj(ch);
