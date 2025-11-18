@@ -18,6 +18,9 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#if defined(unix) && defined(CHGRP_TO)
+#include <grp.h>
+#endif
 
 #if !defined(macintosh)
 extern  int     _filbuf         args( (FILE *) );
@@ -45,6 +48,34 @@ void	fread_char	args( ( CHAR_DATA *ch,  FILE *fp ) );
 void    fread_pet	args( ( CHAR_DATA *ch,  FILE *fp ) );
 void	fread_obj	args( ( CHAR_DATA *ch,  FILE *fp ) );
 
+#if defined(unix) && defined(CHGRP_TO)
+static bool can_chgrp      args( ( void ) );
+#endif
+
+
+#if defined(unix) && defined(CHGRP_TO)
+static bool can_chgrp( void )
+{
+    static int checked = 0;
+    static bool available = FALSE;
+
+    if (!checked)
+    {
+        checked = 1;
+        if (getgrnam(CHGRP_TO) != NULL)
+            available = TRUE;
+        else
+        {
+            sprintf(log_buf,
+                    "save_char_obj: configured CHGRP_TO group '%s' missing; skipping chgrp",
+                    CHGRP_TO);
+            log_string(log_buf);
+        }
+    }
+
+    return available;
+}
+#endif
 
 
 /*
@@ -83,9 +114,12 @@ void save_char_obj( CHAR_DATA *ch )
             ch->level, get_trust(ch), ch->name, ch->pcdata->title);
 	fclose( fp );
 #ifdef CHGRP_TO
-        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-        if (system(buf) == -1)
-            bug("save_char_obj: system backup failed.", 0);
+        if (can_chgrp())
+        {
+            sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+            if (system(buf) == -1)
+                bug("save_char_obj: system backup failed.", 0);
+        }
 #endif
 	fpReserve = fopen( NULL_FILE, "r" );
     }
@@ -107,9 +141,12 @@ void save_char_obj( CHAR_DATA *ch )
             ch->level, get_trust(ch), ch->name, ch->pcdata->title);
         fclose( fp );
 #ifdef CHGRP_TO
-        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-        if (system(buf) == -1)
-            bug("save_char_obj: player backup failed.", 0);
+        if (can_chgrp())
+        {
+            sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+            if (system(buf) == -1)
+                bug("save_char_obj: player backup failed.", 0);
+        }
 #endif
         fpReserve = fopen( NULL_FILE, "r" );
     }
@@ -138,7 +175,10 @@ void save_char_obj( CHAR_DATA *ch )
     fclose( fp );
     /* move the file */
 #ifdef CHGRP_TO
-    sprintf(buf,"mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
+    if (can_chgrp())
+        sprintf(buf,"mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
+    else
+        sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
 #else
     sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
 #endif

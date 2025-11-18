@@ -2734,19 +2734,10 @@ void grant_psionics( CHAR_DATA *ch, int chance, bool force_grant )
              group_add(ch,"confuse",0);
         else
              group_add(ch,"nightmare",0);
-
-void do_check_psi ( CHAR_DATA *ch, char *argument )
-{
-    UNUSED_PARAM(argument);
-  int chance;
-
-            ch->pcdata->last_level = 3;
-        save_char_obj(ch);
-        clear_psionic_preferences( ch );
-
-      return;
     }
 
+    ch->pcdata->last_level = 3;
+    save_char_obj(ch);
     clear_psionic_preferences( ch );
 }
 
@@ -2754,43 +2745,42 @@ void do_check_psi ( CHAR_DATA *ch, char *argument )
 void do_check_psi ( CHAR_DATA *ch, char *argument )
 {
     UNUSED_PARAM(argument);
-  int chance;
-  bool forced;
+    int chance;
+    bool forced;
 
-        forced = ch->pcdata->psionic_grant_pending;
+    forced = ch->pcdata->psionic_grant_pending;
 
-        if (ch->pcdata->num_remorts >= 2)
-                chance = 100;
-        else
+    if (ch->pcdata->num_remorts >= 2)
+        chance = 100;
+    else
         chance = number_percent( );
 
-        if ( forced )
-        {
-            chance = 100;
-        }
+    if ( forced )
+    {
+        chance = 100;
+    }
 
+    sprintf( log_buf, "%s psionic check complete! [Chance: %d]%s", ch->name, chance, forced ? " [grantpsi]" : "");
+    log_string( log_buf );
+    wizinfo( log_buf, MAX_LEVEL-1);
 
-        sprintf( log_buf, "%s psionic check complete! [Chance: %d]%s", ch->name, chance, forced ? " [grantpsi]" : "");
+    if(ch->pcdata->last_level < 3)
+        ch->pcdata->last_level += 1;
+
+    if( forced || chance >= 95)
+        ch->pcdata->psionic = 1;
+
+    if(!forced && ch->pcdata->last_level == 3 && chance < 95)
+    {
+        ch->pcdata->psionic = 2;
+        sprintf( log_buf, "Psionics are forever out of the reach of %s.", ch->name);
         log_string( log_buf );
-        wizinfo( log_buf, MAX_LEVEL-1);
+        wizinfo( log_buf, LEVEL_IMMORTAL);
+        send_to_char("* You feel as though you've lost something... *\n\r\n\r",ch);
+        save_char_obj(ch);
+    }
 
-        if(ch->pcdata->last_level < 3)
-         ch->pcdata->last_level += 1;
-
-  if( forced || chance >= 95)
-    ch->pcdata->psionic = 1;
-
-         if(!forced && ch->pcdata->last_level == 3 && chance < 95)
-                {
-                ch->pcdata->psionic = 2;
-                sprintf( log_buf, "Psionics are forever out of the reach of %s.", ch->name);
-                log_string( log_buf );
-                wizinfo( log_buf, LEVEL_IMMORTAL);
-send_to_char("* You feel as though you've lost something... *\n\r\n\r",ch);
-                save_char_obj(ch);
-          }
-
-  grant_psionics(ch, chance, forced);
+    grant_psionics(ch, chance, forced);
 }
 
 
