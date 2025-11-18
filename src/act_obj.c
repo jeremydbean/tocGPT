@@ -1385,6 +1385,7 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 void do_convert(CHAR_DATA *ch, char *argument)
 {
     UNUSED_PARAM(argument);
+    long temp, left;
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
         send_to_char("You're not in the bank!\n\r",ch);
@@ -1399,7 +1400,7 @@ void do_convert(CHAR_DATA *ch, char *argument)
 void do_balance( CHAR_DATA *ch, char *argument )
 {
     UNUSED_PARAM(argument);
-    char coins_buf[MAX_STRING_LENGTH];
+    char buf[MAX_STRING_LENGTH];
 
     if(IS_NPC(ch))
         return;
@@ -3843,23 +3844,14 @@ void do_repair( CHAR_DATA *ch, char *argument )
 
 long query_gold(CHAR_DATA *ch)
 {
+  long total;
+
   if (ch == NULL) return 0;
 
-  return coins_to_copper(ch) / COPPER_PER_GOLD;
-}
-
-bool has_enough_gold(const CHAR_DATA *ch, long gold_cost)
-{
-  long cost_copper;
-
-  if (ch == NULL || gold_cost <= 0)
-    return FALSE;
-
-  if (gold_cost > LONG_MAX / COPPER_PER_GOLD)
-    return FALSE;
-
-  cost_copper = gold_cost * COPPER_PER_GOLD;
-  return coins_to_copper(ch) >= cost_copper;
+  total = (5 * ch->new_platinum) + ch->new_gold;
+  total += ch->new_silver / 10;
+  total += ch->new_copper / 100;
+  return total;
 }
 
 int query_carry_coins(CHAR_DATA *ch, long amount)

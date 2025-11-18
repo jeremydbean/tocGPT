@@ -343,7 +343,7 @@ struct  descriptor_data
     int 		port;
     int			ip;
     int			top_web_desc;
-    sh_int              descriptor;
+    int                 descriptor;
     sh_int              connected;
     bool                fcommand;
     char                inbuf           [4 * MAX_INPUT_LENGTH];

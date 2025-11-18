@@ -117,12 +117,9 @@ void save_char_obj( CHAR_DATA *ch )
             ch->level, get_trust(ch), ch->name, ch->pcdata->title);
 	fclose( fp );
 #ifdef CHGRP_TO
-        if (can_chgrp())
-        {
-            sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-            if (system(buf) == -1)
-                bug("save_char_obj: system backup failed.", 0);
-        }
+        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+        if (system(buf) == -1)
+            bug("save_char_obj: system backup failed.", 0);
 #endif
 	fpReserve = fopen( NULL_FILE, "r" );
     }
@@ -144,12 +141,9 @@ void save_char_obj( CHAR_DATA *ch )
             ch->level, get_trust(ch), ch->name, ch->pcdata->title);
         fclose( fp );
 #ifdef CHGRP_TO
-        if (can_chgrp())
-        {
-            sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-            if (system(buf) == -1)
-                bug("save_char_obj: player backup failed.", 0);
-        }
+        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+        if (system(buf) == -1)
+            bug("save_char_obj: player backup failed.", 0);
 #endif
         fpReserve = fopen( NULL_FILE, "r" );
     }

@@ -30,6 +30,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
+#include <limits.h>
 #include <string.h>
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
@@ -468,6 +469,7 @@ int init_socket( int listen_port )
     int x = 1;
     int fd;
     FILE *fp;
+    unsigned short listen_port_short;
 
     if ( ( fd = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 )
     {
@@ -502,7 +504,10 @@ int init_socket( int listen_port )
 
     sa              = sa_zero;
     sa.sin_family   = AF_INET;
-    sa.sin_port     = htons( listen_port );
+    listen_port_short = (unsigned short)(listen_port < 0
+                        ? 0
+                        : (listen_port > USHRT_MAX ? USHRT_MAX : listen_port));
+    sa.sin_port     = htons( listen_port_short );
 
     if ( bind( fd, (struct sockaddr *) &sa, sizeof(sa) ) < 0 )
     {
@@ -975,11 +980,11 @@ void new_descriptor( int control_fd )
 	 * Would be nice to use inet_ntoa here but it takes a struct arg,
 	 * which ain't very compatible between gcc and system libraries.
 	 */
-	int addr;
+        unsigned long addr;
 
 /*	create_ident( dnew, sock.sin_addr.s_addr, ntohs( sock.sin_port ) ); */
         addr = ntohl( sock.sin_addr.s_addr );
-        sprintf( buf, "%d.%d.%d.%d",
+        sprintf( buf, "%lu.%lu.%lu.%lu",
             ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF,
             ( addr >>  8 ) & 0xFF, ( addr       ) & 0xFF
             );
@@ -1176,7 +1181,7 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 
 bool read_from_descriptor( DESCRIPTOR_DATA *d )
 {
-    int iStart;
+    size_t iStart;
 
     /* Hold horses if pending command already. */
     if ( d->incomm[0] != '\0' )
@@ -1184,13 +1189,13 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
 
     /* Check for overflow. */
     iStart = strlen(d->inbuf);
-    if ( iStart >= (int)sizeof(d->inbuf) - 10 )
+    if ( iStart >= sizeof(d->inbuf) - 10 )
     {
         sprintf( log_buf, "%s input overflow!", d->host );
         log_string( log_buf );
-	write_to_descriptor( d->descriptor,
-	    "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
-	return FALSE;
+        write_to_descriptor( d->descriptor,
+            "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
+        return FALSE;
     }
 
     /* Snarf input. */
@@ -1213,16 +1218,16 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
 #if defined(MSDOS) || defined(unix)
     for ( ; ; )
     {
-	int nRead;
+        ssize_t nRead;
 
-	nRead = read( d->descriptor, d->inbuf + iStart,
-	    sizeof(d->inbuf) - 10 - iStart );
-	if ( nRead > 0 )
-	{
-	    iStart += nRead;
-	    if ( d->inbuf[iStart-1] == '\n' || d->inbuf[iStart-1] == '\r' )
-		break;
-	}
+        nRead = read( d->descriptor, d->inbuf + iStart,
+            sizeof(d->inbuf) - 10 - iStart );
+        if ( nRead > 0 )
+        {
+            iStart += (size_t)nRead;
+            if ( d->inbuf[iStart-1] == '\n' || d->inbuf[iStart-1] == '\r' )
+                break;
+        }
 	else if ( nRead == 0 )
 	{
 	    log_string( "EOF encountered on read." );
@@ -1546,11 +1551,16 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
  */
 void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
 {
+    size_t computed_length;
+
     /*
      * Find length in case caller didn't.
      */
     if ( length <= 0 )
-	length = strlen(txt);
+    {
+        computed_length = strlen(txt);
+        length = (computed_length > INT_MAX) ? INT_MAX : (int)computed_length;
+    }
 
     /*
      * Initial \n\r if needed.
@@ -1565,9 +1575,9 @@ void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
     /*
      * Expand the buffer as needed.
      */
-    while ( d->outtop + length >= d->outsize )
+    while ( (size_t)d->outtop + (size_t)length >= (size_t)d->outsize )
     {
-	char *outbuf;
+        char *outbuf;
 
 	if (d->outsize > 32000)
 	{
@@ -1576,10 +1586,10 @@ void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
 	    return;
 	}
 	outbuf      = alloc_mem( 2 * d->outsize );
-	strncpy( outbuf, d->outbuf, d->outtop );
-	free_mem( d->outbuf, d->outsize );
-	d->outbuf   = outbuf;
-	d->outsize *= 2;
+        strncpy( outbuf, d->outbuf, (size_t)d->outtop );
+        free_mem( d->outbuf, d->outsize );
+        d->outbuf   = outbuf;
+        d->outsize *= 2;
     }
 
     /*
@@ -1600,9 +1610,10 @@ void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
  */
 bool write_to_descriptor( int desc, char *txt, int length )
 {
-    int iStart;
-    int nWrite;
-    int nBlock;
+    size_t iStart;
+    ssize_t nWrite;
+    size_t nBlock;
+    size_t computed_length;
 
 #if defined(macintosh) || defined(MSDOS)
     if ( desc == 0 )
@@ -1610,13 +1621,19 @@ bool write_to_descriptor( int desc, char *txt, int length )
 #endif
 
     if ( length <= 0 )
-	length = strlen(txt);
-
-    for ( iStart = 0; iStart < length; iStart += nWrite )
     {
-	nBlock = UMIN( length - iStart, 4096 );
-	if ( ( nWrite = write( desc, txt + iStart, nBlock ) ) < 0 )
-	    { perror( "Write_to_descriptor" ); return FALSE; }
+        computed_length = strlen(txt);
+        length = (computed_length > INT_MAX) ? INT_MAX : (int)computed_length;
+    }
+
+    for ( iStart = 0; iStart < (size_t)length; iStart += (size_t)nWrite )
+    {
+        nBlock = (size_t)length - iStart;
+        if ( nBlock > 4096 )
+            nBlock = 4096;
+        nWrite = write( desc, txt + iStart, nBlock );
+        if ( nWrite < 0 )
+            { perror( "Write_to_descriptor" ); return FALSE; }
     }
 
     return TRUE;
@@ -2017,11 +2034,11 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	    break;
 	}
 
-	ch->race = race;
+        ch->race = (sh_int)race;
 	/* initialize stats */
 	for (i = 0; i < MAX_STATS; i++)
 	    ch->perm_stat[i] = pc_race_table[race].stats[i];
-	ch->affected_by = ch->affected_by|race_table[race].aff;
+        ch->affected_by = ch->affected_by | (int)race_table[race].aff;
 	ch->imm_flags   = ch->imm_flags|race_table[race].imm;
 	ch->res_flags   = ch->res_flags|race_table[race].res;
 	ch->vuln_flags  = ch->vuln_flags|race_table[race].vuln;
@@ -2106,7 +2123,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	    break;
 	}
 
-	ch->class = iClass;
+        ch->class = (sh_int)iClass;
 	if(ch->class == CLASS_MONK)
 	   ch->pcdata->guild = GUILD_MONK;
 	else if( ch->class == CLASS_NECRO)
@@ -2415,7 +2432,17 @@ static const char *const psionic_skill_options[] = {
 
 static bool is_valid_psionic_selection( const char *skill )
 {
-    int idx;
+    UNUSED_PARAM(argument);
+  int chance;
+  int add;
+	int add2;
+	int add3;
+	int add4;
+
+	if (ch->pcdata->num_remorts >= 2)
+		chance = 100;
+	else
+  	chance = number_percent( );
 
     for ( idx = 0; idx < (int)(sizeof(psionic_skill_options) / sizeof(psionic_skill_options[0])); idx++ )
     {
@@ -3000,7 +3027,9 @@ void send_to_char( const char *txt, CHAR_DATA *ch )
 {
   char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
-  int t,len,col;
+  size_t t;
+  int col;
+  size_t len;
   PC_DATA *pcdata;
   char *ptr;
   bool do_color;
@@ -3039,11 +3068,11 @@ void send_to_char( const char *txt, CHAR_DATA *ch )
 	ptr += strlen (col_disp_table[pcdata->col_table[COL_REGULAR]].ansi_str);
       }
       *ptr = '\0';
-      write_to_buffer ( ch->desc, buf, ptr - buf);
+      write_to_buffer ( ch->desc, buf, (int)(ptr - buf));
     }
     else
     {
-      write_to_buffer( ch->desc, txt, len);
+      write_to_buffer( ch->desc, txt, (int)len);
     }
   }
     return;
@@ -3078,7 +3107,12 @@ void page_to_char( const char *txt, CHAR_DATA *ch )
 #if defined(macintosh) || defined(MSDOS)
 	send_to_char(txt,ch);
 #else
-    ch->desc->showstr_head = alloc_mem(strlen(txt) + 1);
+    {
+        size_t showstr_len = strlen(txt) + 1;
+        if (showstr_len > INT_MAX)
+            showstr_len = INT_MAX;
+        ch->desc->showstr_head = alloc_mem((int)showstr_len);
+    }
     strcpy(ch->desc->showstr_head,txt);
     ch->desc->showstr_point = ch->desc->showstr_head;
     show_string(ch->desc,"");
@@ -3121,7 +3155,7 @@ void show_string(struct descriptor_data *d, char *input)
 	else if (!*scan || (show_lines > 0 && lines >= show_lines))
 	{
 	    *scan = '\0';
-	    write_to_buffer(d,buffer,strlen(buffer));
+            write_to_buffer(d,buffer,(int)strlen(buffer));
 //	    	for (chk = d->showstr_point; isspace(*chk); chk++)
 //	    		{//
 //				if (!*chk)
@@ -3535,7 +3569,7 @@ static char *swedish_speak( const char *str )
 {
     static char buf[512];
     int iSyl;
-    int length;
+    size_t length;
     bool i_seen;
     bool in_word;
     const char *pName;
@@ -3700,9 +3734,9 @@ static bool str_prefix_c( const char *astr, const char *bstr )
 
 static bool str_infix_c( const char *astr, const char *bstr )
 {
-    int sstr1;
-    int sstr2;
-    int ichar;
+    size_t sstr1;
+    size_t sstr2;
+    size_t ichar;
     char c0;
 
     if ( ( c0 = astr[0] ) == '\0' )
@@ -3711,10 +3745,11 @@ static bool str_infix_c( const char *astr, const char *bstr )
     sstr1 = strlen(astr);
     sstr2 = strlen(bstr);
 
-    for ( ichar = 0; ichar <= sstr2 - sstr1; ichar++ ) {
-        if ( c0 == bstr[ichar] && !str_prefix_c( astr, bstr + ichar ) )
-            return FALSE;
-    }
+    if ( sstr1 <= sstr2 )
+        for ( ichar = 0; ichar <= sstr2 - sstr1; ichar++ ) {
+            if ( c0 == bstr[ichar] && !str_prefix_c( astr, bstr + ichar ) )
+                return FALSE;
+        }
 
     return TRUE;
 }
@@ -3725,8 +3760,8 @@ static char *str_replace_c( char *astr, char *bstr, char *cstr )
     char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
     bool found = FALSE;
-    int sstr1, sstr2;
-    int ichar, jchar;
+    size_t sstr1, sstr2;
+    size_t ichar, jchar;
     char c0, c1, c2;
 
     if ( ( ( c0 = astr[0] ) == '\0' )
