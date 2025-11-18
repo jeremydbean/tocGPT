@@ -189,6 +189,39 @@ The web service appends newline-delimited actions to `/app/area/webadmin.queue`.
 
 > **Security note:** Expose the admin port only to trusted networks or behind a reverse proxy with authentication. The default deployment does not enforce login on the web dashboard.
 
+## Fixing the "dockerDesktopLinuxEngine" pipe error on Windows
+If you see this during a build:
+
+```
+ERROR: error during connect: Head "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/_ping": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+```
+
+Docker Desktop's Linux backend is not running. This usually means WSL features are disabled, the WSL 2 kernel is outdated, the `LxssManager` service is stuck, or Docker Desktop failed to initialize its Linux VM.
+
+### Bundled repair script (recommended)
+Use the included `docker_wsl_repair.ps1` to recover Docker Desktop automatically. Run it from an elevated PowerShell prompt in the repository root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\docker_wsl_repair.ps1
+```
+
+What the script does:
+
+- Detects whether Docker Desktop is installed and exits early with guidance if it is missing.
+- Ensures the WSL and Virtual Machine Platform Windows features are enabled.
+- Updates the WSL kernel and sets the default WSL version to 2.
+- Restarts the `LxssManager` service.
+- Restarts Docker Desktop, waits for `com.docker.service` to report `Running`, and verifies `docker version`, `docker info`, and `docker run hello-world`.
+- Exits with a non-zero status if any step fails so automation can detect the issue.
+
+### Manual validation
+After the script completes, confirm Docker responds normally:
+
+```powershell
+docker version
+docker info
+docker run hello-world
+```
 
 ### Fresh install checklist
 
