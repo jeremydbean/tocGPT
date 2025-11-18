@@ -733,7 +733,7 @@ void move_char( CHAR_DATA *ch, int door, bool skip_special_check )
 
 
     move = movement_loss[UMIN(SECT_MAX-1, in_room->sector_type)]
-	    + movement_loss[UMIN(SECT_MAX-1, to_room->sector_type)] ;
+            + movement_loss[UMIN(SECT_MAX-1, to_room->sector_type)] ;
 
     move /= 2;  /* i.e. the average */
 
@@ -748,7 +748,7 @@ void move_char( CHAR_DATA *ch, int door, bool skip_special_check )
     }
 
     WAIT_STATE( ch, 1 );
-    ch->move -= move;
+    ch->move = (sh_int)(ch->move - move);
 
     if ( (!IS_AFFECTED(ch, AFF_SNEAK) && !IS_AFFECTED2(ch,AFF2_STEALTH) )
     && ( IS_NPC(ch) || !IS_SET(ch->act, PLR_WIZINVIS) )
@@ -2567,7 +2567,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 	    return;
         }
 
-	ch->train -= cost;
+	ch->train = (sh_int)(ch->train - cost);
         ch->pcdata->perm_hit += 10;
         ch->max_hit += 10;
         ch->hit +=10;
@@ -2584,7 +2584,7 @@ void do_train( CHAR_DATA *ch, char *argument )
             return;
         }
 
-	ch->train -= cost;
+	ch->train = (sh_int)(ch->train - cost);
         ch->pcdata->perm_mana += 10;
         ch->max_mana += 10;
 	ch->mana += 10;
@@ -2605,7 +2605,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    ch->train		-= cost;
+    ch->train		= (sh_int)(ch->train - cost);
 
     ch->perm_stat[stat]		+= 1;
     act( "Your $T increases!", ch, NULL, pOutput, TO_CHAR );
@@ -3030,7 +3030,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	   {
 	     af.type      = gsn_poison;
 	     af.level     = gch->level/2;
-	     af.duration  = dice(5,5);
+              af.duration  = (sh_int)dice(5,5);
 	     af.location  = APPLY_DEX;
 	     af.modifier  = -6;
 	     af.bitvector = AFF_POISON;
@@ -3041,7 +3041,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	   }
 	   if(type_gas == 2)
 	   {
-	     af.type = skill_lookup("sleep");
+              af.type = (sh_int)skill_lookup("sleep");
 	     af.level     = gch->level/2;
 	     af.duration  = 12;
 	     af.location  = APPLY_NONE;
@@ -3081,7 +3081,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 		 {
 		   af.type      = gsn_poison;
 		   af.level     = gch->level/2;
-		   af.duration  = dice(5,5);
+                    af.duration  = (sh_int)dice(5,5);
 		   af.location  = APPLY_DEX;
 		   af.modifier  = -6;
 		   af.bitvector = AFF_POISON;
@@ -3092,7 +3092,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 		 }
 		 if(type_gas == 2)
 		 {
-		   af.type = skill_lookup("sleep");
+                    af.type = (sh_int)skill_lookup("sleep");
 		   af.level     = gch->level/2;
 		   af.duration  = 12;
 		   af.location  = APPLY_NONE;
@@ -3128,7 +3128,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	 sprintf(buf, "%s has set off a Beer trap!!!", ch->name);
        break;
        case 4:                              /* sleep trap (24) */
-	 af.type = skill_lookup("sleep");
+          af.type = (sh_int)skill_lookup("sleep");
 	 af.level     = ch->level/2;
 	 af.duration  = 12;
 	 af.location  = APPLY_NONE;
@@ -3171,9 +3171,9 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	ch->hit  = 10;
 	ch->mana = 10;
 	ch->move = 10;
-	af.type      = skill_lookup("curse");
+         af.type      = (sh_int)skill_lookup("curse");
 	af.level     = ch->level/2;
-	af.duration  = dice(1,2);
+         af.duration  = (sh_int)dice(1,2);
 	af.location  = APPLY_HITROLL;
 	af.modifier  = -1 * (ch->level / 8);
 	af.bitvector = AFF_CURSE;
@@ -3200,7 +3200,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	 {
 	    af.type      = gsn_poison;
 	    af.level     = ch->level/2;
-	    af.duration  = dice(5,5);
+             af.duration  = (sh_int)dice(5,5);
 	    af.location  = APPLY_DEX;
 	    af.modifier  = -5;
 	    af.bitvector = AFF_POISON;
@@ -3217,8 +3217,8 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	  guardian->level = ch->level - 5;
 	  if(ch->level < 51 )
 	  {
-	    guardian->max_hit = ch->max_hit * 1.5;
-	    guardian->hit = guardian->max_hit;
+             guardian->max_hit = (sh_int)(ch->max_hit + ch->max_hit / 2);
+             guardian->hit = guardian->max_hit;
 	  }
 	  else
 	  {
@@ -3245,7 +3245,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
        case 9: /* plague trap */
 	 act( "$n yells 'OUCH!'", ch, NULL, NULL, TO_ROOM );
 	 send_to_char("Something has been injected into your body!\n\r",ch);
-	 af.type      = skill_lookup("plague");
+         af.type      = (sh_int)skill_lookup("plague");
 	 af.level     = ch->level/2;
 	 af.duration  = 12;
 	 af.location  = APPLY_STR;

@@ -4389,7 +4389,7 @@ void do_remort( CHAR_DATA *ch, char *arg)
       group_add(ch,pc_race_table[ch->race].skills[i],FALSE);
    }
 
-   ch->affected_by = ch->affected_by|race_table[ch->race].aff;
+    ch->affected_by = ch->affected_by | (int)race_table[ch->race].aff;
    ch->imm_flags   = ch->imm_flags | race_table[ch->race].imm;
    ch->res_flags   = ch->res_flags | race_table[ch->race].res;
    ch->vuln_flags  = ch->vuln_flags | race_table[ch->race].vuln;
