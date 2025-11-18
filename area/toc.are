@@ -466,30 +466,39 @@ Date           Name(s)            Offense                Punishment
 ~
 
 -1 NEWS~
-(Last updated: 12/16/2018)
+(Last updated: 07/16/2024)
+
+- Added a fresh change log entry to HELP NEWS so the latest updates are
+        visible in-game without checking outside resources.
+
+- Repair vendors now broadcast the gold cost before fixing damaged gear,
+        making it easier to budget for weapon and armor upkeep.
+
+- Clarified psionic notifications so INFO messages highlight who gained
+        abilities and when they were granted.
 
 - Smite now no longer destroys your weapon randomly, but has the same
-	chance to drop it, and set it's durability to 1.  Repair it at any
-	weaponsmith before using it, or risk breaking it forever!
+        chance to drop it, and set it's durability to 1.  Repair it at any
+        weaponsmith before using it, or risk breaking it forever!
 
 - Blinding Fists damage has been increased significantly.
 
 - Fists of Fury Flee chance is being tweaked to be lower.
 
 - Components are once again properly scattering around the world.  Also,
-	all scribe & concoct recipes are once again working!
+        all scribe & concoct recipes are once again working!
 
 - Psionic chance has been raised from (1) 10% chance to (3) 5% chances
-	between levels 18-22.  (Approximately a 5% chance increase). However,
-	the chance of being granted some of the better psionic abilities have been
-	lowered slightly.)
+        between levels 18-22.  (Approximately a 5% chance increase). However,
+        the chance of being granted some of the better psionic abilities have been
+        lowered slightly.)
 
 - Visibility of the psionic message has been increased greatly.  Also, all
-	characters will now be notified via INFO if a player is granted
-	psionic abilities!
+        characters will now be notified via INFO if a player is granted
+        psionic abilities!
 
 - Bug causing the MUD to crash when some older pfiles were loaded has been
-	fixed!  (Send a note to Killuminati if this happens again.)
+        fixed!  (Send a note to Killuminati if this happens again.)
 
 - MUD Diploma at the end of the school now has +10 to all leveling stats. :)
 
