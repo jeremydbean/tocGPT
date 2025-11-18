@@ -5716,16 +5716,22 @@ void do_pstat( CHAR_DATA *ch, char *argument )
 }
 
 
-void do_grantpsionics( CHAR_DATA *ch, char *argument )
+void do_grantpsi( CHAR_DATA *ch, char *argument )
 {
     CHAR_DATA *victim;
     char arg[MAX_INPUT_LENGTH];
+    char mode[MAX_INPUT_LENGTH];
+    char list_buf[MAX_STRING_LENGTH];
+    char invalid[MAX_INPUT_LENGTH];
+    bool immediate = FALSE;
+
+    list_buf[0] = '\0';
 
     argument = one_argument( argument, arg );
 
     if ( arg[0] == '\0' )
     {
-        send_to_char( "Syntax: grantpsionics <player>\n\r", ch );
+        send_to_char( "Syntax: grantpsi <player> [now] [skill1,skill2,...]\n\r", ch );
         return;
     }
 
@@ -5741,14 +5747,58 @@ void do_grantpsionics( CHAR_DATA *ch, char *argument )
         return;
     }
 
-    if ( victim->pcdata->psionic == 1 )
+    argument = one_argument( argument, mode );
+
+    if ( !str_cmp( mode, "now" ) )
     {
-        send_to_char( "They already have psionics.\n\r", ch );
+        immediate = TRUE;
+    }
+    else if ( mode[0] != '\0' )
+    {
+        if ( list_buf[0] != '\0' )
+        {
+            strcat( list_buf, " " );
+        }
+        strcat( list_buf, mode );
+    }
+
+    if ( !immediate && argument[0] != '\0' )
+    {
+        if ( list_buf[0] != '\0' )
+        {
+            strcat( list_buf, " " );
+        }
+        strcat( list_buf, argument );
+    }
+
+    if ( immediate )
+    {
+        strcpy( list_buf, argument );
+    }
+
+    if ( !normalize_psionic_arguments( list_buf, list_buf, sizeof(list_buf), invalid ) )
+    {
+        snprintf( arg, sizeof(arg), "Invalid psionic selection: %s. Valid options are: astral walk, clairvoyance, confuse, ego whip, mindbar, mindblast, nightmare, project, psionic armor, psychic shield, pyrotechnics, shift, telekinesis, torment, transfusion.\n\r", invalid );
+        send_to_char( arg, ch );
         return;
     }
 
-    grant_psionics( victim, 100, TRUE );
-    send_to_char( "Psionics granted.\n\r", ch );
+    free_string( victim->pcdata->psionic_grant_spec );
+    victim->pcdata->psionic_grant_spec = str_dup( list_buf );
+
+    if ( immediate )
+    {
+        victim->pcdata->psionic_grant_pending = FALSE;
+        grant_psionics( victim, 100, TRUE );
+        send_to_char( "Psionics granted immediately.\n\r", ch );
+        return;
+    }
+
+    victim->pcdata->psionic_grant_pending = TRUE;
+    victim->pcdata->psionic = 0;
+    victim->pcdata->last_level = 0;
+    send_to_char( "Grant flag applied. They will receive psionics on their next level check.\n\r", ch );
+    send_to_char( "Your mind tingles with unfamiliar potential.\n\r", victim );
 }
 
 

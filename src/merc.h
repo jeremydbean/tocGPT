@@ -1678,6 +1678,8 @@ struct  pc_data
     sh_int              true_sex;
     int                 last_level;
     sh_int              psionic;              /* to determine if psi */
+    bool                psionic_grant_pending;
+    char *              psionic_grant_spec;
     sh_int              condition       [3];
     sh_int              learned         [MAX_SKILL];
     bool                group_known     [MAX_GROUP];
@@ -2436,9 +2438,10 @@ void    add_platinum    args( (CHAR_DATA *ch, long amount) );
 void    show_string     args( ( struct descriptor_data *d, char *input) );
 void    close_socket    args( ( DESCRIPTOR_DATA *dclose ) );
 void    write_to_buffer args( ( DESCRIPTOR_DATA *d, const char *txt,
-			    int length ) );
+                            int length ) );
 void    do_check_psi    args( ( CHAR_DATA *ch, char *argument ) );
 void    grant_psionics  args( ( CHAR_DATA *ch, int chance, bool force_grant ) );
+bool    normalize_psionic_arguments args( ( const char *argument, char *output, size_t length, char *invalid ) );
 void    send_to_char    args( ( const char *txt, CHAR_DATA *ch ) );
 void    send_to_room    args( ( const char *txt, int vnum ) );
 void    page_to_char    args( ( const char *txt, CHAR_DATA *ch ) );

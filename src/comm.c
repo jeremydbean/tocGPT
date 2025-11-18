@@ -2392,6 +2392,216 @@ void do_dns( CHAR_DATA *ch, char *argument )
 
 }
 
+static const char *const psionic_skill_options[] = {
+    "astral walk",
+    "clairvoyance",
+    "confuse",
+    "ego whip",
+    "mindbar",
+    "mindblast",
+    "nightmare",
+    "project",
+    "psionic armor",
+    "psychic shield",
+    "pyrotechnics",
+    "shift",
+    "telekinesis",
+    "torment",
+    "transfusion"
+};
+
+static bool is_valid_psionic_selection( const char *skill )
+{
+    int idx;
+
+    for ( idx = 0; idx < (int)(sizeof(psionic_skill_options) / sizeof(psionic_skill_options[0])); idx++ )
+    {
+        if ( !str_cmp( skill, psionic_skill_options[idx] ) )
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+static void clear_psionic_preferences( CHAR_DATA *ch )
+{
+    ch->pcdata->psionic_grant_pending = FALSE;
+    free_string( ch->pcdata->psionic_grant_spec );
+    ch->pcdata->psionic_grant_spec = str_dup( "" );
+}
+
+static bool add_psionic_choice( CHAR_DATA *ch, const char *skill )
+{
+    if ( skill[0] == '\0' )
+    {
+        return FALSE;
+    }
+
+    if ( !is_valid_psionic_selection( skill ) )
+    {
+        return FALSE;
+    }
+
+    group_add( ch, skill, 0 );
+    sprintf( log_buf, "%s psi selection granted: [%s]", ch->name, skill );
+    log_string( log_buf );
+    wizinfo( log_buf, MAX_LEVEL );
+    return TRUE;
+}
+
+static bool grant_psionic_choices( CHAR_DATA *ch )
+{
+    char list_buf[MAX_STRING_LENGTH];
+    char *cursor;
+    bool granted_any = FALSE;
+
+    if ( ch->pcdata->psionic_grant_spec[0] == '\0' )
+    {
+        return FALSE;
+    }
+
+    sprintf( log_buf, "%s psi custom list: %s", ch->name, ch->pcdata->psionic_grant_spec );
+    log_string( log_buf );
+    wizinfo( log_buf, MAX_LEVEL );
+
+    strncpy( list_buf, ch->pcdata->psionic_grant_spec, sizeof(list_buf) - 1 );
+    list_buf[sizeof(list_buf) - 1] = '\0';
+    cursor = list_buf;
+
+    while ( *cursor != '\0' )
+    {
+        char *start = cursor;
+
+        while ( *start != '\0' && (*start == ' ' || *start == ',') )
+        {
+            start++;
+        }
+
+        cursor = start;
+        while ( *cursor != '\0' && *cursor != ',' )
+        {
+            cursor++;
+        }
+
+        if ( cursor != start )
+        {
+            char saved = *cursor;
+
+            while ( cursor > start && isspace( *(cursor - 1) ) )
+            {
+                cursor--;
+            }
+
+            saved = *cursor;
+            *cursor = '\0';
+
+            if ( add_psionic_choice( ch, start ) )
+            {
+                granted_any = TRUE;
+            }
+
+            *cursor = saved;
+        }
+
+        if ( *cursor == '\0' )
+        {
+            break;
+        }
+
+        cursor++;
+    }
+
+    clear_psionic_preferences( ch );
+    return granted_any;
+}
+
+bool normalize_psionic_arguments( const char *argument, char *output, size_t length, char *invalid )
+{
+    const char *ptr = argument;
+    bool have_token = FALSE;
+
+    if ( invalid != NULL )
+    {
+        invalid[0] = '\0';
+    }
+
+    if ( output != NULL && length > 0 )
+    {
+        output[0] = '\0';
+    }
+
+    while ( *ptr != '\0' )
+    {
+        char token[MAX_INPUT_LENGTH];
+        size_t token_len = 0;
+
+        while ( *ptr == ',' || isspace( (int)*ptr ) )
+        {
+            ptr++;
+        }
+
+        if ( *ptr == '\0' )
+        {
+            break;
+        }
+
+        while ( *ptr != '\0' && *ptr != ',' )
+        {
+            if ( token_len + 1 < sizeof(token) )
+            {
+                token[token_len++] = LOWER(*ptr);
+            }
+            ptr++;
+        }
+
+        while ( token_len > 0 && isspace( (int)token[token_len - 1] ) )
+        {
+            token_len--;
+        }
+
+        token[token_len] = '\0';
+
+        if ( token_len == 0 )
+        {
+            if ( *ptr == ',' )
+            {
+                ptr++;
+            }
+            continue;
+        }
+
+        if ( !is_valid_psionic_selection( token ) )
+        {
+            if ( invalid != NULL )
+            {
+                strncpy( invalid, token, MAX_INPUT_LENGTH - 1 );
+                invalid[MAX_INPUT_LENGTH - 1] = '\0';
+            }
+            return FALSE;
+        }
+
+        if ( output != NULL && length > 0 )
+        {
+            if ( have_token )
+            {
+                strncat( output, ", ", length - strlen(output) - 1 );
+            }
+            strncat( output, token, length - strlen(output) - 1 );
+        }
+
+        have_token = TRUE;
+
+        if ( *ptr == ',' )
+        {
+            ptr++;
+        }
+    }
+
+    return TRUE;
+}
+
 void grant_psionics( CHAR_DATA *ch, int chance, bool force_grant )
 {
     int add;
@@ -2443,6 +2653,11 @@ void grant_psionics( CHAR_DATA *ch, int chance, bool force_grant )
     log_string( log_buf );
     wizinfo( log_buf, LEVEL_IMMORTAL);
 
+    if ( grant_psionic_choices( ch ) )
+    {
+        return;
+    }
+
     if (ch->pcdata->num_remorts >= 4)
     {
             group_add(ch,"shift",0);
@@ -2465,6 +2680,8 @@ void grant_psionics( CHAR_DATA *ch, int chance, bool force_grant )
             wizinfo( log_buf, MAX_LEVEL);
             ch->pcdata->last_level = 3;
             save_char_obj(ch);
+            clear_psionic_preferences( ch );
+            return;
     }
     else
     {
@@ -2518,12 +2735,19 @@ void grant_psionics( CHAR_DATA *ch, int chance, bool force_grant )
         else
              group_add(ch,"nightmare",0);
 
+void do_check_psi ( CHAR_DATA *ch, char *argument )
+{
+    UNUSED_PARAM(argument);
+  int chance;
 
             ch->pcdata->last_level = 3;
         save_char_obj(ch);
+        clear_psionic_preferences( ch );
 
       return;
     }
+
+    clear_psionic_preferences( ch );
 }
 
 
@@ -2531,24 +2755,32 @@ void do_check_psi ( CHAR_DATA *ch, char *argument )
 {
     UNUSED_PARAM(argument);
   int chance;
+  bool forced;
+
+        forced = ch->pcdata->psionic_grant_pending;
 
         if (ch->pcdata->num_remorts >= 2)
                 chance = 100;
         else
         chance = number_percent( );
 
+        if ( forced )
+        {
+            chance = 100;
+        }
 
-        sprintf( log_buf, "%s psionic check complete! [Chance: %d]", ch->name, chance);
+
+        sprintf( log_buf, "%s psionic check complete! [Chance: %d]%s", ch->name, chance, forced ? " [grantpsi]" : "");
         log_string( log_buf );
         wizinfo( log_buf, MAX_LEVEL-1);
 
         if(ch->pcdata->last_level < 3)
          ch->pcdata->last_level += 1;
 
-  if( chance >= 95)
+  if( forced || chance >= 95)
     ch->pcdata->psionic = 1;
 
-         if(ch->pcdata->last_level == 3 && chance < 95)
+         if(!forced && ch->pcdata->last_level == 3 && chance < 95)
                 {
                 ch->pcdata->psionic = 2;
                 sprintf( log_buf, "Psionics are forever out of the reach of %s.", ch->name);
@@ -2558,7 +2790,7 @@ send_to_char("* You feel as though you've lost something... *\n\r\n\r",ch);
                 save_char_obj(ch);
           }
 
-  grant_psionics(ch, chance, FALSE);
+  grant_psionics(ch, chance, forced);
 }
 
 
