@@ -176,43 +176,43 @@ Enjoy...
 ~
 
 -1 GREETING~
-Welcome to ...
-.                           ==(W{==========-      /===-   _________
-			      ||  (.--.)         /===-_---         ------____
-			      | \_,|**|,__      |===--___               __,-'
-		 -==\\        `\ ' `--'   ),    `//=\\   ----`---.___.--
-	     ______-==|        /`\_. .__/\ \    | |  \\           _--`
-      ___----   ,-/-==\\      (   | .  |----|   | |   `\        ,'
-    _-        /'    |  \\     )__/==0==-\<>/   / /      \      /
-  .'        /       |   \\      /-\___/--\/  /' /        \   /'
- /  ____  /         |    \`\.__/---   \  |_/'  /          \/'
-/-'-    --------__  |     --/-         ( )   /'       __---`
-		  \_|      /       __) | ;  ),   __---
-		    '----_/      _- /- |/ \   '- \
-IMPs:              {\__--_/}   _/ \\_>-|)<__\     \        TIME
-Eclipse            /'   (_/ __-   | |__>--<__|     |        OF
-Gravestone        |  __/) )-      | |__>--<__|     |      CHAOS!
-Soulcrusher       / /  ,_/       / /__>---<__/     |
-Blackbird	 o-o _//        /--_>---<__--   _ /  May your stay here be...
-Ungrim		 (^(-          /-_>---<__-    /      Interesting...
-Killuminati   ( '))          |__>--<__|    /
-	    ' )) (            \__>--<__\    \
-	,/,'//( (              --<__>--<--   \
-      ,( ( ((, ))               --_->--<Tzu_/
+[1;36mWelcome to ...[0m
+[1;33m.                           ==(W{==========-      /===-   _________[0m
+[1;33m			      ||  (.--.)         /===-_---         ------____[0m
+[1;33m			      | \_,|**|,__      |===--___               __,-'[0m
+[1;33m		 -==\\        `\ ' `--'   ),    `//=\\   ----`---.___.--[0m
+[1;33m	     ______-==|        /`\_. .__/\ \    | |  \\           _--`[0m
+[1;33m      ___----   ,-/-==\\      (   | .  |----|   | |   `\        ,'[0m
+[1;33m    _-        /'    |  \\     )__/==0==-\<>/   / /      \      /[0m
+[1;33m  .'        /       |   \\      /-\___/--\/  /' /        \   /'[0m
+[1;33m /  ____  /         |    \`\.__/---   \  |_/'  /          \/'[0m
+[1;33m/-'-    --------__  |     --/-         ( )   /'       __---`[0m
+[1;33m		  \_|      /       __) | ;  ),   __---[0m
+[1;33m		    '----_/      _- /- |/ \   '- \[0m
+[1;35mIMPs:              {\__--_/}   _/ \\_>-|)<__\     \        TIME[0m
+[1;35mEclipse            /'   (_/ __-   | |__>--<__|     |        OF[0m
+[1;35mGravestone        |  __/) )-      | |__>--<__|     |      CHAOS![0m
+[1;35mSoulcrusher       / /  ,_/       / /__>---<__/     |[0m
+[1;35mBlackbird	 o-o _//        /--_>---<__--   _ /  May your stay here be...[0m
+[1;35mUngrim		 (^(-          /-_>---<__-    /      Interesting...[0m
+[1;35mKilluminati   ( '))          |__>--<__|    /[0m
+[1;33m	    ' )) (            \__>--<__\    \[0m
+[1;33m	,/,'//( (              --<__>--<--   \[0m
+[1;33m      ,( ( ((, ))               --_->--<Tzu_/[0m
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-Welcome and Enjoy your Stay! Your Implementors are: Soulcrusher, Blackbird,
-Eclipse and Ungrim, we can be found at soul@kersur.net, armavirum@wxs.nl,
-belial@starlink.com and protaeseus@eudoramail.com.
-Times of Chaos (2018) is being maintained & hosted at ToC.jeremybean.com:9000
-by Killuminati, whom you can reach at j@jeremybean.com.
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-This mud is based on Dragons Legends and Lore (ROM 2.3).
-DikuMUD (C) 1990-1991 by Hans Staerfeldt, Katja Nyboe, Tom Madsen, Michael
-Seifert, and Sebastian Hammer. Merc 2.1 (C) 1992-1993 by Michael Chastain,
-Michael Quan and Mitchell Tse. ROM 2.3 by Hatchet, Furey, Kahn, Russ Taylor,
-and ROM 2.4 by Russ Taylor (Alander). Further modifications done by Eclipse,
-Gravestone, Ricochet, Soulcrusher, Blackbird, Ungrim, & Killuminati.
+[1;34m=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[0m
+[1;32mWelcome and Enjoy your Stay! Your Implementors are: Soulcrusher, Blackbird,[0m
+[1;32mEclipse and Ungrim, we can be found at soul@kersur.net, armavirum@wxs.nl,[0m
+[1;32mbelial@starlink.com and protaeseus@eudoramail.com.[0m
+[1;32mTimes of Chaos (2018) is being maintained & hosted at ToC.jeremybean.com:9000[0m
+[1;32mby Killuminati, whom you can reach at j@jeremybean.com.[0m
+[1;34m=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[0m
+[1;37mThis mud is based on Dragons Legends and Lore (ROM 2.3).[0m
+[1;37mDikuMUD (C) 1990-1991 by Hans Staerfeldt, Katja Nyboe, Tom Madsen, Michael[0m
+[1;37mSeifert, and Sebastian Hammer. Merc 2.1 (C) 1992-1993 by Michael Chastain,[0m
+[1;37mMichael Quan and Mitchell Tse. ROM 2.3 by Hatchet, Furey, Kahn, Russ Taylor,[0m
+[1;37mand ROM 2.4 by Russ Taylor (Alander). Further modifications done by Eclipse,[0m
+[1;37mGravestone, Ricochet, Soulcrusher, Blackbird, Ungrim, & Killuminati.[0m
 
 By what name art thou known? ~
 
