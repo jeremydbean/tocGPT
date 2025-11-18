@@ -157,6 +157,9 @@ If you don't see updates on GitHub after working locally, verify that your commi
 
 If `git push` reports authentication issues, sign in with a GitHub token or SSH key and rerun the push command.
 
+## Immortal command ideas
+For inspiration on future staff utilities and quality-of-life commands, see [`docs/IMMORTAL_COMMAND_IDEAS.md`](docs/IMMORTAL_COMMAND_IDEAS.md). It outlines potential tools by immortal tier (helper through implementor) with suggested use cases and access levels.
+
 ## Applying patches with `git apply`
 To apply a patch file or an inline diff, run the command from the repository root so Git can find the correct paths. For example, using three-way merge to reduce conflicts:
 
