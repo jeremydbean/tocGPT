@@ -210,9 +210,11 @@ What the script does:
 - Detects whether Docker Desktop is installed and exits early with guidance if it is missing.
 - Ensures the WSL and Virtual Machine Platform Windows features are enabled.
 - Updates the WSL kernel and sets the default WSL version to 2.
-- Restarts the `LxssManager` service.
+- Restarts the `LxssManager` service (and asks you to reboot if the service is missing because WSL has not finished installing).
 - Restarts Docker Desktop, waits for `com.docker.service` to report `Running`, and verifies `docker version`, `docker info`, and `docker run hello-world`.
 - Exits with a non-zero status if any step fails so automation can detect the issue.
+
+If you see a message that `LxssManager` is missing, reboot Windows so the WSL features can register the service, then rerun the script.
 
 ### Manual validation
 After the script completes, confirm Docker responds normally:

@@ -55,6 +55,11 @@ function Ensure-WslDefaultVersion2 {
 
 function Restart-LxssManager {
     Write-Status 'Restarting LxssManager service'
+    $service = Get-Service -Name LxssManager -ErrorAction SilentlyContinue
+    if (-not $service) {
+        throw 'LxssManager service is missing. Reboot Windows to complete WSL installation, then rerun this script.'
+    }
+
     Restart-Service -Name LxssManager -Force -ErrorAction Stop
     Start-Sleep -Seconds 3
 }
