@@ -2991,7 +2991,7 @@ char *get_extra_descr( const char *name, EXTRA_DESCR_DATA *ed )
 {
     for ( ; ed != NULL; ed = ed->next )
     {
-        if ( is_name( (char *) name, ed->keyword ) )
+        if ( is_name( name, ed->keyword ) )
             return ed->description;
     }
     return NULL;
@@ -3652,12 +3652,16 @@ void *alloc_perm( int sMem )
 char *str_dup( const char *str )
 {
     char *str_new;
- 
+
     if ( str[0] == '\0' )
         return &str_empty[0];
- 
+
     if ( str >= string_space && str < top_string )
-        return (char *) str;
+    {
+        str_new = alloc_mem( strlen(str) + 1 );
+        strcpy( str_new, str );
+        return str_new;
+    }
  
     str_new = alloc_mem( strlen(str) + 1 );
     strcpy( str_new, str );

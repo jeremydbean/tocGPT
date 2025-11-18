@@ -36,3 +36,7 @@
   clears `-Wmissing-prototypes` diagnostics; system backup calls now check return codes instead of discarding results so
   `-Wunused-result` stays quiet under `-Wall -Wextra -Wshadow -Wsign-compare -Wformat-overflow=2 -Wunused-parameter
   -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes`.
+- Running with `-Wcast-qual` surfaces a few places that cast away constness: `act_new`/`act_public` now keep arguments
+  const-correct while copying mutable strings before parsing, web-admin commands duplicate the buffer before passing to
+  `interpret`, `is_name` works on local copies, and `str_dup` always returns writable memory instead of the original
+  const pointer. The stricter build remains warning-free under `-Wall -Wextra -Wcast-qual`.
