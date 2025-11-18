@@ -6,6 +6,9 @@ CURRENT REPORTED BUGS:
 sudo chmod -R 777 tocGPT
 sudo chmod a+rwx -R tocGPT
 
+## ToC 2026 login branding
+The connection greeting now features a colorful Times of Chaos (ToC) 2026 banner that keeps the classic logo while calling out the modernized toolset. Enable ANSI colors in your MUD client to see the full rainbow treatment on login.
+
 ## Docker usage
 You can build and run the MUD inside a portable Docker container that exposes the game port on all interfaces. The steps below cover a brand-new install of macOS, Windows, and Ubuntu, followed by common Docker commands for building and running the container anywhere.
 
