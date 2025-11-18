@@ -474,12 +474,13 @@ void fwrite_pet( CHAR_DATA *pet, FILE *fp)
     if (pet->act != pet->pIndexData->act)
 	fprintf(fp, "Act  %ld\n", pet->act);
     if (pet->affected_by != pet->pIndexData->affected_by)
-	fprintf(fp, "AfBy %d\n", pet->affected_by);
-     if (pet->affected_by != pet->pIndexData->affected_by2)
-	fprintf(fp, "AfBy %d\n", pet->affected_by2);
-   if (pet->comm != 0)
-	fprintf(fp, "Comm %ld\n", pet->comm);
-    fprintf(fp,"Pos  %d\n", pet->position = POS_FIGHTING ? POS_STANDING : pet->position);
+        fprintf(fp, "AfBy %d\n", pet->affected_by);
+    if (pet->affected_by2 != pet->pIndexData->affected_by2)
+        fprintf(fp, "AfBy2 %d\n", pet->affected_by2);
+    if (pet->comm != 0)
+        fprintf(fp, "Comm %ld\n", pet->comm);
+    fprintf(fp,"Pos  %d\n",
+            pet->position == POS_FIGHTING ? POS_STANDING : pet->position);
     if (pet->saving_throw != 0)
 	fprintf(fp, "Save %d\n", pet->saving_throw);
     if (pet->alignment != pet->pIndexData->alignment)
