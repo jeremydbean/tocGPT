@@ -46,7 +46,12 @@ If Git is not already available, install it using the package manager for your p
   ```bash
   brew install git
   ```
-- **Windows:** Download and install [Git for Windows](https://git-scm.com/download/win), then use the bundled Git Bash or enable "Git from the command line" during setup.
+- **Windows:** Install via winget or the Git for Windows installer.
+  - **winget (PowerShell):**
+    ```powershell
+    winget install -e --id Git.Git
+    ```
+  - **Installer:** Download [Git for Windows](https://git-scm.com/download/win), then use the bundled Git Bash or enable "Git from the command line" during setup.
 - **Ubuntu / Debian:**
   ```bash
   sudo apt update
