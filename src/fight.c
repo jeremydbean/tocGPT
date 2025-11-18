@@ -1282,9 +1282,8 @@ bool damage( CHAR_DATA *ch, CHAR_DATA *victim, int dam, int dt, int dam_type )
 
 
     return FALSE;
-			}
-	else;
-	group_gain( ch, victim );
+                        }
+        group_gain( ch, victim );
 
 	if( !IS_NPC(ch) && !IS_NPC(victim) )
 	{
@@ -5353,16 +5352,22 @@ void do_iron_skin( CHAR_DATA *ch, char *argument )
 
 	pick = dice(1,4);
 
-	switch (pick)
-	{
-	 case 1: if(!IS_SET(ch->imm_flags, IMM_BASH) )
-		    SET_BIT(ch->imm_flags, IMM_BASH); 
+        switch (pick)
+        {
+         case 1: if(!IS_SET(ch->imm_flags, IMM_BASH) )
+                    SET_BIT(ch->imm_flags, IMM_BASH);
                 break;
-	 case 2: if(!IS_SET(ch->imm_flags, IMM_PIERCE) )
-		    SET_BIT(ch->imm_flags, IMM_PIERCE);  break;
-	 case 3: if(!IS_SET(ch->imm_flags, IMM_SLASH) )
-		    SET_BIT(ch->imm_flags, IMM_SLASH);   break;
-	}
+         case 2: if(!IS_SET(ch->imm_flags, IMM_PIERCE) )
+                    {
+                        SET_BIT(ch->imm_flags, IMM_PIERCE);
+                    }
+                 break;
+         case 3: if(!IS_SET(ch->imm_flags, IMM_SLASH) )
+                    {
+                        SET_BIT(ch->imm_flags, IMM_SLASH);
+                    }
+                 break;
+        }
 
     }
     else
