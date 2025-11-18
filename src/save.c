@@ -785,10 +785,8 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     /* initialize race */
     if (found)
     {
-	int i;
-
-	if (ch->race == 0)
-	    ch->race = race_lookup("human");
+        if (ch->race == 0)
+            ch->race = race_lookup("human");
 
 	ch->size = pc_race_table[ch->race].size;
 	ch->dam_type = 17; /*punch */
@@ -1019,14 +1017,14 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
             if ( !str_cmp( word, "Group" )  || !str_cmp(word,"Gr"))
             {
                 int gn;
-                char *temp;
+                char *group_name;
 
-                temp = fread_word( fp ) ;
-                gn = group_lookup(temp);
-		/* gn    = group_lookup( fread_word( fp ) ); */
-		if ( gn < 0 )
+                group_name = fread_word( fp ) ;
+                gn = group_lookup(group_name);
+                /* gn    = group_lookup( fread_word( fp ) ); */
+                if ( gn < 0 )
                 {
-                    fprintf(stderr,"%s",temp);
+                    fprintf(stderr,"%s",group_name);
                     bug( "Fread_char: unknown group. ", 0 );
                 }
 		else
@@ -1174,16 +1172,16 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 	    if ( !str_cmp( word, "Skill" ) || !str_cmp(word,"Sk"))
 	    {
 		int sn;
-		int value;
-		char *temp;
+                int value;
+                char *skill_name;
 
-		value = fread_number( fp );
-		temp = fread_word( fp ) ;
-		sn = skill_lookup(temp);
-		/* sn    = skill_lookup( fread_word( fp ) ); */
-		if ( sn < 0 )
-		{
-		    fprintf(stderr,"%s",temp);
+                value = fread_number( fp );
+                skill_name = fread_word( fp ) ;
+                sn = skill_lookup(skill_name);
+                /* sn    = skill_lookup( fread_word( fp ) ); */
+                if ( sn < 0 )
+                {
+                    fprintf(stderr,"%s",skill_name);
 		    bug( "Fread_char: unknown skill. ", 0 );
 		}
 		else

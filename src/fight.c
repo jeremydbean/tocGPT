@@ -2122,16 +2122,17 @@ void death_cry( CHAR_DATA *ch )
     {
     case  0: msg  = "$n hits the ground ... DEAD.";                     break;
     case  1:
-	if (ch->material == 0)
-	{
-	    msg  = "$n splatters blood on your armor.";
-	    break;
-	}
+        if (ch->material == 0)
+        {
+            msg  = "$n splatters blood on your armor.";
+            break;
+        }
+        /* fall through */
     case  2:
-	if (IS_SET(ch->parts,PART_GUTS))
-	{
-	    msg = "$n spills $s guts all over the floor.";
-	    vnum = OBJ_VNUM_GUTS;
+        if (IS_SET(ch->parts,PART_GUTS))
+        {
+            msg = "$n spills $s guts all over the floor.";
+            vnum = OBJ_VNUM_GUTS;
 	}
 	break;
     case  3:

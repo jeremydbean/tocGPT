@@ -46,6 +46,8 @@ typedef short   int                     sh_int;
 typedef unsigned char                   bool;
 #endif
 
+#define UNUSED_PARAM(x) ((void)(x))
+
 
 
 /*
