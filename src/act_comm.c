@@ -2451,7 +2451,7 @@ void do_pose( CHAR_DATA *ch, char *argument )
     int pose;
 
     if ( IS_NPC(ch) )
-	return;
+        return;
 
     {
         const int max_pose = (int)(sizeof(pose_table) / sizeof(pose_table[0]) - 1);
