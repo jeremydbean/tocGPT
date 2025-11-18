@@ -13,6 +13,7 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include "merc.h"
+#include "interp.h"
 
 #define MAX_PASS 3
 #define WIZ_FILE        "../area/wizlist.txt"

@@ -28,6 +28,7 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include "merc.h"
+#include "interp.h"
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_split		);
@@ -1222,7 +1223,8 @@ void do_withdraw( CHAR_DATA *ch, char *argument )
 
 void do_convert(CHAR_DATA *ch, char *argument)
 {
-    int temp, left;
+    UNUSED_PARAM(argument);
+    long temp, left;
 
     if(ch->in_room != get_room_index(ROOM_VNUM_BANK)) {
 	send_to_char("Your not in the bank!\n\r",ch);
@@ -1262,6 +1264,7 @@ void do_convert(CHAR_DATA *ch, char *argument)
 
 void do_balance( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
 
     if(IS_NPC(ch))
@@ -2401,6 +2404,7 @@ void do_recite( CHAR_DATA *ch, char *argument )
 
 void do_brandish( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     CHAR_DATA *vch;
     CHAR_DATA *vch_next;
     OBJ_DATA *staff;
@@ -2694,9 +2698,9 @@ void do_steal( CHAR_DATA *ch, char *argument )
     }
 
     if(!str_cmp(arg1,"platinum")) {
-	int amount;
+        long amount;
 
-	amount = victim->new_platinum * number_range(1, 10) / 100;
+        amount = victim->new_platinum * number_range(1, 10) / 100;
 
 	if ((amount <= 0) || (query_carry_coins(ch,amount) > can_carry_w(ch))) {
 	    send_to_char( "You couldn't get any platinum.\n\r", ch );
@@ -2705,16 +2709,16 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_platinum     += amount;
 	victim->new_platinum -= amount;
-	sprintf(buf,"Bingo! You got %d platinum coins.\n\r",amount);
+        sprintf(buf,"Bingo! You got %ld platinum coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
     }
 
     if(!str_cmp(arg1,"gold")) {
-	int amount;
+        long amount;
 
-	amount = victim->new_gold * number_range(1, 10) / 100;
+        amount = victim->new_gold * number_range(1, 10) / 100;
 
 	if ((amount <= 0) || (query_carry_coins(ch,amount) > can_carry_w(ch))) {
 	    send_to_char( "You couldn't get any gold.\n\r", ch );
@@ -2723,16 +2727,16 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_gold     += amount;
 	victim->new_gold -= amount;
-	sprintf(buf,"Bingo! You got %d gold coins.\n\r",amount);
+        sprintf(buf,"Bingo! You got %ld gold coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
     }
 
     if(!str_cmp(arg1,"silver")) {
-	int amount;
+        long amount;
 
-	amount = victim->new_silver * number_range(1, 10) / 100;
+        amount = victim->new_silver * number_range(1, 10) / 100;
 
 	if ((amount <= 0) || (query_carry_coins(ch,amount) > can_carry_w(ch))) {
 	    send_to_char( "You couldn't get any silver.\n\r", ch );
@@ -2741,16 +2745,16 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_silver     += amount;
 	victim->new_silver -= amount;
-	sprintf(buf,"Bingo! You got %d silver coins.\n\r",amount);
+        sprintf(buf,"Bingo! You got %ld silver coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
     }
 
     if(!str_cmp(arg1,"copper")) {
-	int amount;
+        long amount;
 
-	amount = victim->new_copper * number_range(1, 10) / 100;
+        amount = victim->new_copper * number_range(1, 10) / 100;
 
 	if ((amount <= 0) || (query_carry_coins(ch,amount) > can_carry_w(ch))) {
 	    send_to_char( "You couldn't get any copper.\n\r", ch );
@@ -2759,7 +2763,7 @@ void do_steal( CHAR_DATA *ch, char *argument )
 
 	ch->new_copper     += amount;
 	victim->new_copper -= amount;
-	sprintf(buf,"Bingo! You got %d copper coins.\n\r",amount);
+        sprintf(buf,"Bingo! You got %ld copper coins.\n\r",amount);
 	send_to_char(buf,ch);
 	check_improve(ch,gsn_steal,TRUE,2);
 	return;
