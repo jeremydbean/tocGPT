@@ -17,6 +17,7 @@
 #include <string.h>
 #include <strings.h> /* for bzero() */
 #include "merc.h"
+#include "interp.h"
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_look		);
@@ -109,7 +110,7 @@ ROOM_INDEX_DATA *get_random_room(CHAR_DATA *ch)
 }
 
 /* Mob is type M - Haiku */
-void do_mob_action(CHAR_DATA *mobile, CHAR_DATA *vict)
+static void do_mob_action(CHAR_DATA *mobile, CHAR_DATA *vict)
 {
     MOB_ACTION_DATA *action;
 
@@ -732,7 +733,7 @@ void move_char( CHAR_DATA *ch, int door, bool skip_special_check )
 
 
     move = movement_loss[UMIN(SECT_MAX-1, in_room->sector_type)]
-	    + movement_loss[UMIN(SECT_MAX-1, to_room->sector_type)] ;
+            + movement_loss[UMIN(SECT_MAX-1, to_room->sector_type)] ;
 
     move /= 2;  /* i.e. the average */
 
@@ -747,7 +748,7 @@ void move_char( CHAR_DATA *ch, int door, bool skip_special_check )
     }
 
     WAIT_STATE( ch, 1 );
-    ch->move -= move;
+    ch->move = (sh_int)(ch->move - move);
 
     if ( (!IS_AFFECTED(ch, AFF_SNEAK) && !IS_AFFECTED2(ch,AFF2_STEALTH) )
     && ( IS_NPC(ch) || !IS_SET(ch->act, PLR_WIZINVIS) )
@@ -876,6 +877,7 @@ void move_char( CHAR_DATA *ch, int door, bool skip_special_check )
 
 void do_north( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_NORTH, FALSE );
     return;
 }
@@ -884,6 +886,7 @@ void do_north( CHAR_DATA *ch, char *argument )
 
 void do_east( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_EAST, FALSE );
     return;
 }
@@ -892,6 +895,7 @@ void do_east( CHAR_DATA *ch, char *argument )
 
 void do_south( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_SOUTH, FALSE );
     return;
 }
@@ -900,6 +904,7 @@ void do_south( CHAR_DATA *ch, char *argument )
 
 void do_west( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_WEST, FALSE );
     return;
 }
@@ -908,6 +913,7 @@ void do_west( CHAR_DATA *ch, char *argument )
 
 void do_up( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_UP, FALSE );
     return;
 }
@@ -916,30 +922,35 @@ void do_up( CHAR_DATA *ch, char *argument )
 
 void do_down( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_DOWN, FALSE );
     return;
 }
 
 void do_northeast( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_NORTHEAST, FALSE );
     return;
 }
 
 void do_northwest( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_NORTHWEST, FALSE );
     return;
 }
 
 void do_southeast( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_SOUTHEAST, FALSE );
     return;
 }
 
 void do_southwest( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     move_char( ch, DIR_SOUTHWEST, FALSE );
     return;
 }
@@ -1785,6 +1796,7 @@ void do_pick( CHAR_DATA *ch, char *argument )
 
 void do_stand( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
 
     if(!IS_NPC(ch) && ch->pcdata->mounted)
     {
@@ -1842,6 +1854,7 @@ void do_stand( CHAR_DATA *ch, char *argument )
 
 void do_rest( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
 
     if(!IS_NPC(ch) && ch->pcdata->mounted)
     {
@@ -1889,6 +1902,7 @@ void do_rest( CHAR_DATA *ch, char *argument )
 
 void do_sit (CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     if(!IS_NPC(ch) && ch->pcdata->mounted)
     {
       send_to_char("You must dismount first.\n\r",ch);
@@ -1928,6 +1942,7 @@ void do_sit (CHAR_DATA *ch, char *argument )
 
 void do_sleep( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     int chance = 0;
 
     if(!IS_NPC(ch) && ch->pcdata->mounted)
@@ -2011,6 +2026,7 @@ void do_wake( CHAR_DATA *ch, char *argument )
 
 void do_sneak( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     AFFECT_DATA af;
     OBJ_DATA *obj;
     int iWear, chance;
@@ -2103,6 +2119,7 @@ void recheck_sneak( CHAR_DATA *ch)
 
 void do_hide( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     send_to_char( "You attempt to hide.\n\r", ch );
 
     if ( IS_AFFECTED(ch, AFF_HIDE) )
@@ -2126,6 +2143,7 @@ void do_hide( CHAR_DATA *ch, char *argument )
  */
 void do_visible( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     affect_strip ( ch, gsn_invis			);
     affect_strip ( ch, gsn_mass_invis			);
     affect_strip ( ch, gsn_sneak			);
@@ -2144,6 +2162,7 @@ void do_visible( CHAR_DATA *ch, char *argument )
 /*
 void do_recall( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim;
     ROOM_INDEX_DATA *location;
@@ -2270,6 +2289,7 @@ void do_recall( CHAR_DATA *ch, char *argument )
 /* New recall function recoded by Rico 8/2/98 */
 void do_recall( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     ROOM_INDEX_DATA *location;
     int lose, skill, chance;
@@ -2547,7 +2567,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 	    return;
         }
 
-	ch->train -= cost;
+	ch->train = (sh_int)(ch->train - cost);
         ch->pcdata->perm_hit += 10;
         ch->max_hit += 10;
         ch->hit +=10;
@@ -2564,7 +2584,7 @@ void do_train( CHAR_DATA *ch, char *argument )
             return;
         }
 
-	ch->train -= cost;
+	ch->train = (sh_int)(ch->train - cost);
         ch->pcdata->perm_mana += 10;
         ch->max_mana += 10;
 	ch->mana += 10;
@@ -2585,7 +2605,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    ch->train		-= cost;
+    ch->train		= (sh_int)(ch->train - cost);
 
     ch->perm_stat[stat]		+= 1;
     act( "Your $T increases!", ch, NULL, pOutput, TO_CHAR );
@@ -3010,7 +3030,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	   {
 	     af.type      = gsn_poison;
 	     af.level     = gch->level/2;
-	     af.duration  = dice(5,5);
+              af.duration  = (sh_int)dice(5,5);
 	     af.location  = APPLY_DEX;
 	     af.modifier  = -6;
 	     af.bitvector = AFF_POISON;
@@ -3021,7 +3041,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	   }
 	   if(type_gas == 2)
 	   {
-	     af.type = skill_lookup("sleep");
+              af.type = (sh_int)skill_lookup("sleep");
 	     af.level     = gch->level/2;
 	     af.duration  = 12;
 	     af.location  = APPLY_NONE;
@@ -3061,7 +3081,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 		 {
 		   af.type      = gsn_poison;
 		   af.level     = gch->level/2;
-		   af.duration  = dice(5,5);
+                    af.duration  = (sh_int)dice(5,5);
 		   af.location  = APPLY_DEX;
 		   af.modifier  = -6;
 		   af.bitvector = AFF_POISON;
@@ -3072,7 +3092,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 		 }
 		 if(type_gas == 2)
 		 {
-		   af.type = skill_lookup("sleep");
+                    af.type = (sh_int)skill_lookup("sleep");
 		   af.level     = gch->level/2;
 		   af.duration  = 12;
 		   af.location  = APPLY_NONE;
@@ -3108,7 +3128,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	 sprintf(buf, "%s has set off a Beer trap!!!", ch->name);
        break;
        case 4:                              /* sleep trap (24) */
-	 af.type = skill_lookup("sleep");
+          af.type = (sh_int)skill_lookup("sleep");
 	 af.level     = ch->level/2;
 	 af.duration  = 12;
 	 af.location  = APPLY_NONE;
@@ -3151,9 +3171,9 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	ch->hit  = 10;
 	ch->mana = 10;
 	ch->move = 10;
-	af.type      = skill_lookup("curse");
+         af.type      = (sh_int)skill_lookup("curse");
 	af.level     = ch->level/2;
-	af.duration  = dice(1,2);
+         af.duration  = (sh_int)dice(1,2);
 	af.location  = APPLY_HITROLL;
 	af.modifier  = -1 * (ch->level / 8);
 	af.bitvector = AFF_CURSE;
@@ -3180,7 +3200,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	 {
 	    af.type      = gsn_poison;
 	    af.level     = ch->level/2;
-	    af.duration  = dice(5,5);
+             af.duration  = (sh_int)dice(5,5);
 	    af.location  = APPLY_DEX;
 	    af.modifier  = -5;
 	    af.bitvector = AFF_POISON;
@@ -3197,8 +3217,8 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	  guardian->level = ch->level - 5;
 	  if(ch->level < 51 )
 	  {
-	    guardian->max_hit = ch->max_hit * 1.5;
-	    guardian->hit = guardian->max_hit;
+             guardian->max_hit = (sh_int)(ch->max_hit + ch->max_hit / 2);
+             guardian->hit = guardian->max_hit;
 	  }
 	  else
 	  {
@@ -3225,7 +3245,7 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
        case 9: /* plague trap */
 	 act( "$n yells 'OUCH!'", ch, NULL, NULL, TO_ROOM );
 	 send_to_char("Something has been injected into your body!\n\r",ch);
-	 af.type      = skill_lookup("plague");
+         af.type      = (sh_int)skill_lookup("plague");
 	 af.level     = ch->level/2;
 	 af.duration  = 12;
 	 af.location  = APPLY_STR;
@@ -3245,8 +3265,8 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	   {
 	    if(!IS_NPC(gch) )
 	    {
-	      af.type      = skill_lookup("blindness");
-	      af.level     = gch->level/3;
+              af.type      = (sh_int)skill_lookup("blindness");
+              af.level     = (sh_int)(gch->level/3);
 	      af.location  = APPLY_HITROLL;
 	      af.modifier  = -4;
 	      af.duration  = gch->level;
@@ -3259,8 +3279,8 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	 }
 	 else
 	 {
-	   af.type      = skill_lookup("blindness");
-	   af.level     = ch->level/3;
+           af.type      = (sh_int)skill_lookup("blindness");
+           af.level     = (sh_int)(ch->level/3);
 	   af.location  = APPLY_HITROLL;
 	   af.modifier  = -4;
 	   af.duration  = ch->level;
@@ -3561,6 +3581,7 @@ void do_ride( CHAR_DATA *ch, char *argument)
 
 void do_dismount(CHAR_DATA *ch, char *argument)
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *mount;
 
@@ -3696,7 +3717,7 @@ void do_riding(CHAR_DATA *ch, int door, bool skip_special_check)
     }
 
     WAIT_STATE( temp_ch, 1 );
-    ch->move -= move;
+    ch->move = (sh_int)(ch->move - move);
 
     if ( IS_NPC(ch) || !IS_SET(temp_ch->act, PLR_WIZINVIS) )
       act( "$n rides off $Tward.", temp_ch, NULL, dir_name[door], TO_ROOM );
@@ -3734,6 +3755,7 @@ void do_riding(CHAR_DATA *ch, int door, bool skip_special_check)
 
 void do_stealth( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     AFFECT_DATA af;
     OBJ_DATA *obj;
     int iWear, chance;
@@ -3802,6 +3824,7 @@ void do_stealth( CHAR_DATA *ch, char *argument )
 
 void do_levitate( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     AFFECT_DATA af;
 
     if ( IS_AFFECTED(ch, AFF_FLYING) )

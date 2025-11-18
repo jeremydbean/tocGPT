@@ -20,8 +20,10 @@
 #include <sys/resource.h>
 #include <unistd.h>
 #endif
- 
+
 #include "merc.h"
+#include "interp.h"
+#include <limits.h>
 #pragma GCC diagnostic ignored "-Wformat-security"
 #pragma GCC diagnostic ignored "-Wuse-after-free"
 #include "db.h"
@@ -39,6 +41,21 @@ extern  int     _filbuf         args( (FILE *) );
  
 bool write_to_descriptor	args( ( int desc, char *txt, int length ) );
 bool merc_down;
+
+static sh_int clamp_sh_int_from_long( long value )
+{
+    if ( value > SHRT_MAX )
+        return SHRT_MAX;
+    if ( value < SHRT_MIN )
+        return SHRT_MIN;
+    return (sh_int) value;
+}
+
+static sh_int fread_sh_int( FILE *fp )
+{
+    return clamp_sh_int_from_long( fread_number( fp ) );
+}
+
 
  
 /*
@@ -296,7 +313,7 @@ void    reset_area      args( ( AREA_DATA * pArea ) );
 #if defined(unix)
 /* RT max open files fix */
  
-void maxfilelimit()
+static void maxfilelimit(void)
 {
 #ifndef linux
     struct rlimit r;
@@ -347,12 +364,12 @@ void boot_db( void )
  
         lhour           = (current_time - 650336715)
                         / (PULSE_TICK / PULSE_PER_SECOND);
-        time_info.hour  = lhour  % 24;
+        time_info.hour  = (int)(lhour  % 24);
         lday            = lhour  / 24;
-        time_info.day   = lday   % 35;
+        time_info.day   = (int)(lday   % 35);
         lmonth          = lday   / 35;
-        time_info.month = lmonth % 17;
-        time_info.year  = lmonth / 17;
+        time_info.month = (int)(lmonth % 17);
+        time_info.year  = (int)(lmonth / 17);
  
              if ( time_info.hour <  5 ) weather_info.sunlight = SUN_DARK;
         else if ( time_info.hour <  6 ) weather_info.sunlight = SUN_RISE;
@@ -397,7 +414,7 @@ void boot_db( void )
         for ( sn = 0; sn < MAX_SKILL; sn++ )
         {
             if ( skill_table[sn].pgsn != NULL )
-                *skill_table[sn].pgsn = sn;
+                *skill_table[sn].pgsn = clamp_sh_int_from_long( sn );
         }
     }
 
@@ -486,17 +503,17 @@ void boot_db( void )
 /*
  * Load Area File loads the whole file
  */
-void load_area_file( char *strArea )
+void load_area_file( char *area_filename )
 {
-    if ( strArea[0] == '-' )
+    if ( area_filename[0] == '-' )
     {
         fpArea = stdin;
     }
     else
     {
-        if ( ( fpArea = fopen( strArea, "r" ) ) == NULL )
+        if ( ( fpArea = fopen( area_filename, "r" ) ) == NULL )
         {
-            perror( strArea );
+            perror( area_filename );
             exit( 1 );
         }
     }
@@ -574,7 +591,7 @@ void load_helps( FILE *fp )
     for ( ; ; )
     {
         pHelp           = alloc_perm( sizeof(*pHelp) );
-        pHelp->level    = fread_number( fp );
+        pHelp->level    = clamp_sh_int_from_long( fread_number( fp ) );
         pHelp->keyword  = fread_string( fp );
         if ( pHelp->keyword[0] == '$' )
             break;
@@ -728,18 +745,18 @@ void load_socials( FILE *fp)
  * read_mob_action:  reads in a new action for M-style mobs
  * by Haiku
  */
-MOB_ACTION_DATA * read_mob_action( FILE *fp )
+static MOB_ACTION_DATA * read_mob_action( FILE *fp )
 {
     MOB_ACTION_DATA * new_action;
  
     new_action                  = alloc_perm( sizeof(*new_action) );
-    new_action->level           = fread_number(fp);
+    new_action->level           = clamp_sh_int_from_long( fread_number(fp) );
     new_action->not_vict_action = fread_string(fp);
     new_action->vict_action     = fread_string(fp);
     return new_action;
 }
 
-void read_m_mob_extras( FILE *fp, MOB_INDEX_DATA *pMobIndex )
+static void read_m_mob_extras( FILE *fp, MOB_INDEX_DATA *pMobIndex )
 {
     MOB_ACTION_DATA *new_action, *prev_action = NULL;
     char letter;
@@ -810,7 +827,7 @@ void load_mobiles( FILE *fp )
         pMobIndex->short_descr          = fread_string( fp );
         pMobIndex->long_descr           = fread_string( fp );
         pMobIndex->description          = fread_string( fp );
-        pMobIndex->race                 = race_lookup(fread_string( fp ));
+        pMobIndex->race                 = clamp_sh_int_from_long( race_lookup(fread_string( fp )) );
  
         pMobIndex->long_descr[0]        = UPPER(pMobIndex->long_descr[0]);
         pMobIndex->description[0]       = UPPER(pMobIndex->description[0]);
@@ -824,47 +841,47 @@ void load_mobiles( FILE *fp )
         if(IS_SET(pMobIndex->affected_by,AFF_FLAGS2) )
            pMobIndex->affected_by2      = fread_flag( fp );
         pMobIndex->pShop                = NULL;
-        pMobIndex->alignment            = fread_number( fp );
+        pMobIndex->alignment            = fread_sh_int( fp );
         letter                          = fread_letter( fp );
  
-        pMobIndex->level                = fread_number( fp );
-        pMobIndex->hitroll              = fread_number( fp );
+        pMobIndex->level                = fread_sh_int( fp );
+        pMobIndex->hitroll              = fread_sh_int( fp );
 
         pMobIndex->hitroll              = UMAX(pMobIndex->level/2,pMobIndex->hitroll);
  
         /* read hit dice */
-        pMobIndex->hit[DICE_NUMBER]     = fread_number( fp );
+        pMobIndex->hit[DICE_NUMBER]     = fread_sh_int( fp );
         /* 'd'          */                fread_letter( fp );
-        pMobIndex->hit[DICE_TYPE]       = fread_number( fp );
+        pMobIndex->hit[DICE_TYPE]       = fread_sh_int( fp );
         /* '+'          */                fread_letter( fp );
-        pMobIndex->hit[DICE_BONUS]      = fread_number( fp );
+        pMobIndex->hit[DICE_BONUS]      = fread_sh_int( fp );
  
         /* read mana dice */
-        pMobIndex->mana[DICE_NUMBER]    = fread_number( fp );
+        pMobIndex->mana[DICE_NUMBER]    = fread_sh_int( fp );
                                           fread_letter( fp );
-        pMobIndex->mana[DICE_TYPE]      = fread_number( fp );
+        pMobIndex->mana[DICE_TYPE]      = fread_sh_int( fp );
                                           fread_letter( fp );
-        pMobIndex->mana[DICE_BONUS]     = fread_number( fp );
+        pMobIndex->mana[DICE_BONUS]     = fread_sh_int( fp );
  
         /* read damage dice */
-        pMobIndex->damage[DICE_NUMBER]  = fread_number( fp );
+        pMobIndex->damage[DICE_NUMBER]  = fread_sh_int( fp );
                                           fread_letter( fp );
-        pMobIndex->damage[DICE_TYPE]    = fread_number( fp );
+        pMobIndex->damage[DICE_TYPE]    = fread_sh_int( fp );
                                           fread_letter( fp );
-        pMobIndex->damage[DICE_BONUS]   = fread_number( fp );
-        pMobIndex->damage[DICE_BONUS]   = UMAX(3*pMobIndex->level/4,pMobIndex->damage[DICE_BONUS]);
-        
-        pMobIndex->dam_type             = fread_number( fp );
+        pMobIndex->damage[DICE_BONUS]   = fread_sh_int( fp );
+        pMobIndex->damage[DICE_BONUS]   = clamp_sh_int_from_long( UMAX(3*pMobIndex->level/4,pMobIndex->damage[DICE_BONUS]) );
+
+        pMobIndex->dam_type             = fread_sh_int( fp );
  
         /* read armor class */
-        pMobIndex->ac[AC_PIERCE]        = fread_number( fp );
-        pMobIndex->ac[AC_PIERCE]        = UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_PIERCE]);
-        pMobIndex->ac[AC_BASH]          = fread_number( fp );
-        pMobIndex->ac[AC_BASH]          = UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_BASH]);
-        pMobIndex->ac[AC_SLASH]         = fread_number( fp );
-        pMobIndex->ac[AC_SLASH]         = UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_SLASH]);
-        pMobIndex->ac[AC_EXOTIC]        = fread_number( fp );
-        pMobIndex->ac[AC_EXOTIC]        = UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_EXOTIC]);
+        pMobIndex->ac[AC_PIERCE]        = fread_sh_int( fp );
+        pMobIndex->ac[AC_PIERCE]        = clamp_sh_int_from_long( UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_PIERCE]) );
+        pMobIndex->ac[AC_BASH]          = fread_sh_int( fp );
+        pMobIndex->ac[AC_BASH]          = clamp_sh_int_from_long( UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_BASH]) );
+        pMobIndex->ac[AC_SLASH]         = fread_sh_int( fp );
+        pMobIndex->ac[AC_SLASH]         = clamp_sh_int_from_long( UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_SLASH]) );
+        pMobIndex->ac[AC_EXOTIC]        = fread_sh_int( fp );
+        pMobIndex->ac[AC_EXOTIC]        = clamp_sh_int_from_long( UMIN(100 - 6 * pMobIndex->level, pMobIndex->ac[AC_EXOTIC]) );
  
         /* read flags and add in data from the race table */
         pMobIndex->off_flags            = fread_flag( fp )
@@ -888,9 +905,9 @@ void load_mobiles( FILE *fp )
            pMobIndex->vuln_flags2       = fread_flag( fp );
  
         /* vital statistics */
-        pMobIndex->start_pos            = fread_number( fp );
-        pMobIndex->default_pos          = fread_number( fp );
-        pMobIndex->sex                  = fread_number( fp );
+        pMobIndex->start_pos            = fread_sh_int( fp );
+        pMobIndex->default_pos          = fread_sh_int( fp );
+        pMobIndex->sex                  = fread_sh_int( fp );
 
         total		                = fread_number( fp );
         if(total != 0) {
@@ -1037,12 +1054,12 @@ void load_objects( FILE *fp )
  
         for ( ; ; )
         {
-            char letter;
- 
-            letter = fread_letter( fp );
+            char letter_inner;
+
+            letter_inner = fread_letter( fp );
 
  
-            if ( letter == 'A' )
+            if ( letter_inner == 'A' )
             {
                 AFFECT_DATA *paf;
  
@@ -1059,7 +1076,7 @@ void load_objects( FILE *fp )
                 top_affect++;
             }
  
-            else if ( letter == 'E' )
+            else if ( letter_inner == 'E' )
             {
                 EXTRA_DESCR_DATA *ed;
  
@@ -1071,9 +1088,9 @@ void load_objects( FILE *fp )
                 top_ed++;
             }
 	    
-	    else if ( letter == 'T' )
-	    {
-		OBJ_ACTION_DATA *new_action;
+            else if ( letter_inner == 'T' )
+            {
+                OBJ_ACTION_DATA *new_action;
 
 		new_action 		= alloc_perm( sizeof(*new_action) );
 		new_action->not_vict_action	= fread_string(fp);
@@ -1085,7 +1102,7 @@ void load_objects( FILE *fp )
  
             else
             {
-                ungetc( letter, fp );
+                ungetc( letter_inner, fp );
                 break;
             }
         }
@@ -2107,14 +2124,14 @@ void reset_area( AREA_DATA *pArea )
              && !IS_SET(pRoomIndex->room_flags, ROOM_NEWBIES_ONLY)
              && number_percent () <= 1
              && number_range(1,200) <= 1)
-             {
-               char buf[MAX_STRING_LENGTH];
+            {
+               char trap_buf[MAX_STRING_LENGTH];
                if(IS_SET(pexit->exit_info, EX_PICKPROOF) )
                  REMOVE_BIT(pexit->exit_info, EX_PICKPROOF);
                SET_BIT( pexit->exit_info, EX_TRAPPED);
                pexit->trap = dice(1,10);
-               sprintf(buf,"New Trap: [Room: %d]",pRoomIndex->vnum);
-               wizinfo(buf,LEVEL_IMMORTAL);
+               sprintf(trap_buf,"New Trap: [Room: %d]",pRoomIndex->vnum);
+               wizinfo(trap_buf,LEVEL_IMMORTAL);
              }
             last = TRUE;
             break;
@@ -2517,7 +2534,7 @@ int calc_modifier(int apply_stats, int item_type, int nr_rolls)
  * Modification, 21 March 1999, Blackbird
  * Roll dice to determine APPLY.
  */
-int calc_apply_stats()
+int calc_apply_stats(void)
 { int result;
 
   result = number_bits(5);
@@ -2990,7 +3007,7 @@ char *get_extra_descr( const char *name, EXTRA_DESCR_DATA *ed )
 {
     for ( ; ed != NULL; ed = ed->next )
     {
-        if ( is_name( (char *) name, ed->keyword ) )
+        if ( is_name( name, ed->keyword ) )
             return ed->description;
     }
     return NULL;
@@ -3375,7 +3392,7 @@ char *fread_string_eol( FILE *fp )
 {
     static bool char_special[256-EOF];
     char *plast;
-    char c;
+    int c;
  
     if ( char_special[EOF-EOF] != TRUE )
     {
@@ -3400,13 +3417,13 @@ char *fread_string_eol( FILE *fp )
         c = getc( fp );
     }
     while ( isspace(c) );
- 
-    if ( ( *plast++ = c ) == '\n')
+
+    if ( ( *plast++ = (char) c ) == '\n')
         return &str_empty[0];
  
     for ( ;; )
     {
-        if ( !char_special[ ( *plast++ = getc( fp ) ) - EOF ] )
+        if ( !char_special[ ( *plast++ = (char) getc( fp ) ) - EOF ] )
             continue;
  
         switch ( plast[-1] )
@@ -3475,20 +3492,20 @@ char *fread_string_eol( FILE *fp )
  */
 void fread_to_eol( FILE *fp )
 {
-    char c;
+    int c;
  
     do
     {
         c = getc( fp );
     }
     while ( c != '\n' && c != '\r' );
- 
+
     do
     {
         c = getc( fp );
     }
     while ( c == '\n' || c == '\r' );
- 
+
     ungetc( c, fp );
     return;
 }
@@ -3502,28 +3519,28 @@ char *fread_word( FILE *fp )
 {
     static char word[MAX_INPUT_LENGTH];
     char *pword;
-    char cEnd;
+    int cEnd;
  
     do
     {
         cEnd = getc( fp );
     }
     while ( isspace( cEnd ) );
- 
+
     if ( cEnd == '\'' || cEnd == '"' )
     {
         pword   = word;
     }
     else
     {
-        word[0] = cEnd;
+        word[0] = (char) cEnd;
         pword   = word+1;
-	cEnd    = ' ';
+        cEnd    = ' ';
     }
- 
+
     for ( ; pword < word + MAX_INPUT_LENGTH; pword++ )
     {
-        *pword = getc( fp );
+        *pword = (char) getc( fp );
         if ( cEnd == ' ' ? isspace(*pword) : *pword == cEnd )
         {
             if ( cEnd == ' ' )
@@ -3617,8 +3634,14 @@ void *alloc_perm( int sMem )
     static int iMemPerm;
     void *pMem;
  
-    while ( sMem % sizeof(long) != 0 )
-        sMem++;
+    {
+        size_t aligned = (size_t) sMem;
+
+        while ( aligned % sizeof(long) != 0 )
+            aligned++;
+
+        sMem = ( aligned > (size_t) INT_MAX ) ? INT_MAX : (int) aligned;
+    }
     if ( sMem > MAX_PERM_BLOCK )
     {
         bug( "Alloc_perm: %d too large.", sMem );
@@ -3651,14 +3674,23 @@ void *alloc_perm( int sMem )
 char *str_dup( const char *str )
 {
     char *str_new;
- 
+    size_t len;
+    int alloc_len;
+
     if ( str[0] == '\0' )
         return &str_empty[0];
- 
+
+    len = strlen(str) + 1;
+    alloc_len = ( len > (size_t) INT_MAX ) ? INT_MAX : (int) len;
+
     if ( str >= string_space && str < top_string )
-        return (char *) str;
- 
-    str_new = alloc_mem( strlen(str) + 1 );
+    {
+        str_new = alloc_mem( alloc_len );
+        strcpy( str_new, str );
+        return str_new;
+    }
+
+    str_new = alloc_mem( alloc_len );
     strcpy( str_new, str );
     return str_new;
 }
@@ -3672,12 +3704,17 @@ char *str_dup( const char *str )
  */
 void free_string( char *pstr )
 {
+    size_t len;
+    int alloc_len;
+
     if ( pstr == NULL
     ||   pstr == &str_empty[0]
     || ( pstr >= string_space && pstr < top_string ) )
         return;
 
-    free_mem( pstr, strlen(pstr) + 1 );
+    len = strlen(pstr) + 1;
+    alloc_len = ( len > (size_t) INT_MAX ) ? INT_MAX : (int) len;
+    free_mem( pstr, alloc_len );
     return;
 }
 
@@ -3720,6 +3757,7 @@ void do_areas( CHAR_DATA *ch, char *argument )
  
 void do_memory( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
     char buf[MAX_STRING_LENGTH];
  
     sprintf( buf, "Affects %5d\n\r", top_affect    ); send_to_char( buf, ch );
@@ -3748,7 +3786,7 @@ void do_memory( CHAR_DATA *ch, char *argument )
     return;
 }
  
-char* identify_obj(OBJ_DATA *obj)
+static char* identify_obj(OBJ_DATA *obj)
 {
     static char bigbuf[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
@@ -3924,7 +3962,7 @@ char* identify_obj(OBJ_DATA *obj)
     return bigbuf;
 }
  
-char* stat_mob(CHAR_DATA *victim)
+static char* stat_mob(CHAR_DATA *victim)
 {
     static char bigbuf[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
@@ -4438,7 +4476,7 @@ int number_bits( int width )
  */
 static  int     rgiState[2+55];
  
-void init_mm( )
+void init_mm(void)
 {
     int *piState;
     int iState;
@@ -4605,8 +4643,8 @@ int str_counter(const char *astr, const char *bstr)
     if ( ( c0 = LOWER(astr[0]) ) == '\0' )
         return 0;
 
-    sstr1 = strlen(astr);
-    sstr2 = strlen(bstr);
+    sstr1 = (int) strlen(astr);
+    sstr2 = (int) strlen(bstr);
 
     count = 0;
 
@@ -4635,8 +4673,8 @@ bool str_infix( const char *astr, const char *bstr )
     if ( ( c0 = LOWER(astr[0]) ) == '\0' )
 	return FALSE;
  
-    sstr1 = strlen(astr);
-    sstr2 = strlen(bstr);
+    sstr1 = (int) strlen(astr);
+    sstr2 = (int) strlen(bstr);
  
     for ( ichar = 0; ichar <= sstr2 - sstr1; ichar++ )
     {
@@ -4659,8 +4697,8 @@ bool str_suffix( const char *astr, const char *bstr )
     int sstr1;
     int sstr2;
  
-    sstr1 = strlen(astr);
-    sstr2 = strlen(bstr);
+    sstr1 = (int) strlen(astr);
+    sstr2 = (int) strlen(bstr);
     if ( sstr1 <= sstr2 && !str_cmp( astr, bstr + sstr2 - sstr1 ) )
         return FALSE;
     else
@@ -4841,6 +4879,8 @@ void tail_chain( void )
 
 void do_dump_exits( CHAR_DATA *ch , char *argument )
 {
+    UNUSED_PARAM(ch);
+    UNUSED_PARAM(argument);
     ROOM_INDEX_DATA *in_room;
     ROOM_INDEX_DATA *to_room;
     FILE *fp;
@@ -4871,7 +4911,7 @@ void do_dump_exits( CHAR_DATA *ch , char *argument )
     return;
 }
 
-void load_relics()
+void load_relics(void)
 {
     RELIC_1 = create_object(get_obj_index(VNUM_RELIC_1),1);
     RELIC_ROOM_1 = get_room_index(RELIC_1->value[0]);
@@ -4910,7 +4950,7 @@ void load_relics()
     }
 }
 
-void update_relics()
+void update_relics(void)
 {
     	if(RELIC_1->in_room != RELIC_ROOM_1 &&
 	   RELIC_1->in_room != RELIC_ROOM_2 &&

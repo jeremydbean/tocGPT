@@ -30,6 +30,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
+#include <limits.h>
 #include <string.h>
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
@@ -40,6 +41,15 @@
 #include <sys/syscall.h>
 
 #include "merc.h"
+#include "interp.h"
+
+static void fix_sex(CHAR_DATA *ch);
+static void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
+              const void *arg2, int type, int min_pos );
+static char *swedish_speak( const char *str );
+static bool str_prefix_c( const char *astr, const char *bstr );
+static bool str_infix_c( const char *astr, const char *bstr );
+static char *str_replace_c( char *astr, char *bstr, char *cstr );
 
 #define WNOHANG 1
 #define WEB_ADMIN_QUEUE "../webadmin.queue"
@@ -110,9 +120,9 @@ const   char    go_ahead_str    [] = { '\0' };
 #if !defined ( STDOUT_FILEND )
 #define STDOUT_FILEND 1
 #endif
-const   char    echo_off_str    [] = { IAC, WILL, TELOPT_ECHO, '\0' };
-const   char    echo_on_str     [] = { IAC, WONT, TELOPT_ECHO, '\0' };
-const   char    go_ahead_str    [] = { IAC, GA, '\0' };
+const   char    echo_off_str    [] = { (char)IAC, (char)WILL, (char)TELOPT_ECHO, '\0' };
+const   char    echo_on_str     [] = { (char)IAC, (char)WONT, (char)TELOPT_ECHO, '\0' };
+const   char    go_ahead_str    [] = { (char)IAC, (char)GA, '\0' };
 #endif
 
 
@@ -452,13 +462,14 @@ int main( int argc, char **argv )
 
 
 #if defined(unix)
-int init_socket( int port )
+int init_socket( int listen_port )
 {
     static struct sockaddr_in sa_zero;
     struct sockaddr_in sa;
     int x = 1;
     int fd;
     FILE *fp;
+    unsigned short listen_port_short;
 
     if ( ( fd = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 )
     {
@@ -493,7 +504,10 @@ int init_socket( int port )
 
     sa              = sa_zero;
     sa.sin_family   = AF_INET;
-    sa.sin_port     = htons( port );
+    listen_port_short = (unsigned short)(listen_port < 0
+                        ? 0
+                        : (listen_port > USHRT_MAX ? USHRT_MAX : listen_port));
+    sa.sin_port     = htons( listen_port_short );
 
     if ( bind( fd, (struct sockaddr *) &sa, sizeof(sa) ) < 0 )
     {
@@ -683,7 +697,7 @@ void game_loop_mac_msdos( void )
 
 
 #if defined(unix)
-void game_loop_unix( int control )
+void game_loop_unix( int control_fd )
 {
     static struct timeval null_time;
     struct timeval last_time;
@@ -720,8 +734,8 @@ void game_loop_unix( int control )
 	FD_ZERO( &in_set  );
 	FD_ZERO( &out_set );
 	FD_ZERO( &exc_set );
-	FD_SET( control, &in_set );
-	maxdesc = control;
+        FD_SET( control_fd, &in_set );
+        maxdesc = control_fd;
 	for ( d = descriptor_list; d != NULL; d = d->next )
 	{
 	    maxdesc = UMAX( maxdesc, d->descriptor );
@@ -744,8 +758,8 @@ void game_loop_unix( int control )
 	/*
 	 * New connection?
 	 */
-	if ( FD_ISSET( control, &in_set ) )
-	    new_descriptor( control );
+        if ( FD_ISSET( control_fd, &in_set ) )
+            new_descriptor( control_fd );
 
 	/*
 	 * Kick out the freaky folks.
@@ -910,7 +924,7 @@ void make_descriptor( DESCRIPTOR_DATA *dnew, int desc )
 }
 
 #if defined(unix)
-void new_descriptor( int control )
+void new_descriptor( int control_fd )
 {
     char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
@@ -922,8 +936,8 @@ void new_descriptor( int control )
     socklen_t size;
 
     size = sizeof(sock);
-    getsockname( control, (struct sockaddr *) &sock, &size );
-    if ( ( desc = accept( control, (struct sockaddr *) &sock, &size) ) < 0 )
+    getsockname( control_fd, (struct sockaddr *) &sock, &size );
+    if ( ( desc = accept( control_fd, (struct sockaddr *) &sock, &size) ) < 0 )
     {
 	perror( "New_descriptor: accept" );
 	return;
@@ -966,11 +980,11 @@ void new_descriptor( int control )
 	 * Would be nice to use inet_ntoa here but it takes a struct arg,
 	 * which ain't very compatible between gcc and system libraries.
 	 */
-	int addr;
+        unsigned long addr;
 
 /*	create_ident( dnew, sock.sin_addr.s_addr, ntohs( sock.sin_port ) ); */
         addr = ntohl( sock.sin_addr.s_addr );
-        sprintf( buf, "%d.%d.%d.%d",
+        sprintf( buf, "%lu.%lu.%lu.%lu",
             ( addr >> 24 ) & 0xFF, ( addr >> 16 ) & 0xFF,
             ( addr >>  8 ) & 0xFF, ( addr       ) & 0xFF
             );
@@ -1164,7 +1178,7 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 
 bool read_from_descriptor( DESCRIPTOR_DATA *d )
 {
-    int iStart;
+    size_t iStart;
 
     /* Hold horses if pending command already. */
     if ( d->incomm[0] != '\0' )
@@ -1172,13 +1186,13 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
 
     /* Check for overflow. */
     iStart = strlen(d->inbuf);
-    if ( iStart >= (int)sizeof(d->inbuf) - 10 )
+    if ( iStart >= sizeof(d->inbuf) - 10 )
     {
         sprintf( log_buf, "%s input overflow!", d->host );
         log_string( log_buf );
-	write_to_descriptor( d->descriptor,
-	    "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
-	return FALSE;
+        write_to_descriptor( d->descriptor,
+            "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
+        return FALSE;
     }
 
     /* Snarf input. */
@@ -1201,16 +1215,16 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
 #if defined(MSDOS) || defined(unix)
     for ( ; ; )
     {
-	int nRead;
+        ssize_t nRead;
 
-	nRead = read( d->descriptor, d->inbuf + iStart,
-	    sizeof(d->inbuf) - 10 - iStart );
-	if ( nRead > 0 )
-	{
-	    iStart += nRead;
-	    if ( d->inbuf[iStart-1] == '\n' || d->inbuf[iStart-1] == '\r' )
-		break;
-	}
+        nRead = read( d->descriptor, d->inbuf + iStart,
+            sizeof(d->inbuf) - 10 - iStart );
+        if ( nRead > 0 )
+        {
+            iStart += (size_t)nRead;
+            if ( d->inbuf[iStart-1] == '\n' || d->inbuf[iStart-1] == '\r' )
+                break;
+        }
 	else if ( nRead == 0 )
 	{
 	    log_string( "EOF encountered on read." );
@@ -1534,11 +1548,16 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
  */
 void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
 {
+    size_t computed_length;
+
     /*
      * Find length in case caller didn't.
      */
     if ( length <= 0 )
-	length = strlen(txt);
+    {
+        computed_length = strlen(txt);
+        length = (computed_length > INT_MAX) ? INT_MAX : (int)computed_length;
+    }
 
     /*
      * Initial \n\r if needed.
@@ -1553,9 +1572,9 @@ void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
     /*
      * Expand the buffer as needed.
      */
-    while ( d->outtop + length >= d->outsize )
+    while ( (size_t)d->outtop + (size_t)length >= (size_t)d->outsize )
     {
-	char *outbuf;
+        char *outbuf;
 
 	if (d->outsize > 32000)
 	{
@@ -1564,10 +1583,10 @@ void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
 	    return;
 	}
 	outbuf      = alloc_mem( 2 * d->outsize );
-	strncpy( outbuf, d->outbuf, d->outtop );
-	free_mem( d->outbuf, d->outsize );
-	d->outbuf   = outbuf;
-	d->outsize *= 2;
+        strncpy( outbuf, d->outbuf, (size_t)d->outtop );
+        free_mem( d->outbuf, d->outsize );
+        d->outbuf   = outbuf;
+        d->outsize *= 2;
     }
 
     /*
@@ -1588,9 +1607,10 @@ void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
  */
 bool write_to_descriptor( int desc, char *txt, int length )
 {
-    int iStart;
-    int nWrite;
-    int nBlock;
+    size_t iStart;
+    ssize_t nWrite;
+    size_t nBlock;
+    size_t computed_length;
 
 #if defined(macintosh) || defined(MSDOS)
     if ( desc == 0 )
@@ -1598,13 +1618,19 @@ bool write_to_descriptor( int desc, char *txt, int length )
 #endif
 
     if ( length <= 0 )
-	length = strlen(txt);
-
-    for ( iStart = 0; iStart < length; iStart += nWrite )
     {
-	nBlock = UMIN( length - iStart, 4096 );
-	if ( ( nWrite = write( desc, txt + iStart, nBlock ) ) < 0 )
-	    { perror( "Write_to_descriptor" ); return FALSE; }
+        computed_length = strlen(txt);
+        length = (computed_length > INT_MAX) ? INT_MAX : (int)computed_length;
+    }
+
+    for ( iStart = 0; iStart < (size_t)length; iStart += (size_t)nWrite )
+    {
+        nBlock = (size_t)length - iStart;
+        if ( nBlock > 4096 )
+            nBlock = 4096;
+        nWrite = write( desc, txt + iStart, nBlock );
+        if ( nWrite < 0 )
+            { perror( "Write_to_descriptor" ); return FALSE; }
     }
 
     return TRUE;
@@ -1619,7 +1645,7 @@ bool write_to_descriptor( int desc, char *txt, int length )
  */
 void nanny( DESCRIPTOR_DATA *d, char *argument )
 {
-    DESCRIPTOR_DATA *d_old, *d_next;
+    DESCRIPTOR_DATA *d_old, *d_next_local;
     DESCRIPTOR_DATA *dch;
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
@@ -1851,9 +1877,9 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	switch( *argument )
 	{
 	case 'y' : case 'Y':
-	    for ( d_old = descriptor_list; d_old != NULL; d_old = d_next )
-	    {
-		d_next = d_old->next;
+            for ( d_old = descriptor_list; d_old != NULL; d_old = d_next_local )
+            {
+                d_next_local = d_old->next;
 		if (d_old == d || d_old->character == NULL)
 		    continue;
 
@@ -2005,11 +2031,11 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	    break;
 	}
 
-	ch->race = race;
+        ch->race = (sh_int)race;
 	/* initialize stats */
 	for (i = 0; i < MAX_STATS; i++)
 	    ch->perm_stat[i] = pc_race_table[race].stats[i];
-	ch->affected_by = ch->affected_by|race_table[race].aff;
+        ch->affected_by = ch->affected_by | (int)race_table[race].aff;
 	ch->imm_flags   = ch->imm_flags|race_table[race].imm;
 	ch->res_flags   = ch->res_flags|race_table[race].res;
 	ch->vuln_flags  = ch->vuln_flags|race_table[race].vuln;
@@ -2094,7 +2120,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	    break;
 	}
 
-	ch->class = iClass;
+        ch->class = (sh_int)iClass;
 	if(ch->class == CLASS_MONK)
 	   ch->pcdata->guild = GUILD_MONK;
 	else if( ch->class == CLASS_NECRO)
@@ -2354,9 +2380,10 @@ case CON_GET_ALIGNMENT:
    just search for the word DNS in this file to find
    the rest of the code */
 
-void do_dns( CHAR_DATA *ch )
+void do_dns( CHAR_DATA *ch, char *argument )
 {
     extern bool dns;
+    UNUSED_PARAM(argument);
 
     if(IS_NPC(ch))
         return;
@@ -2384,6 +2411,7 @@ void do_dns( CHAR_DATA *ch )
 
 void do_check_psi ( CHAR_DATA *ch, char *argument )
 {
+    UNUSED_PARAM(argument);
   int chance;
   int add;
 	int add2;
@@ -2607,6 +2635,7 @@ bool check_parse_name( char *name )
  */
 bool check_reconnect( DESCRIPTOR_DATA *d, char *name, bool fConn )
 {
+    UNUSED_PARAM(name);
     DESCRIPTOR_DATA *dch;
     int samehost = 0;
     char chhost[MAX_STRING_LENGTH];
@@ -2740,7 +2769,9 @@ void send_to_char( const char *txt, CHAR_DATA *ch )
 {
   char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
-  int t,len,col;
+  size_t t;
+  int col;
+  size_t len;
   PC_DATA *pcdata;
   char *ptr;
   bool do_color;
@@ -2779,11 +2810,11 @@ void send_to_char( const char *txt, CHAR_DATA *ch )
 	ptr += strlen (col_disp_table[pcdata->col_table[COL_REGULAR]].ansi_str);
       }
       *ptr = '\0';
-      write_to_buffer ( ch->desc, buf, ptr - buf);
+      write_to_buffer ( ch->desc, buf, (int)(ptr - buf));
     }
     else
     {
-      write_to_buffer( ch->desc, txt, len);
+      write_to_buffer( ch->desc, txt, (int)len);
     }
   }
     return;
@@ -2818,7 +2849,12 @@ void page_to_char( const char *txt, CHAR_DATA *ch )
 #if defined(macintosh) || defined(MSDOS)
 	send_to_char(txt,ch);
 #else
-    ch->desc->showstr_head = alloc_mem(strlen(txt) + 1);
+    {
+        size_t showstr_len = strlen(txt) + 1;
+        if (showstr_len > INT_MAX)
+            showstr_len = INT_MAX;
+        ch->desc->showstr_head = alloc_mem((int)showstr_len);
+    }
     strcpy(ch->desc->showstr_head,txt);
     ch->desc->showstr_point = ch->desc->showstr_head;
     show_string(ch->desc,"");
@@ -2861,7 +2897,7 @@ void show_string(struct descriptor_data *d, char *input)
 	else if (!*scan || (show_lines > 0 && lines >= show_lines))
 	{
 	    *scan = '\0';
-	    write_to_buffer(d,buffer,strlen(buffer));
+            write_to_buffer(d,buffer,(int)strlen(buffer));
 //	    	for (chk = d->showstr_point; isspace(*chk); chk++)
 //	    		{//
 //				if (!*chk)
@@ -2896,21 +2932,21 @@ void show_string(struct descriptor_data *d, char *input)
 
 
 /* quick sex fixer */
-void fix_sex(CHAR_DATA *ch)
+static void __attribute__((unused)) fix_sex(CHAR_DATA *ch)
 {
     if (ch->sex < 0 || ch->sex > 2)
 	ch->sex = IS_NPC(ch) ? 0 : ch->pcdata->true_sex;
 }
 
 void act (const char *format, CHAR_DATA *ch, const void *arg1, const void *arg2,
-	  int type)
+          int type)
 {
     /* to be compatible with older code */
     act_new(format,ch,arg1,arg2,type,POS_RESTING);
 }
 
 void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
-	      const void *arg2, int type, int min_pos)
+              const void *arg2, int type, int min_pos)
 {
     static char * const he_she  [] = { "it",  "he",  "she" };
     static char * const him_her [] = { "it",  "him", "her" };
@@ -2920,9 +2956,9 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
     buf[0] = '0';
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
-    CHAR_DATA *vch = (CHAR_DATA *) arg2;
-    OBJ_DATA *obj1 = (OBJ_DATA  *) arg1;
-    OBJ_DATA *obj2 = (OBJ_DATA  *) arg2;
+    const CHAR_DATA *vch = arg2;
+    const OBJ_DATA *obj1 = arg1;
+    const OBJ_DATA *obj2 = arg2;
     const char *str;
     const char *i;
     char *point;
@@ -2977,22 +3013,22 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 	    }
 	    ++str;
 
-	    if ( arg2 == NULL && *str >= 'A' && *str <= 'Z' )
-	    {
-		bug( "Act: missing arg2 for code %d.", *str );
-		i = " <@@@> ";
-	    }
-	    else
-	    {
-		switch ( *str )
-		{
-		default:  bug( "Act: bad code %d.", *str );
-			  i = " <@@@> ";                                break;
-		/* Thx alex for 't' idea */
-		case 't': i = (char *) arg1;                            break;
-		case 'T': i = (char *) arg2;                            break;
-		case 'n': i = PERS( ch,  to  );                         break;
-		case 'N': i = PERS( vch, to  );                         break;
+            if ( arg2 == NULL && *str >= 'A' && *str <= 'Z' )
+            {
+                bug( "Act: missing arg2 for code %d.", *str );
+                i = " <@@@> ";
+            }
+            else
+            {
+                switch ( *str )
+                {
+                default:  bug( "Act: bad code %d.", *str );
+                          i = " <@@@> ";                                break;
+                /* Thx alex for 't' idea */
+                case 't': i = (const char *) arg1;                      break;
+                case 'T': i = (const char *) arg2;                      break;
+                case 'n': i = PERS( ch,  to  );                         break;
+                case 'N': i = PERS( vch, to  );                         break;
 		case 'e': i = he_she  [URANGE(0, ch  ->sex, 2)];        break;
 		case 'E': i = he_she  [URANGE(0, vch ->sex, 2)];        break;
 		case 'm': i = him_her [URANGE(0, ch  ->sex, 2)];        break;
@@ -3000,30 +3036,34 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 		case 's': i = his_her [URANGE(0, ch  ->sex, 2)];        break;
 		case 'S': i = his_her [URANGE(0, vch ->sex, 2)];        break;
 
-		case 'p':
-		    i = can_see_obj( to, obj1 )
-			    ? obj1->short_descr
-			    : "something";
-		    break;
+                case 'p':
+                    i = can_see_obj( to, obj1 )
+                            ? obj1->short_descr
+                            : "something";
+                    break;
 
-		case 'P':
-		    i = can_see_obj( to, obj2 )
-			    ? obj2->short_descr
-			    : "something";
-		    break;
+                case 'P':
+                    i = can_see_obj( to, obj2 )
+                            ? obj2->short_descr
+                            : "something";
+                    break;
 
-		case 'd':
-		    if ( arg2 == NULL || ((char *) arg2)[0] == '\0' )
-		    {
-			i = "door";
-		    }
-		    else
-		    {
-			one_argument( (char *) arg2, fname );
-			i = fname;
-		    }
-		    break;
-		}
+                case 'd':
+                    if ( arg2 == NULL || ((const char *) arg2)[0] == '\0' )
+                    {
+                        i = "door";
+                    }
+                    else
+                    {
+                        char arg2_copy[MAX_INPUT_LENGTH];
+
+                        strncpy(arg2_copy, (const char *) arg2, sizeof(arg2_copy) - 1);
+                        arg2_copy[sizeof(arg2_copy) - 1] = '\0';
+                        one_argument( arg2_copy, fname );
+                        i = fname;
+                    }
+                    break;
+                }
 	    }
 
 	    ++str;
@@ -3047,8 +3087,8 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 }
 
 /* for use with public chat channels */
-void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
-	      const void *arg2, int type, int min_pos)
+static void __attribute__((unused)) act_public( const char *format, CHAR_DATA *ch, const void *arg1,
+              const void *arg2, int type, int min_pos)
 {
     static char * const he_she  [] = { "it",  "he",  "she" };
     static char * const him_her [] = { "it",  "him", "her" };
@@ -3058,9 +3098,9 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
     buf[0] = '0';
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
-    CHAR_DATA *vch = (CHAR_DATA *) arg2;
-    OBJ_DATA *obj1 = (OBJ_DATA  *) arg1;
-    OBJ_DATA *obj2 = (OBJ_DATA  *) arg2;
+    const CHAR_DATA *vch = arg2;
+    const OBJ_DATA *obj1 = arg1;
+    const OBJ_DATA *obj2 = arg2;
     const char *str;
     const char *i;
     char *point;
@@ -3154,10 +3194,10 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
 		default:  bug( "Act: bad code %d.", *str );
 			  i = " <@@@> ";                                break;
 		/* Thx alex for 't' idea */
-		case 't': i = (char *) arg1;                            break;
-		case 'T': i = (char *) arg2;                            break;
-		case 'n': i = PERS( ch,  to  );                         break;
-		case 'N': i = PERS( vch, to  );                         break;
+                case 't': i = (const char *) arg1;                      break;
+                case 'T': i = (const char *) arg2;                      break;
+                case 'n': i = PERS( ch,  to  );                         break;
+                case 'N': i = PERS( vch, to  );                         break;
 		case 'e': i = he_she  [URANGE(0, ch  ->sex, 2)];        break;
 		case 'E': i = he_she  [URANGE(0, vch ->sex, 2)];        break;
 		case 'm': i = him_her [URANGE(0, ch  ->sex, 2)];        break;
@@ -3165,30 +3205,34 @@ void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
 		case 's': i = his_her [URANGE(0, ch  ->sex, 2)];        break;
 		case 'S': i = his_her [URANGE(0, vch ->sex, 2)];        break;
 
-		case 'p':
-		    i = can_see_obj( to, obj1 )
-			    ? obj1->short_descr
+                case 'p':
+                    i = can_see_obj( to, obj1 )
+                            ? obj1->short_descr
 			    : "something";
 		    break;
 
-		case 'P':
-		    i = can_see_obj( to, obj2 )
-			    ? obj2->short_descr
-			    : "something";
-		    break;
+                case 'P':
+                    i = can_see_obj( to, obj2 )
+                            ? obj2->short_descr
+                            : "something";
+                    break;
 
-		case 'd':
-		    if ( arg2 == NULL || ((char *) arg2)[0] == '\0' )
-		    {
-			i = "door";
-		    }
-		    else
-		    {
-			one_argument( (char *) arg2, fname );
-			i = fname;
-		    }
-		    break;
-		}
+                case 'd':
+                    if ( arg2 == NULL || ((const char *) arg2)[0] == '\0' )
+                    {
+                        i = "door";
+                    }
+                    else
+                    {
+                        char arg2_copy[MAX_INPUT_LENGTH];
+
+                        strncpy(arg2_copy, (const char *) arg2, sizeof(arg2_copy) - 1);
+                        arg2_copy[sizeof(arg2_copy) - 1] = '\0';
+                        one_argument( arg2_copy, fname );
+                        i = fname;
+                    }
+                    break;
+                }
 	    }
 
 	    ++str;
@@ -3263,11 +3307,11 @@ char *drunk_speak( const char *str )
 
 
 
-char *swedish_speak( const char *str )
+static char *swedish_speak( const char *str )
 {
     static char buf[512];
     int iSyl;
-    int length;
+    size_t length;
     bool i_seen;
     bool in_word;
     const char *pName;
@@ -3409,7 +3453,7 @@ int gettimeofday( struct timeval *tp, void *tzp )
 }
 #endif
 
-bool str_prefix_c( const char *astr, const char *bstr )
+static bool str_prefix_c( const char *astr, const char *bstr )
 {
     if ( astr == NULL ) {
         bug( "Strn_cmp: null astr.", 0 );
@@ -3430,11 +3474,11 @@ bool str_prefix_c( const char *astr, const char *bstr )
 }
 
 
-bool str_infix_c( const char *astr, const char *bstr )
+static bool str_infix_c( const char *astr, const char *bstr )
 {
-    int sstr1;
-    int sstr2;
-    int ichar;
+    size_t sstr1;
+    size_t sstr2;
+    size_t ichar;
     char c0;
 
     if ( ( c0 = astr[0] ) == '\0' )
@@ -3443,22 +3487,23 @@ bool str_infix_c( const char *astr, const char *bstr )
     sstr1 = strlen(astr);
     sstr2 = strlen(bstr);
 
-    for ( ichar = 0; ichar <= sstr2 - sstr1; ichar++ ) {
-        if ( c0 == bstr[ichar] && !str_prefix_c( astr, bstr + ichar ) )
-            return FALSE;
-    }
+    if ( sstr1 <= sstr2 )
+        for ( ichar = 0; ichar <= sstr2 - sstr1; ichar++ ) {
+            if ( c0 == bstr[ichar] && !str_prefix_c( astr, bstr + ichar ) )
+                return FALSE;
+        }
 
     return TRUE;
 }
 
-char *str_replace_c( char *astr, char *bstr, char *cstr )
+static char *str_replace_c( char *astr, char *bstr, char *cstr )
 {
     char newstr[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
     bool found = FALSE;
-    int sstr1, sstr2;
-    int ichar, jchar;
+    size_t sstr1, sstr2;
+    size_t ichar, jchar;
     char c0, c1, c2;
 
     if ( ( ( c0 = astr[0] ) == '\0' )
@@ -3510,17 +3555,6 @@ void config_prompt( CHAR_DATA *ch )
     char buf[MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     int incl = 0;
-    size_t used = 0;
-
-#define APPEND_TO_PROMPT(...) do { \
-    int _written = snprintf(buf + used, sizeof(buf) - used, __VA_ARGS__); \
-    if (_written < 0) _written = 0; \
-    if ((size_t)_written >= sizeof(buf) - used) { \
-        used = sizeof(buf) - 1; \
-    } else { \
-        used += (size_t)_written; \
-    } \
-} while (0)
 
     buf[0] = '\0';
     buf2[0] = '\0';
@@ -3640,12 +3674,14 @@ void config_prompt( CHAR_DATA *ch )
    else
         send_to_char( buf2, ch );
 
-#undef APPEND_TO_PROMPT
-
    return;
 }
 
-void do_outfit(CHAR_DATA *ch, char *argument) { send_to_char("Outfit command is not available.\n\r", ch); }
+void do_outfit(CHAR_DATA *ch, char *argument)
+{
+    UNUSED_PARAM(argument);
+    send_to_char("Outfit command is not available.\n\r", ch);
+}
 
 static CHAR_DATA *find_best_admin( void )
 {
@@ -3702,6 +3738,7 @@ static void handle_web_admin_command( const char *line )
     {
         CHAR_DATA *admin = find_best_admin();
         const char *command_text = line + 8;
+        char command_buf[MAX_INPUT_LENGTH];
 
         if ( admin == NULL || admin->desc == NULL )
         {
@@ -3709,10 +3746,13 @@ static void handle_web_admin_command( const char *line )
             return;
         }
 
+        strncpy( command_buf, command_text, sizeof(command_buf) - 1 );
+        command_buf[sizeof(command_buf) - 1] = '\0';
+
         sprintf( log_buf_local, "Web admin executing command via %s: %s",
             admin->name, command_text );
         log_string( log_buf_local );
-        interpret( admin, (char *) command_text );
+        interpret( admin, command_buf );
         return;
     }
 
