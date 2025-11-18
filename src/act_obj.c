@@ -19,9 +19,11 @@
 #if defined(macintosh)
 #include <types.h>
 #include <time.h>
+#include <limits.h>
 #else
 #include <sys/types.h>
 #include <sys/time.h>
+#include <limits.h>
 #endif
 #include <stdio.h>
 #include <string.h>
@@ -628,7 +630,7 @@ void do_put( CHAR_DATA *ch, char *argument )
 	    }
 	    else
 	    {
-		obj->timer = number_range(100,200);
+                obj->timer = (sh_int)number_range(100,200);
 	    }
 	}
 
@@ -658,14 +660,14 @@ void do_put( CHAR_DATA *ch, char *argument )
 	    &&   get_obj_weight( obj ) + get_obj_weight( container )
 		 <= container->value[0] )
 	    {
-		if (container->pIndexData->vnum == OBJ_VNUM_PIT
-		&&  !CAN_WEAR(obj, ITEM_TAKE) )
-		{
-		    if (obj->timer)
-			continue;
-		    else
-			obj->timer = number_range(100,200);
-		}
+                if (container->pIndexData->vnum == OBJ_VNUM_PIT
+                &&  !CAN_WEAR(obj, ITEM_TAKE) )
+                {
+                    if (obj->timer)
+                        continue;
+                    else
+                        obj->timer = (sh_int)number_range(100,200);
+                }
 
 		obj_from_char( obj );
 		obj_to_obj( obj, container );
@@ -1460,8 +1462,8 @@ void do_drink( CHAR_DATA *ch, char *argument )
 	    act( "$n chokes and gags.", ch, NULL, NULL, TO_ROOM );
 	    send_to_char( "You choke and gag.\n\r", ch );
 	    af.type      = gsn_poison;
-	    af.level	 = number_fuzzy(amount);
-	    af.duration  = 3 * amount;
+	    af.level     = (sh_int)number_fuzzy(amount);
+            af.duration  = (sh_int)(3 * amount);
 	    af.location  = APPLY_NONE;
 	    af.modifier  = 0;
 	    af.bitvector = AFF_POISON;
@@ -1540,8 +1542,8 @@ void do_eat( CHAR_DATA *ch, char *argument )
 	    send_to_char( "You choke and gag.\n\r", ch );
 
 	    af.type      = gsn_poison;
-	    af.level 	 = number_fuzzy(obj->value[0]);
-	    af.duration  = 2 * obj->value[0];
+	    af.level     = (sh_int)number_fuzzy(obj->value[0]);
+            af.duration  = (sh_int)(2 * obj->value[0]);
 	    af.location  = APPLY_NONE;
 	    af.modifier  = 0;
 	    af.bitvector = AFF_POISON;
@@ -3087,7 +3089,7 @@ void do_sell( CHAR_DATA *ch, char *argument )
 	return;
     }
 
-    if ( cost > keeper->new_gold )
+    if ( (long)cost > keeper->new_gold )
     {
 	act("$n tells you 'I'm afraid I don't have enough gold to buy $p.",
 	    keeper,obj,ch,TO_VICT);
@@ -3102,7 +3104,7 @@ void do_sell( CHAR_DATA *ch, char *argument )
         send_to_char("You haggle with the shopkeeper.\n\r",ch);
         cost += obj->cost / 2 * roll / 100;
         cost = UMIN(cost,95 * get_cost(keeper,obj,TRUE) / 100);
-	cost = UMIN(cost,keeper->new_gold);
+        cost = (int)UMAX(0L, UMIN((long)cost, keeper->new_gold));
         check_improve(ch,gsn_haggle,TRUE,4);
     }
     sprintf( buf, "You sell $p for %d gold piece%s.",
@@ -3120,7 +3122,7 @@ void do_sell( CHAR_DATA *ch, char *argument )
     else
     {
 	obj_from_char( obj );
-	obj->timer = number_range(50,100);
+        obj->timer = (sh_int)number_range(50,100);
 	obj_to_char( obj, keeper );
     }
 
@@ -3278,7 +3280,7 @@ void do_bounce( OBJ_DATA *obj )
 	 }
 
 	 if(IS_SET(obj->extra_flags, ITEM_TPORT) )
-	   obj->timer = 20 + dice(2,10);
+           obj->timer = (sh_int)(20 + dice(2,10));
 	 else
 	   obj->timer = 150;
 return;
@@ -3707,22 +3709,44 @@ void do_repair( CHAR_DATA *ch, char *argument )
 
 long query_gold(CHAR_DATA *ch)
 {
+  long total;
+
   if (ch == NULL) return 0;
-  return (long) ((5 * ch->new_platinum) + (ch -> new_gold) +
-                 (0.1 * ch -> new_silver) + (0.01 * ch->new_copper));
+
+  total = (5 * ch->new_platinum) + ch->new_gold;
+  total += ch->new_silver / 10;
+  total += ch->new_copper / 100;
+  return total;
 }
 
 int query_carry_coins(CHAR_DATA *ch, long amount)
 {
+  long total_weight;
+
   if (ch == NULL) return 0;
-  return (ch->carry_weight + ((ch->new_platinum + ch->new_gold +
-                               ch->new_silver + ch->new_copper + amount)/5000));
+
+  total_weight = ch->new_platinum + ch->new_gold + ch->new_silver + ch->new_copper + amount;
+  total_weight = ch->carry_weight + (total_weight / 5000);
+
+  if (total_weight > INT_MAX)
+    return INT_MAX;
+
+  return (int)total_weight;
 }
 
 int query_carry_weight(CHAR_DATA *ch)
 {
+  long total_weight;
+
   if (ch == NULL) return 0;
-  return (ch->carry_weight + ((ch->new_platinum + ch->new_gold + ch->new_silver + ch->new_copper)/5000));
+
+  total_weight = ch->new_platinum + ch->new_gold + ch->new_silver + ch->new_copper;
+  total_weight = ch->carry_weight + (total_weight / 5000);
+
+  if (total_weight > INT_MAX)
+    return INT_MAX;
+
+  return (int)total_weight;
 }
 
 void add_money(CHAR_DATA *ch, long amount)

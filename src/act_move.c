@@ -3265,8 +3265,8 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	   {
 	    if(!IS_NPC(gch) )
 	    {
-	      af.type      = skill_lookup("blindness");
-	      af.level     = gch->level/3;
+              af.type      = (sh_int)skill_lookup("blindness");
+              af.level     = (sh_int)(gch->level/3);
 	      af.location  = APPLY_HITROLL;
 	      af.modifier  = -4;
 	      af.duration  = gch->level;
@@ -3279,8 +3279,8 @@ void trapped( CHAR_DATA *ch, OBJ_DATA *obj, int find_trap )
 	 }
 	 else
 	 {
-	   af.type      = skill_lookup("blindness");
-	   af.level     = ch->level/3;
+           af.type      = (sh_int)skill_lookup("blindness");
+           af.level     = (sh_int)(ch->level/3);
 	   af.location  = APPLY_HITROLL;
 	   af.modifier  = -4;
 	   af.duration  = ch->level;
@@ -3717,7 +3717,7 @@ void do_riding(CHAR_DATA *ch, int door, bool skip_special_check)
     }
 
     WAIT_STATE( temp_ch, 1 );
-    ch->move -= move;
+    ch->move = (sh_int)(ch->move - move);
 
     if ( IS_NPC(ch) || !IS_SET(temp_ch->act, PLR_WIZINVIS) )
       act( "$n rides off $Tward.", temp_ch, NULL, dir_name[door], TO_ROOM );
