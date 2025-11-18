@@ -83,7 +83,7 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
    ```
 2. Start the game server on the default port 9000 with host persistence (recommended):
 
-## MacOS / Linux
+### MacOS / Linux
    ```bash
    docker run --rm -it \
      -p 9000:9000 \
@@ -92,7 +92,7 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
      -v $(pwd)/log:/app/log \
      toc
    ```
-## Windows
+### Windows
    ```bash
   docker run --rm -it -p 9000:9000 -v "${PWD}\player:/app/player" -v "${PWD}\backups:/app/backups" -v "${PWD}\log:/app/log" toc
   ```
