@@ -507,12 +507,9 @@ void do_cast( CHAR_DATA *ch, char *argument )
     &&   victim != ch
     &&   victim->master != ch)
     {
-	CHAR_DATA *vch;
-	CHAR_DATA *vch_next;
-
-	for ( vch = ch->in_room->people; vch; vch = vch_next )
-	{
-	    vch_next = vch->next_in_room;
+        for ( vch = ch->in_room->people; vch; vch = vch_next )
+        {
+            vch_next = vch->next_in_room;
 	    if ( victim == vch && victim->fighting == NULL )
 	    {
 		check_killer( ch, victim );
@@ -796,7 +793,7 @@ void spell_burning_hands( int sn, int level, CHAR_DATA *ch, void *vo )
     };
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
     if ( saves_spell( level, victim ) )
@@ -1013,16 +1010,16 @@ void spell_cancellation( int sn, int level, CHAR_DATA *ch, void *vo )
         found = TRUE;
 
     if (check_dispel(level,victim,skill_lookup("detect good")))
-	     found = TRUE;
+        found = TRUE;
 
-  if (check_dispel(level,victim,skill_lookup("aid")))
-    found = TRUE;
+    if (check_dispel(level,victim,skill_lookup("aid")))
+        found = TRUE;
 
-  if (check_dispel(level,victim,skill_lookup("fire shield")))
-      found = TRUE;
+    if (check_dispel(level,victim,skill_lookup("fire shield")))
+        found = TRUE;
 
-      if (check_dispel(level,victim,skill_lookup("divine protection")))
-          found = TRUE;
+    if (check_dispel(level,victim,skill_lookup("divine protection")))
+        found = TRUE;
 
     if (check_dispel(level,victim,skill_lookup("detect hidden")))
         found = TRUE;
@@ -1346,7 +1343,7 @@ void spell_chill_touch( int sn, int level, CHAR_DATA *ch, void *vo )
     AFFECT_DATA af;
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
     if ( !saves_spell( level, victim ) )
@@ -1386,7 +1383,7 @@ void spell_colour_spray( int sn, int level, CHAR_DATA *ch, void *vo )
     };
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2,  dam_each[level] * 2 );
     if ( saves_spell( level, victim ) )
@@ -2601,7 +2598,7 @@ void spell_fireball( int sn, int level, CHAR_DATA *ch, void *vo )
     };
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
     if ( saves_spell( level, victim ) )
@@ -2945,74 +2942,82 @@ void spell_heat_metal( int sn, int level, CHAR_DATA *ch, void *vo )
 	    if ( number_bits( 2 ) != 0 )
 		    continue;
         switch ( obj_lose->item_type )
-		  {
-		    case ITEM_ARMOR:
-			     if ( obj_lose->value[0] > 0 )
-			      {
-			        if( IS_OBJ_STAT( obj_lose, ITEM_NOREMOVE) )
-			           {
-				           if ( ( iWear = obj_lose->wear_loc ) != WEAR_NONE )
-				               for (i = 0; i < 4; i ++)
-					               victim->armor[i] -= apply_ac( obj_lose, iWear, i );
-				               for (i = 0; i < 4; i ++)
-				                 obj_lose->value[i] -= 1;
-				                 obj_lose->cost       = obj_lose->cost/3;
-				                   if ( iWear != WEAR_NONE )
-				                     for (i = 0; i < 4; i++)
-					victim->armor[i] += apply_ac( obj_lose, iWear, i );
-				 dam = GET_DAMROLL(ch) + dice(2, ch->level/2);
-				 damage( ch, victim, dam, sn, DAM_FIRE );
-			    }
-// 			  else
-			    {
-				act( "\n$n throws a burning hot $p to the ground!",
-				victim, obj_lose, NULL, TO_ROOM );
-				send_to_char("You quickly remove a burning piece of armor.\n\r",
-					   victim);
-				if ( ( iWear = obj_lose->wear_loc ) != WEAR_NONE )
-				  for (i = 0; i < 4; i ++)
-					victim->armor[i] -= apply_ac( obj_lose, iWear, i );
-				for (i = 0; i < 4; i ++)
-				   obj_lose->value[i] -= 1;
-				obj_lose->cost       = obj_lose->cost/3;
-				if ( iWear != WEAR_NONE )
-				  for (i = 0; i < 4; i++)
-					victim->armor[i] += apply_ac( obj_lose, iWear, i );
-				obj_from_char(obj_lose);
-				obj_to_room(obj_lose, victim->in_room);
-				dam = GET_DAMROLL(ch) + dice(1, ch->level/2);
-				if ( saves_spell( level, victim ) )
-				  dam /= 2;
-				damage( ch, victim, dam, sn, DAM_FIRE );
-				++hit_it;
-			    }
-			 }
-		  break;
-		  case ITEM_WEAPON:
-			 if ( obj_lose->value[0] > 0 )
-			 {
-			  if( IS_OBJ_STAT( obj_lose, ITEM_NOREMOVE) )
-			    {
-				 dam = GET_DAMROLL(ch) + dice(2, ch->level/2);
-				 damage( ch, victim, dam, sn, DAM_FIRE );
-			    }
-// 			  else
-			    {
-				    act( "\n$n is burned by $p, and throws it to the ground.",
-				    victim, obj_lose, NULL, TO_ROOM );
-				    send_to_char("You drop your weapon because it's red hot!\n\r",
-					  victim);
-				    obj_from_char(obj_lose);
-				    obj_to_room(obj_lose, victim->in_room);
-				    dam = GET_DAMROLL(ch) + dice(1, ch->level/2);
-				if ( saves_spell( level, victim ) )
-				  dam /= 2;
-				  damage( ch, victim, dam, sn, DAM_FIRE );
-				  ++hit_it;
-			    }
-			 }
-		  break;
-		 }
+                  {
+                    case ITEM_ARMOR:
+                        if ( obj_lose->value[0] > 0 )
+                        {
+                            if( IS_OBJ_STAT( obj_lose, ITEM_NOREMOVE) )
+                            {
+                                if ( ( iWear = obj_lose->wear_loc ) != WEAR_NONE )
+                                {
+                                    for (i = 0; i < 4; i ++)
+                                        victim->armor[i] -= apply_ac( obj_lose, iWear, i );
+                                }
+                                for (i = 0; i < 4; i ++)
+                                    obj_lose->value[i] -= 1;
+                                obj_lose->cost       = obj_lose->cost/3;
+                                if ( iWear != WEAR_NONE )
+                                {
+                                    for (i = 0; i < 4; i++)
+                                        victim->armor[i] += apply_ac( obj_lose, iWear, i );
+                                }
+                                dam = GET_DAMROLL(ch) + dice(2, ch->level/2);
+                                damage( ch, victim, dam, sn, DAM_FIRE );
+                            }
+                            else
+                            {
+                                act( "\n$n throws a burning hot $p to the ground!",
+                                     victim, obj_lose, NULL, TO_ROOM );
+                                send_to_char("You quickly remove a burning piece of armor.\n\r",
+                                             victim);
+                                if ( ( iWear = obj_lose->wear_loc ) != WEAR_NONE )
+                                {
+                                    for (i = 0; i < 4; i ++)
+                                        victim->armor[i] -= apply_ac( obj_lose, iWear, i );
+                                }
+                                for (i = 0; i < 4; i ++)
+                                    obj_lose->value[i] -= 1;
+                                obj_lose->cost       = obj_lose->cost/3;
+                                if ( iWear != WEAR_NONE )
+                                {
+                                    for (i = 0; i < 4; i++)
+                                        victim->armor[i] += apply_ac( obj_lose, iWear, i );
+                                }
+                                obj_from_char(obj_lose);
+                                obj_to_room(obj_lose, victim->in_room);
+                                dam = GET_DAMROLL(ch) + dice(1, ch->level/2);
+                                if ( saves_spell( level, victim ) )
+                                    dam /= 2;
+                                damage( ch, victim, dam, sn, DAM_FIRE );
+                                ++hit_it;
+                            }
+                        }
+                        break;
+                    case ITEM_WEAPON:
+                        if ( obj_lose->value[0] > 0 )
+                        {
+                            if( IS_OBJ_STAT( obj_lose, ITEM_NOREMOVE) )
+                            {
+                                dam = GET_DAMROLL(ch) + dice(2, ch->level/2);
+                                damage( ch, victim, dam, sn, DAM_FIRE );
+                            }
+                            else
+                            {
+                                act( "\n$n is burned by $p, and throws it to the ground.",
+                                     victim, obj_lose, NULL, TO_ROOM );
+                                send_to_char("You drop your weapon because it's red hot!\n\r",
+                                             victim);
+                                obj_from_char(obj_lose);
+                                obj_to_room(obj_lose, victim->in_room);
+                                dam = GET_DAMROLL(ch) + dice(1, ch->level/2);
+                                if ( saves_spell( level, victim ) )
+                                    dam /= 2;
+                                damage( ch, victim, dam, sn, DAM_FIRE );
+                                ++hit_it;
+                            }
+                        }
+                        break;
+                  }
 	   }
 	}
 	if ( hit_it == 0)
@@ -3333,7 +3338,7 @@ void spell_lightning_bolt( int sn, int level, CHAR_DATA *ch, void *vo )
     };
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
     if ( saves_spell( level, victim ) )
@@ -3442,7 +3447,7 @@ void spell_magic_missile( int sn, int level, CHAR_DATA *ch, void *vo )
 
     for( count = 0; count < missiles; count++)
     {
-      level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+      level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
       level	= UMAX(0, level);
       dam	= number_range( dam_each[level] / 2, dam_each[level] * 2 );
       if ( saves_spell( level, victim ) )
@@ -3975,7 +3980,7 @@ void spell_shocking_grasp( int sn, int level, CHAR_DATA *ch, void *vo )
     };
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
     if ( saves_spell( level, victim ) )
@@ -4659,7 +4664,7 @@ void spell_blizzard( int sn, int level, CHAR_DATA *ch, void *vo )
     };
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
 
@@ -4701,7 +4706,7 @@ void spell_icicle( int sn, int level, CHAR_DATA *ch, void *vo )
     };
     int dam;
 
-    level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+    level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
     level	= UMAX(0, level);
     dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
     if ( saves_spell( level, victim ) )

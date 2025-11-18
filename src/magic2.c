@@ -141,11 +141,11 @@ void do_lore( CHAR_DATA *ch, char *argument )
 	    send_to_char( "'", ch );
 	  }
 	}
-	else if( check < 1)
-	  send_to_char("Unknown",ch);
+        else if( check < 1)
+            send_to_char("Unknown",ch);
 
-	  send_to_char( ".\n\r", ch );
-	  break;
+        send_to_char( ".\n\r", ch );
+        break;
 
     case ITEM_WAND:
     case ITEM_STAFF:
@@ -164,11 +164,11 @@ void do_lore( CHAR_DATA *ch, char *argument )
 	    send_to_char( "'", ch );
 	  }
 	}
-	else
-	  send_to_char("\n\rof a spell you can't seem to determine",ch);
+        else
+            send_to_char("\n\rof a spell you can't seem to determine",ch);
 
-	  send_to_char( ".\n\r", ch );
-	  break;
+        send_to_char( ".\n\r", ch );
+        break;
 
     case ITEM_WEAPON:
 	send_to_char("Weapon type is ",ch);
@@ -431,7 +431,7 @@ void do_mindblast( CHAR_DATA *ch, char *argument )
 	{
 	if ( vch != ch && !is_safe_spell(ch,vch,TRUE) )
 	{
-	 level	= UMIN(level, sizeof(dam_each)/sizeof(dam_each[0]) - 1);
+	 level	= UMIN(level, (int)(sizeof(dam_each)/sizeof(dam_each[0]) - 1));
 	 level	= UMAX(0, level);
 	 dam		= number_range( dam_each[level] / 2, dam_each[level] * 2 );
 	 if ( saves_spell( level, vch ) )
@@ -4139,12 +4139,14 @@ void spell_detect_traps( int sn, int level, CHAR_DATA *ch, void *vo )
 	break;
        }
 
-       if ( ( pexit = ch->in_room->exit[door] ) != NULL
-	   && IS_SET(pexit->exit_info, EX_ISDOOR)
-	   && IS_SET(pexit->exit_info, EX_TRAPPED) )
-	   {
-	     snprintf(buf, sizeof buf,"There is a trap on the %s to the %s!\n\r",pexit->keyword,
-		   direction);
+         if ( ( pexit = ch->in_room->exit[door] ) != NULL
+             && IS_SET(pexit->exit_info, EX_ISDOOR)
+             && IS_SET(pexit->exit_info, EX_TRAPPED) )
+             {
+              snprintf(buf, sizeof buf,
+                       "There is a trap on the %.200s to the %.32s!\n\r",
+                       pexit->keyword,
+                       direction);
 	     send_to_char(buf,ch);
 	     found = TRUE;
 	   }
