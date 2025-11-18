@@ -66,34 +66,41 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
 
 1. Build the image:
    ```bash
-   docker build -t toc-mud .
+   docker build -t toc .
    ```
-2. Start the game server on the default port 9000:
-   ```bash
-   docker run --rm -it -p 9000:9000 toc-mud
-   ```
-3. Change the port (optional) by setting `PORT`/`MUD_PORT`:
-   ```bash
-   docker run --rm -it -e PORT=4000 -p 4000:4000 toc-mud
-   ```
-4. Keep character files and logs on the host (recommended for persistence):
+2. Start the game server on the default port 9000 with host persistence (recommended):
    ```bash
    docker run --rm -it \
      -p 9000:9000 \
      -v $(pwd)/player:/app/player \
      -v $(pwd)/backups:/app/backups \
      -v $(pwd)/log:/app/log \
-     toc-mud
+     toc
    ```
-5. Publish the web admin dashboard (port 8000) alongside the game port:
+3. Change the port (optional) by setting `PORT`/`MUD_PORT` while keeping persistence:
    ```bash
    docker run --rm -it \
-     -p 9000:9000 \
-     -p 8000:8000 \
-     toc-mud
+     -e PORT=4000 \
+     -p 4000:4000 \
+     -v $(pwd)/player:/app/player \
+     -v $(pwd)/backups:/app/backups \
+     -v $(pwd)/log:/app/log \
+     toc
    ```
-
-The container automatically creates the writable data directories (`player`, `backups`, `log`, `gods`, `heroes`, `corpse`) on startup so that fresh volumes are ready for the game server. If you mount host directories, ensure they are writable by the container user.
+4. Publish the web admin dashboard (port 8000) alongside the game port (persistent storage):
+   ```bash
+   docker run --rm -it \
+     -p 9000:9000 \   # game
+     -p 8000:8000 \   # web admin
+     -v $(pwd)/player:/app/player \
+     -v $(pwd)/backups:/app/backups \
+     -v $(pwd)/log:/app/log \
+     toc
+   ```
+5. Run without host persistence (not recommended): drop the `-v` flags to use container-local storage only:
+   ```bash
+   docker run --rm -it -p 9000:9000 toc
+   ```
 
 The container entrypoint accepts optional arguments if you need to pass flags directly to the `merc` binary (for example, `newlock` to block new players). If no arguments are provided, it automatically starts the server on the configured port.
 
@@ -106,7 +113,10 @@ The container starts a lightweight FastAPI web dashboard alongside the game serv
    docker run --rm -it \
      -p 9000:9000 \   # game
      -p 8000:8000 \   # web admin
-     toc-mud
+     -v $(pwd)/player:/app/player \
+     -v $(pwd)/backups:/app/backups \
+     -v $(pwd)/log:/app/log \
+     toc
    ```
 2. Open <http://localhost:8000/> in your browser to use the UI.
 
