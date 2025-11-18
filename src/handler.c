@@ -16,6 +16,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #include <stdlib.h>
 #include <stdlib.h>
 
@@ -231,7 +232,7 @@ bool is_old_mob(CHAR_DATA *ch)
 }
 
 /* for returning skill information */
-int get_skill(CHAR_DATA *ch, int sn)
+int get_skill(const CHAR_DATA *ch, int sn)
 {
     int skill;
 
@@ -734,35 +735,41 @@ bool is_name( const char *str, char *namelist )
 }
 */
 
-bool is_name ( char *str, char *namelist )
+bool is_name ( const char *str, const char *namelist )
 {
     char name[MAX_INPUT_LENGTH], part[MAX_INPUT_LENGTH];
-    char *list, *string;
+    char list[MAX_STRING_LENGTH];
+    char string[MAX_STRING_LENGTH];
+    char *list_ptr, *string_ptr;
 
+    strncpy( string, str, sizeof(string) - 1 );
+    string[sizeof(string) - 1] = '\0';
+    strncpy( list, namelist, sizeof(list) - 1 );
+    list[sizeof(list) - 1] = '\0';
 
-    string = str;
+    string_ptr = string;
     /* we need ALL parts of string to match part of namelist */
     for ( ; ; )  /* start parsing string */
     {
-	str = one_argument(str,part);
+        string_ptr = one_argument(string_ptr,part);
 
-	if (part[0] == '\0' )
-	    return TRUE;
+        if (part[0] == '\0' )
+            return TRUE;
 
 	/* check to see if this is part of namelist */
-	list = namelist;
-	for ( ; ; )  /* start parsing namelist */
-	{
-	    list = one_argument(list,name);
-	    if (name[0] == '\0')  /* this name was not found */
-		return FALSE;
+        list_ptr = list;
+        for ( ; ; )  /* start parsing namelist */
+        {
+            list_ptr = one_argument(list_ptr,name);
+            if (name[0] == '\0')  /* this name was not found */
+                return FALSE;
 
-	    if (!str_cmp(string,name))
-		return TRUE; /* full pattern match */
+            if (!str_cmp(string,name))
+                return TRUE; /* full pattern match */
 
-	    if (!str_prefix(part,name))
-		break;
-	}
+            if (!str_prefix(part,name))
+                break;
+        }
     }
 }
 
@@ -1472,7 +1479,7 @@ OBJ_DATA *get_eq_char( CHAR_DATA *ch, int iWear )
 }
 
 /* Check and do the obj_actions... -Graves */
-void do_obj_action(CHAR_DATA *ch, OBJ_DATA *obj)
+static void do_obj_action(CHAR_DATA *ch, OBJ_DATA *obj)
 {
     OBJ_ACTION_DATA *action;
 
@@ -2600,7 +2607,7 @@ bool can_see_room( CHAR_DATA *ch, ROOM_INDEX_DATA *pRoomIndex )
 /*
  * True if char can see victim.
  */
-bool can_see( CHAR_DATA *ch, CHAR_DATA *victim )
+bool can_see( CHAR_DATA *ch, const CHAR_DATA *victim )
 {
 /* RT changed so that WIZ_INVIS has levels */
     if ( ch == victim )
@@ -2673,10 +2680,10 @@ bool can_see( CHAR_DATA *ch, CHAR_DATA *victim )
 /*
  * True if char can see obj.
  */
-bool can_see_obj( CHAR_DATA *ch, OBJ_DATA *obj )
+bool can_see_obj( CHAR_DATA *ch, const OBJ_DATA *obj )
 {
     if ( !IS_NPC(ch) && IS_SET(ch->act, PLR_HOLYLIGHT) )
-	return TRUE;
+        return TRUE;
 
     if ( IS_SET(obj->extra_flags,ITEM_VIS_DEATH))
 	return FALSE;
@@ -3101,6 +3108,7 @@ char *imm2_bit_name(int imm_flags)
 {
     static char buf[512];
 
+    UNUSED_PARAM(imm_flags);
     buf[0] = '\0';
 
     return ( buf[0] != '\0' ) ? buf+1 : "none";
