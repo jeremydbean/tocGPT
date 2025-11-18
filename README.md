@@ -1,10 +1,3 @@
-Please see the WIKI for building documents and Raspberry Pi install info.
-CURRENT REPORTED BUGS:
-- Game crashes at login if pfile is set with a (NULL) password.
-        WORKAROUND: RESET PFILE PASSWORDS TO:  Kyz2D/BNiZB8Q~  (which translates to toc123)
-<strike>- Game currently allows players to log in multiple times.  (Many copies of the character can be loaded.)   This is modified via ChatGPT to be compilable on Ubuntu 24 LTS.</strike>
-sudo chmod -R 777 tocGPT
-sudo chmod a+rwx -R tocGPT
 
 ## Docker usage
 You can run the MUD inside a portable Docker container. The steps below start with getting Docker on each major OS, then show how to copy this code locally and run the container from a terminal. GUI download options are noted for users who prefer them.
