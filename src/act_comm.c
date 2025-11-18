@@ -2567,7 +2567,8 @@ void do_quit( CHAR_DATA *ch, char *argument )
     /*
      * After extract_char the ch is no longer valid!
      */
-    if(ch->level >= 3)
+    /* Save everyone who is at least level 1 so fledgling characters keep progress. */
+    if ( ch->level >= 1 )
       save_char_obj( ch );
     id = ch->pcdata->id;
     d = ch->desc;
