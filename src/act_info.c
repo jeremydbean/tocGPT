@@ -1224,10 +1224,19 @@ void do_score( CHAR_DATA *ch, char *argument )
             "Copper:",  ch->new_copper);
     send_to_char(buf, ch);
 
-    snprintf(buf, sizeof(buf), "| %-4s %2d (%2d) | %-5s %-5s  %-5s  | %-9s %11ld |\n\r",
+    {
+        long bank_copper = IS_NPC(ch) ? 0 : ch->pcdata->bank;
+        long bank_platinum = bank_copper / COPPER_PER_PLATINUM;
+        bank_copper %= COPPER_PER_PLATINUM;
+        snprintf(buf, sizeof(buf),
+            "| %-4s %2d (%2d) | %-5s %-5s  %-5s  | %-9s %3ldp %3ldg %3lds %4ldc |\n\r",
             "Con:"  , ch->perm_stat[STAT_CON], get_curr_stat(ch,STAT_CON),
             " " , " ", " ",
-            "Bank:",  (IS_NPC(ch) ? 0 : ch->pcdata->bank));
+            "Bank:", bank_platinum,
+            bank_copper / COPPER_PER_GOLD,
+            (bank_copper % COPPER_PER_GOLD) / COPPER_PER_SILVER,
+            bank_copper % COPPER_PER_SILVER);
+    }
     send_to_char(buf, ch);
     send_to_char(kader, ch);
 
