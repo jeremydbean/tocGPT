@@ -7,6 +7,15 @@
 - **Code layout tips**: C headers in `src/` (`merc.h`, etc.) pair with module `.c` files for game logic (combat, skills, magic, saving/loading, etc.). The FastAPI component is Python-only and isolated in `webadmin/`.
 - **Folder handling**: Do **not** modify anything under `player/` or `gods/` without explicit permission from the user.
 
+## Money-related special cases
+- **Guild clerks**: The guild join handler charges 1 coin when players use `join` with a guild clerk (see `spec_guild_clerk` in `src/special.c`).【F:src/special.c†L1399-L1468】
+- **Pet shop**: The pet shop owner in rooms flagged `ROOM_PET_SHOP` sells pets for `10 * level^2` (haggling can reduce the price) and pays players for selling items; both operations move coins via `add_money`.【F:src/special.c†L1477-L1737】
+- **Club entrance**: The club clerk at room vnum 80 charges a 10-coin cover to head south into the club elevator and refuses NPCs.【F:src/special.c†L1999-L2080】
+- **Healer NPCs**: The healer service in `src/misc.c` bills 10–100 coins for refresh/energize casts before performing them.【F:src/misc.c†L132-L176】
+- **Lore appraisals**: Using `lore` on an item deducts gold based on item level and skill (`obj->level * 20 - (chance * 2 + ch->level/2)`).【F:src/magic2.c†L83-L104】
+- **Portal fees**: Certain portals (item type `ITEM_PORTAL` with `value[0] == 1`) charge 50 coins to peek and 500 coins to enter Hall of Heroes windows; insufficient funds block the action.【F:src/act_move.c†L245-L272】【F:src/act_move.c†L2897-L2934】
+- **Forced guilding at level 6**: Characters who reach level 6 without a guild are auto-enrolled and lose 50 coins if they have them, otherwise their purse is emptied.【F:src/update.c†L283-L296】
+
 ## Compile warning notes
 - Recent warning fixes touched `src/comm.c` (unused prompt buffer logic), `src/fight.c` (documented intentional fall-through in
   `death_cry`), `src/magic.c` (cleaned indentation and signed/unsigned comparisons; reorganized `spell_heat_metal`), and

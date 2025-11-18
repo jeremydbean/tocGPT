@@ -247,7 +247,7 @@ void do_look( CHAR_DATA *ch, char *argument )
           {
             if(!IS_IMMORTAL(ch) )
             {
-              if (query_gold(ch) < 50)
+              if (!has_enough_gold(ch, 50))
               {
                 act("You don't have enough gold to activate the $p.",ch,
                   obj, NULL, TO_CHAR);
@@ -2908,11 +2908,11 @@ void do_enter( CHAR_DATA *ch, char *argument )
    case 1:               /* for windows in hall of hero's */
      if(!IS_IMMORTAL(ch) )
      {
-       if(query_gold(ch) < 500)
+       if(!has_enough_gold(ch, 500))
        {
-	 act("You don't have enough gold to activate the $p.",ch,
-	    obj, NULL, TO_CHAR);
-	 return;
+         act("You don't have enough gold to activate the $p.",ch,
+            obj, NULL, TO_CHAR);
+         return;
        }
        else
          add_money(ch,-500);
