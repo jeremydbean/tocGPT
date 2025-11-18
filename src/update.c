@@ -17,6 +17,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #pragma GCC diagnostic ignored "-Wmissing-braces"
 #pragma GCC diagnostic ignored "-Wmisleading-indentation"
 #pragma GCC diagnostic ignored "-Wdangling-else"
@@ -175,7 +176,8 @@ void do_backup( void )
     log_string("Automated backup complete.");
     backup = current_time + (60*60*4);
   /*  system("tar cfz ../backups/`date +%b.%d`.tar.gz ../player"); */
-    system("tar cfz ../backups/`date +%b.%d.%Y-%H.%M.%S`.tar.gz ../player");
+    if (system("tar cfz ../backups/`date +%b.%d.%Y-%H.%M.%S`.tar.gz ../player") == -1)
+        bug("do_backup: archive creation failed.", 0);
     return;
 
 }
@@ -188,7 +190,8 @@ void do_dailybackup( void )
     log_string("Daily backup complete.");
     dailybackup = current_time + (60*60*24);
   /*  system("tar cfz ../backups/`date +%b.%d`.tar.gz ../player"); */
-    system("tar cf ../backups/`date +%b.%d`.tar.gz ../player");
+    if (system("tar cf ../backups/`date +%b.%d`.tar.gz ../player") == -1)
+        bug("do_dailybackup: archive creation failed.", 0);
     return;
 
 }
@@ -1409,24 +1412,24 @@ void char_update( void )
 	if ( ch->position == POS_STUNNED )
 	    update_pos( ch );
 
-	if ( !IS_NPC(ch) && ch->level < LEVEL_IMMORTAL )
-	{
-	    OBJ_DATA *obj;
+        if ( !IS_NPC(ch) && ch->level < LEVEL_IMMORTAL )
+        {
+            OBJ_DATA *light_obj;
 
-	    if ( ( obj = get_eq_char( ch, WEAR_LIGHT ) ) != NULL
-	    &&   obj->item_type == ITEM_LIGHT
-	    &&   obj->value[2] > 0 )
-	    {
-		if ( --obj->value[2] == 0 && ch->in_room != NULL )
-		{
-		    --ch->in_room->light;
-		    act( "$p goes out.", ch, obj, NULL, TO_ROOM );
-		    act( "$p flickers and goes out.", ch, obj, NULL, TO_CHAR );
-		    extract_obj( obj );
-		}
-		else if ( obj->value[2] <= 5 && ch->in_room != NULL)
-		    act("$p flickers.",ch,obj,NULL,TO_CHAR);
-	    }
+            if ( ( light_obj = get_eq_char( ch, WEAR_LIGHT ) ) != NULL
+            &&   light_obj->item_type == ITEM_LIGHT
+            &&   light_obj->value[2] > 0 )
+            {
+                if ( --light_obj->value[2] == 0 && ch->in_room != NULL )
+                {
+                    --ch->in_room->light;
+                    act( "$p goes out.", ch, light_obj, NULL, TO_ROOM );
+                    act( "$p flickers and goes out.", ch, light_obj, NULL, TO_CHAR );
+                    extract_obj( light_obj );
+                }
+                else if ( light_obj->value[2] <= 5 && ch->in_room != NULL)
+                    act("$p flickers.",ch,light_obj,NULL,TO_CHAR);
+            }
 
 	    if (IS_IMMORTAL(ch))
 		ch->timer = 0;
@@ -2318,6 +2321,7 @@ void ban_update( void )
 
 void do_lycanthropy(CHAR_DATA *ch, char *argument)
 {
+     UNUSED_PARAM(argument);
      OBJ_DATA *obj, *obj_next;
      CHAR_DATA * mob = NULL;
      int primer = 0, tracker = 0, counter = 0, ac = 0;
