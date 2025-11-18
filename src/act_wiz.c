@@ -1016,18 +1016,17 @@ void do_transfer( CHAR_DATA *ch, char *argument )
 
     if ( !str_cmp( arg1, "all" ) )
     {
-	for ( d = descriptor_list; d != NULL; d = d->next )
-	{
-	    if ( d->connected == CON_PLAYING
-	    &&   d->character != ch
-	    &&   d->character->in_room != NULL
-	    &&   can_see( ch, d->character ) )
-	    {
-		char buf[MAX_STRING_LENGTH];
-		sprintf( buf, "%s %s", d->character->name, arg2 );
-		do_transfer( ch, buf );
-	    }
-	}
+        for ( d = descriptor_list; d != NULL; d = d->next )
+        {
+            if ( d->connected == CON_PLAYING
+            &&   d->character != ch
+            &&   d->character->in_room != NULL
+            &&   can_see( ch, d->character ) )
+            {
+                sprintf( buf, "%s %s", d->character->name, arg2 );
+                do_transfer( ch, buf );
+            }
+        }
 	return;
     }
 
@@ -4023,23 +4022,21 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	class = class_lookup(arg3);
-	if ( class == -1 )
-	{
-	    char buf[MAX_STRING_LENGTH];
+        class = class_lookup(arg3);
+        if ( class == -1 )
+        {
+            strcpy( buf, "Possible classes are: " );
+            for ( class = 0; class < MAX_CLASS; class++ )
+            {
+                if ( class > 0 )
+                    strcat( buf, " " );
+                strcat( buf, class_table[class].name );
+            }
+            strcat( buf, ".\n\r" );
 
-		strcpy( buf, "Possible classes are: " );
-		for ( class = 0; class < MAX_CLASS; class++ )
-		{
-		    if ( class > 0 )
-			strcat( buf, " " );
-		    strcat( buf, class_table[class].name );
-		}
-	    strcat( buf, ".\n\r" );
-
-	    send_to_char(buf,ch);
-	    return;
-	}
+            send_to_char(buf,ch);
+            return;
+        }
 
 	victim->class = class;
 	if(victim != ch)
@@ -4067,17 +4064,15 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	  return;
 	}
 
-	guild = guild_lookup(arg3);
-	if ( guild == -1 || guild == GUILD_ANY )
-	{
-	    char buf[MAX_STRING_LENGTH];
+        guild = guild_lookup(arg3);
+        if ( guild == -1 || guild == GUILD_ANY )
+        {
+            strcpy( buf, "Possible guilds are: mage, cleric, warrior, " );
+            strcat( buf, "thief, none.\n\r" );
 
-	    strcpy( buf, "Possible guilds are: mage, cleric, warrior, " );
-	    strcat( buf, "thief, none.\n\r" );
-
-	    send_to_char(buf,ch);
-	    return;
-	}
+            send_to_char(buf,ch);
+            return;
+        }
 
 	victim->pcdata->guild = guild;
 	if(victim != ch)
@@ -4098,16 +4093,14 @@ void do_mset( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	castle = castle_lookup(arg3);
-	if ( castle == -1 )
-	{
-	    char buf[MAX_STRING_LENGTH];
+        castle = castle_lookup(arg3);
+        if ( castle == -1 )
+        {
+            strcpy( buf, "Possible castles are: none, valhalla and rogue." );
 
-	    strcpy( buf, "Possible castles are: none, valhalla and rogue." );
-
-	    send_to_char(buf,ch);
-	    return;
-	}
+            send_to_char(buf,ch);
+            return;
+        }
 
 	victim->pcdata->castle = castle;
 	if(victim != ch)
