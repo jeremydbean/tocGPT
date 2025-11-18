@@ -40,3 +40,4 @@
   const-correct while copying mutable strings before parsing, web-admin commands duplicate the buffer before passing to
   `interpret`, `is_name` works on local copies, and `str_dup` always returns writable memory instead of the original
   const pointer. The stricter build remains warning-free under `-Wall -Wextra -Wcast-qual`.
+- Addressed `-Wconversion` hotspots by using explicit size-aware allocations in `act_info.c` list builders and casting color table updates to `sh_int` in `act_comm.c`.

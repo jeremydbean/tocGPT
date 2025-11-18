@@ -129,6 +129,7 @@ void show_list_to_char( OBJ_DATA *list, CHAR_DATA *ch, bool fShort, bool fShowNo
     int nShow;
     int iShow;
     int count;
+    size_t count_size;
     bool fCombine;
 
     if ( ch->desc == NULL )
@@ -140,8 +141,9 @@ void show_list_to_char( OBJ_DATA *list, CHAR_DATA *ch, bool fShort, bool fShowNo
     count = 0;
     for ( obj = list; obj != NULL; obj = obj->next_content )
 	count++;
-    prgpstrShow	= alloc_mem( count * sizeof(char *) );
-    prgnShow    = alloc_mem( count * sizeof(int)    );
+    count_size  = (size_t) count;
+    prgpstrShow	= alloc_mem( (int)(count_size * sizeof(char *)) );
+    prgnShow    = alloc_mem( (int)(count_size * sizeof(int)    ) );
     nShow	= 0;
 
     /*
@@ -219,8 +221,8 @@ void show_list_to_char( OBJ_DATA *list, CHAR_DATA *ch, bool fShort, bool fShowNo
     /*
      * Clean up.
      */
-    free_mem( prgpstrShow, count * sizeof(char *) );
-    free_mem( prgnShow,    count * sizeof(int)    );
+    free_mem( prgpstrShow, (int)(count_size * sizeof(char *)) );
+    free_mem( prgnShow,    (int)(count_size * sizeof(int)    ) );
 
     return;
 }
@@ -3504,6 +3506,7 @@ void show_pit_list_to_char( OBJ_DATA *list, CHAR_DATA *ch, char *key_type, char 
     int nShow;
     int iShow;
     int count;
+    size_t count_size;
     int Adjusted_Index = 1;
     bool fCombine;
 
@@ -3516,9 +3519,10 @@ void show_pit_list_to_char( OBJ_DATA *list, CHAR_DATA *ch, char *key_type, char 
     count = 0;
     for ( obj = list; obj != NULL; obj = obj->next_content )
 	count++;
-    prgpstrShow	= alloc_mem( count * sizeof(char *) );
-    prgnShow    = alloc_mem( count * sizeof(int)    );
-    prgUsable   = alloc_mem( count * sizeof(char)   );
+    count_size  = (size_t) count;
+    prgpstrShow	= alloc_mem( (int)(count_size * sizeof(char *)) );
+    prgnShow    = alloc_mem( (int)(count_size * sizeof(int)    ) );
+    prgUsable   = alloc_mem( (int)(count_size * sizeof(char)   ) );
     nShow	= 0;
 
 
@@ -3616,9 +3620,9 @@ void show_pit_list_to_char( OBJ_DATA *list, CHAR_DATA *ch, char *key_type, char 
     /*
      * Clean up.
      */
-    free_mem( prgpstrShow, count * sizeof(char *) );
-    free_mem( prgnShow,    count * sizeof(int)    );
-    free_mem( prgUsable,   count * sizeof(char)   );
+    free_mem( prgpstrShow, (int)(count_size * sizeof(char *)) );
+    free_mem( prgnShow,    (int)(count_size * sizeof(int)    ) );
+    free_mem( prgUsable,   (int)(count_size * sizeof(char)   ) );
 
     return;
 }

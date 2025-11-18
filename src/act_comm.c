@@ -3332,10 +3332,10 @@ void do_color ( CHAR_DATA *ch, char *argument )
     sprintf (buf,"Color:  %s\n\r",ch->pcdata->color ? "ON":"OFF");
     send_to_char (buf,ch);
     for (t = 1; t <= COL_MAX; t++) {
-      odd = t % 2;
+      odd = (t % 2) != 0;
       sprintf (buf,"%-10s - [%3d] \x02%c%-16s\x02\x01",col_table[t].name,
-	ch->pcdata->col_table[col_table[t].num],  col_table[t].num,
-	col_disp_table[ch->pcdata->col_table[col_table[t].num]].type);
+        ch->pcdata->col_table[col_table[t].num],  col_table[t].num,
+        col_disp_table[ch->pcdata->col_table[col_table[t].num]].type);
       send_to_char (buf,ch);
       if (!odd) send_to_char ("\n\r",ch);
     }
@@ -3360,7 +3360,7 @@ void do_color ( CHAR_DATA *ch, char *argument )
   if (!str_cmp (arg,"list")) {
     send_to_char ("Available colors:\n\r",ch);
     for ( t = 0; t < 14; t++ ) {
-      odd = t % 2;
+      odd = (t % 2) != 0;
       sprintf (buf," [%2d] %-18s",t,col_disp_table[t].type);
       send_to_char (buf,ch);
       if (odd) send_to_char ("\n\r",ch);
@@ -3373,7 +3373,7 @@ void do_color ( CHAR_DATA *ch, char *argument )
     for ( t = 1; t <= COL_MAX; t++ ) {
       if (!col_table[t].name) break;
       ch->pcdata->col_table[col_table[t].num] =
-	col_table[t].def;
+        (sh_int) col_table[t].def;
     }
     send_to_char ("Color defaults loaded.\n\r",ch);
     return;
@@ -3403,9 +3403,9 @@ void do_color ( CHAR_DATA *ch, char *argument )
 	}
       }
       if ((col >= 0) && (col <= 14)) {
-	ch->pcdata->col_table[idx] = col;
-	send_to_char ("Ok.\n\r",ch);
-	return;
+        ch->pcdata->col_table[idx] = (sh_int) col;
+        send_to_char ("Ok.\n\r",ch);
+        return;
       }
       send_to_char ("Color not found.\n\r",ch);
       return;
