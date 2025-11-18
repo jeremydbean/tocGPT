@@ -602,6 +602,7 @@ void do_nightmare( CHAR_DATA *ch, char *argument )
 /* psi or cleric */
 void spell_cure_nightmare( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
 
 	if( IS_SET(ch->act,ACT_PET) || IS_SET(ch->affected_by,AFF_CHARM) ||
@@ -2003,6 +2004,8 @@ void spell_major_globe( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_earth_travel( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(vo);
     CHAR_DATA *victim;
     char buf[MAX_STRING_LENGTH];
 
@@ -2051,6 +2054,7 @@ void spell_earth_travel( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_remove_align( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
   OBJ_DATA *obj = (OBJ_DATA *) vo;
 
     if(number_percent () > level + 40)
@@ -2118,6 +2122,8 @@ void spell_skeletal_hands( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_tentacles( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
    CHAR_DATA *vch;
    CHAR_DATA *vch_next;
    int tentacle, count, dam;
@@ -2950,6 +2956,8 @@ void do_scribe( CHAR_DATA *ch, char *argument )
 
 void spell_vengence( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     int nuke = 0;
     char buf[MAX_STRING_LENGTH];
@@ -3079,6 +3087,8 @@ void spell_vengence( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_raise_dead( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     OBJ_DATA *corpse = (OBJ_DATA *) vo;
     OBJ_DATA *obj;
     OBJ_DATA *obj_next;
@@ -3390,6 +3400,8 @@ void spell_force_sword( int sn, int level, CHAR_DATA *ch, void *vo )
 /* TAR_OBJ_HERE */
 void spell_create_skeleton( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     OBJ_DATA *corpse = (OBJ_DATA *) vo;
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim, *gch;
@@ -3466,6 +3478,8 @@ void spell_create_skeleton( int sn, int level, CHAR_DATA *ch, void *vo )
 /* TAR_OBJ_HERE */
 void spell_create_wraith( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     OBJ_DATA *corpse = (OBJ_DATA *) vo;
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim, *gch;
@@ -3542,6 +3556,8 @@ void spell_create_wraith( int sn, int level, CHAR_DATA *ch, void *vo )
 /* TAR_OBJ_HERE */
 void spell_create_vampire( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     OBJ_DATA *corpse = (OBJ_DATA *) vo;
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *victim, *gch;
@@ -3752,6 +3768,7 @@ void spell_shroud( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_cone_of_cold( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+   UNUSED_PARAM(vo);
    CHAR_DATA *vch;
    CHAR_DATA *vch_next;
 
@@ -3779,6 +3796,8 @@ void spell_cone_of_cold( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_embalm( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+  UNUSED_PARAM(sn);
+  UNUSED_PARAM(level);
   OBJ_DATA *obj = (OBJ_DATA *) vo;
   char buf[MAX_STRING_LENGTH];
   int part = 0;
@@ -3824,7 +3843,8 @@ void spell_embalm( int sn, int level, CHAR_DATA *ch, void *vo )
 /* Meteor swarm recoded on 2/25/99 - Rico */
 void spell_meteor_swarm( int sn, int level, CHAR_DATA *ch, void *vo )
 {
-   CHAR_DATA *gch, *vch;
+     UNUSED_PARAM(vo);
+     CHAR_DATA *gch, *vch;
    int count2,count3;
 
     send_to_char( "Meteors explode from your hands!\n\r", ch );
@@ -3883,6 +3903,7 @@ void spell_meteor_swarm( int sn, int level, CHAR_DATA *ch, void *vo )
 void spell_trap_the_soul_fixed(int sn,int level, CHAR_DATA *ch, void *vo)
 {
 
+  UNUSED_PARAM(sn);
   CHAR_DATA *victim = (CHAR_DATA *) vo;
   OBJ_DATA *obj;
   bool found=FALSE;
@@ -4106,6 +4127,9 @@ void spell_death_shroud( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_detect_traps( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+  UNUSED_PARAM(sn);
+  UNUSED_PARAM(level);
+  UNUSED_PARAM(vo);
   int door;
   OBJ_DATA *obj;
   bool found = FALSE;
@@ -4187,6 +4211,9 @@ void spell_detect_traps( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_stinking_cloud( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
     ROOM_AFF_DATA *raf;
     CHAR_DATA *gch;
 
@@ -4228,6 +4255,9 @@ void spell_stinking_cloud( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_rope_trick( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
     ROOM_AFF_DATA *raf;
     EXIT_DATA *pexit;
     ROOM_INDEX_DATA *pRoomIndex, *pHolder;
@@ -4312,6 +4342,9 @@ void spell_rope_trick( int sn, int level, CHAR_DATA *ch, void *vo )
 }
 void spell_haven( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
     ROOM_AFF_DATA *raf;
     CHAR_DATA *gch, *gch_next;
     EXIT_DATA *pexit;
@@ -4411,6 +4444,8 @@ void spell_haven( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_butcher( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     OBJ_DATA *corpse = (OBJ_DATA *) vo;
     OBJ_DATA *arm1 = NULL;
     OBJ_DATA *arm2 = NULL;
@@ -4483,6 +4518,9 @@ void spell_butcher( int sn, int level, CHAR_DATA *ch, void *vo )
 void spell_bewitch_weapon( int sn, int level, CHAR_DATA *ch, void *vo )
 {
 
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+
     OBJ_DATA *obj = (OBJ_DATA *) vo;
 
     if ( obj->wear_loc != -1 )
@@ -4528,6 +4566,9 @@ void spell_bewitch_weapon( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_divine_intervention( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
     CHAR_DATA *gch;
 
     for( gch = ch->in_room->people; gch != NULL; gch = gch->next_in_room )
@@ -4575,6 +4616,9 @@ void spell_divine_intervention( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_neutrality_field( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
+    UNUSED_PARAM(vo);
     CHAR_DATA *vch;
     CHAR_DATA *vch_next;
     int sn2;
@@ -4621,6 +4665,7 @@ void spell_shock_sphere( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_ghostly_presence( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(vo);
     AFFECT_DATA af;
 
     if( IS_AFFECTED2( ch, AFF2_GHOST ) )
@@ -4655,6 +4700,8 @@ void spell_ghostly_presence( int sn, int level, CHAR_DATA *ch, void *vo )
 
 void spell_death_ray( int sn, int level, CHAR_DATA *ch, void *vo )
 {
+    UNUSED_PARAM(sn);
+    UNUSED_PARAM(level);
     CHAR_DATA *victim = (CHAR_DATA *) vo;
     char buf[MAX_STRING_LENGTH];
 

@@ -2318,6 +2318,7 @@ void ban_update( void )
 
 void do_lycanthropy(CHAR_DATA *ch, char *argument)
 {
+     UNUSED_PARAM(argument);
      OBJ_DATA *obj, *obj_next;
      CHAR_DATA * mob = NULL;
      int primer = 0, tracker = 0, counter = 0, ac = 0;

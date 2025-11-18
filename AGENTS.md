@@ -30,3 +30,5 @@
   `handler.c`, `hunt.c`, `interp.c`, and the spell stubs in `magic.c`; the strict warning set now builds cleanly. To avoid
   recurring merge conflicts on this note file, append new warning summaries as standalone bullets rather than rewriting
   previous entries.
+- Added explicit `UNUSED_PARAM` markers to remaining spell stubs and spec functions in `magic2.c`, `skills.c`, `special.c`,
+  and `update.c` so the extended warning set builds cleanly without suppressing diagnostics.
