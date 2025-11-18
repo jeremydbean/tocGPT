@@ -1,6 +1,10 @@
 # Top-level Makefile for ToC MUD on Ubuntu 24.04+
 CC       := gcc
-CFLAGS   := -std=gnu89 -O2 -w -fcommon -DROM
+
+# Default flags favor stability while still surfacing helpful warnings. Use
+# `make CFLAGS="..."` to override for local builds.
+CFLAGS   ?= -std=gnu89 -O2 -fcommon -DROM
+WARNFLAGS?= -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
 
 LDFLAGS  := -lcrypt -lm
 
@@ -15,13 +19,13 @@ TARGET   := merc
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(WARNFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(WARNFLAGS) -c $< -o $@
 
 $(AREA_DIR)/%.o: $(AREA_DIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(WARNFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(TARGET)

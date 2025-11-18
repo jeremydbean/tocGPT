@@ -807,7 +807,7 @@ char buf[1000];
       j = (int) (index_char - 'a');
       if ((j < 0) || (j > CMDTABLE_FIRST_HASH - 1)) {
          sprintf(buf,"Building index on command_table\n"
-                     "Oops, a logic error accured for command: %s\n",
+                     "Oops, a logic error occurred for command: %s\n",
                  cmd_table[i].name);
          bug(" INITIALIZE COMMAND TABLE, INDEX OUT OF RANGE %d", j);
       }
@@ -899,7 +899,7 @@ char buf[1000];
       j = (int) (index_char - 'a');
       if ((j < 0) || (j > SOCIALTABLE_FIRST_HASH - 1)) {
          sprintf(buf,"Building index on social_table\n"
-                     "Oops, a logic error accured for command: %s\n",
+                     "Oops, a logic error occurred for command: %s\n",
                  social_table[i].name);
          bug(" INITIALIZE SOCIAL TABLE, INDEX OUT OF RANGE %d", j);
       }

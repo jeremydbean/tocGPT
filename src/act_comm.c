@@ -2585,7 +2585,13 @@ void do_quit( CHAR_DATA *ch, char *argument )
 void do_save( CHAR_DATA *ch, char *argument )
 {
     if ( IS_NPC(ch) )
-	return;
+        return;
+
+    if ( ch->position == POS_FIGHTING )
+    {
+        send_to_char( "You're a bit busy fighting to save right now.\n\r", ch );
+        return;
+    }
 
 /*    if (ch -> level < 1)
     {

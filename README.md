@@ -2,62 +2,82 @@ Please see the WIKI for building documents and Raspberry Pi install info.
 CURRENT REPORTED BUGS:
 - Game crashes at login if pfile is set with a (NULL) password.
         WORKAROUND: RESET PFILE PASSWORDS TO:  Kyz2D/BNiZB8Q~  (which translates to toc123)
-<strike>- Game currently allows players to log in multiple times.  (Many copies of the character can be loaded.)   This is modified via ChatGPT to be compileable on Ubuntu 24 LTS.</strike>
+<strike>- Game currently allows players to log in multiple times.  (Many copies of the character can be loaded.)   This is modified via ChatGPT to be compilable on Ubuntu 24 LTS.</strike>
 sudo chmod -R 777 tocGPT
 sudo chmod a+rwx -R tocGPT
 
 ## Docker usage
-You can build and run the MUD inside a portable Docker container that exposes the game port on all interfaces. The steps below cover a brand-new install of macOS, Windows, and Ubuntu, followed by common Docker commands for building and running the container anywhere.
+You can run the MUD inside a portable Docker container. The steps below start with getting Docker on each major OS, then show how to copy this code locally and run the container from a terminal. GUI download options are noted for users who prefer them.
 
-### macOS (new install)
-1. Install Docker Desktop from <https://www.docker.com/products/docker-desktop> and start it once so it can finish setup.
-2. Clone this repository:
-   ```
-   git clone https://github.com/jgmeiner/tocGPT.git
-   cd tocGPT
-   ```
-3. Build and run (see [Common Docker commands](#common-docker-commands)).
+### 1) Install Docker
 
-### Windows (new install)
-1. Install Docker Desktop for Windows from <https://www.docker.com/products/docker-desktop>. Enable WSL 2 integration if prompted, then start Docker Desktop.
-2. Use PowerShell or Git Bash to clone the repository:
-   ```powershell
-   git clone https://github.com/jgmeiner/tocGPT.git
-   cd tocGPT
-   ```
-3. Build and run using the commands in [Common Docker commands](#common-docker-commands). When mapping volumes, replace `$(pwd)` with `${PWD}` in PowerShell or `$(pwd)` in Git Bash.
+#### macOS
+- **Terminal-first (recommended):**
+  1. Install [Homebrew](https://brew.sh/) if you do not already have it.
+  2. In Terminal, install Docker Desktop:  
+     ```bash
+     brew install --cask docker
+     ```
+  3. Open Docker Desktop from Launchpad or run `open /Applications/Docker.app` so it can finish setup.
+- **GUI option:** Download Docker Desktop for Mac from <https://www.docker.com/products/docker-desktop>, drag it to Applications, then launch it once to complete initialization.
 
-### Ubuntu (new install)
-1. Install Docker Engine:
-   ```
-   sudo apt update
-   sudo apt install -y docker.io
-   sudo systemctl enable --now docker
-   sudo usermod -aG docker "$USER"
-   ```
-   Log out and back in (or `newgrp docker`) so your user can run Docker without sudo.
-2. Clone the repository:
-   ```
-   git clone https://github.com/jgmeiner/tocGPT.git
-   cd tocGPT
-   ```
-3. Use the [Common Docker commands](#common-docker-commands) to build and run the container.
+#### Windows 10/11
+- **PowerShell-first (recommended):**
+  1. Enable virtualization (most systems ship enabled; otherwise turn on “Virtualization Technology” in BIOS/UEFI).
+  2. Install WSL 2 and the kernel update (if not already installed):  
+     ```powershell
+     wsl --install
+     ```
+  3. Install Docker Desktop via winget:  
+     ```powershell
+     winget install -e --id Docker.DockerDesktop
+     ```
+  4. Start Docker Desktop once; accept prompts to enable WSL integration.
+- **GUI option:** Download Docker Desktop for Windows from <https://www.docker.com/products/docker-desktop>, run the installer, enable WSL 2 integration when prompted, and launch Docker Desktop.
 
-### Common Docker commands
-1. Build the image from the repository root:
-   ```
+#### Ubuntu (and Debian-based Linux)
+- **Terminal (apt):**
+  ```bash
+  sudo apt update
+  sudo apt install -y docker.io
+  sudo systemctl enable --now docker
+  sudo usermod -aG docker "$USER"
+  ```
+  Log out/in or run `newgrp docker` so your user can run Docker without sudo.
+- **Other distributions:** Install the vendor Docker Engine package for your distro (for example, `dnf install docker` on Fedora) or download static binaries from <https://docs.docker.com/engine/install/>.
+
+### 2) Copy the code locally
+Use Git to clone the repository into a working folder.
+
+- **macOS / Linux (bash/zsh):**
+  ```bash
+  git clone https://github.com/jgmeiner/tocGPT.git
+  cd tocGPT
+  ```
+
+- **Windows PowerShell:**
+  ```powershell
+  git clone https://github.com/jgmeiner/tocGPT.git
+  cd tocGPT
+  ```
+
+### 3) Build and run the Docker container
+Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` for `$(pwd)` when using PowerShell.
+
+1. Build the image:
+   ```bash
    docker build -t toc-mud .
    ```
-2. Start the server (default port 9000) and forward it to your host for local connections:
-   ```
+2. Start the game server on the default port 9000:
+   ```bash
    docker run --rm -it -p 9000:9000 toc-mud
    ```
-3. To change the port, set the `PORT` (or `MUD_PORT`) environment variable when running:
-   ```
+3. Change the port (optional) by setting `PORT`/`MUD_PORT`:
+   ```bash
    docker run --rm -it -e PORT=4000 -p 4000:4000 toc-mud
    ```
-4. For persistent characters and logs across container runs, mount the data directories from your host:
-   ```
+4. Keep character files and logs on the host (recommended for persistence):
+   ```bash
    docker run --rm -it \
      -p 9000:9000 \
      -v $(pwd)/player:/app/player \
@@ -65,10 +85,61 @@ You can build and run the MUD inside a portable Docker container that exposes th
      -v $(pwd)/log:/app/log \
      toc-mud
    ```
+5. Publish the web admin dashboard (port 8000) alongside the game port:
+   ```bash
+   docker run --rm -it \
+     -p 9000:9000 \
+     -p 8000:8000 \
+     toc-mud
+   ```
 
 The container automatically creates the writable data directories (`player`, `backups`, `log`, `gods`, `heroes`, `corpse`) on startup so that fresh volumes are ready for the game server. If you mount host directories, ensure they are writable by the container user.
 
 The container entrypoint accepts optional arguments if you need to pass flags directly to the `merc` binary (for example, `newlock` to block new players). If no arguments are provided, it automatically starts the server on the configured port.
+
+## Web administration dashboard
+The container starts a lightweight FastAPI web dashboard alongside the game server. It provides a browser UI plus JSON endpoints so admins can queue in-game actions without logging in as an immortal. By default it listens on port `8000` inside the container and can be disabled with `WEB_ADMIN_ENABLED=0`.
+
+### How to expose and open the dashboard
+1. Publish the admin port when launching the container (change host ports as desired):
+   ```bash
+   docker run --rm -it \
+     -p 9000:9000 \   # game
+     -p 8000:8000 \   # web admin
+     toc-mud
+   ```
+2. Open <http://localhost:8000/> in your browser to use the UI.
+
+### Available actions (UI and API)
+- **WizInfo broadcast:** Sends a WizInfo message to connected players at the chosen minimum level (defaults to 62). Queued as `wizinfo|<level>|<message>` in `/app/area/webadmin.queue`.
+- **Run immortal command:** Queues `command|<text>` which the game executes through the highest-trust connected immortal. Use this for admin-only commands like `copyover`, `wizinvis`, or moderation tools.
+- **Backup:** Queues `backup`, which invokes the existing `do_backup` routine from inside the game loop.
+- **Shutdown:** Queues `shutdown` for a clean server stop.
+- **Log tail:** Shows the last 200 lines of `log/toc.log` and refreshes every 15 seconds. Also available at `/api/logs`.
+- **Health:** `/api/health` returns process flags for the MUD (`merc`) and the web service itself.
+
+### Endpoint summary
+| Method | Path            | Body                           | Purpose                             |
+|--------|-----------------|--------------------------------|-------------------------------------|
+| GET    | `/`             | —                              | HTML dashboard                      |
+| GET    | `/api/health`   | —                              | Process status JSON                 |
+| GET    | `/api/logs`     | `?lines=200` (optional)        | Last N lines of `log/toc.log`       |
+| POST   | `/api/wizinfo`  | `{ "message": "text", "level": 62? }` | Queue WizInfo broadcast             |
+| POST   | `/api/command`  | `{ "command": "text" }`      | Queue immortal command              |
+| POST   | `/api/backup`   | —                              | Queue `do_backup`                   |
+| POST   | `/api/shutdown` | —                              | Queue shutdown request              |
+
+### Configuration knobs
+- `WEB_ADMIN_PORT` (default `8000`): Port exposed inside the container.
+- `WEB_ADMIN_HOST` (default `0.0.0.0`): Bind address for the FastAPI server.
+- `WEB_ADMIN_ENABLED` (default `1`): Set to `0` to skip starting the service.
+- `WEB_ADMIN_QUEUE` (default `/app/area/webadmin.queue`): Where requests are queued for the game loop.
+- `WEB_ADMIN_LOG_FILE` (default `/app/log/toc.log`): Log file used by `/api/logs`.
+
+### How it works under the hood
+The web service appends newline-delimited actions to `/app/area/webadmin.queue`. On each game tick, the server reads and clears the queue, then executes requests in order—broadcasting WizInfo, running immortal commands, kicking off backups, or initiating shutdown. This means queued actions are only processed while the game is running. Restarting the container clears the queue file but preserves the log file if you mounted it from the host.
+
+> **Security note:** Expose the admin port only to trusted networks or behind a reverse proxy with authentication. The default deployment does not enforce login on the web dashboard.
 
 ## Publishing your changes to GitHub
 If you don't see updates on GitHub after working locally, verify that your commits are pushed to a remote. From the repository root:

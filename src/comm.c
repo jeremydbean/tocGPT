@@ -42,6 +42,7 @@
 #include "merc.h"
 
 #define WNOHANG 1
+#define WEB_ADMIN_QUEUE "../webadmin.queue"
 /* command procedures needed */
 DECLARE_DO_FUN(do_help          );
 DECLARE_DO_FUN(do_look          );
@@ -50,6 +51,7 @@ DECLARE_DO_FUN(do_outfit        );
 DECLARE_DO_FUN(do_note          );
 DECLARE_DO_FUN( do_lycanthropy );
 DECLARE_DO_FUN( do_return );
+extern void do_backup( void );
 
 extern struct col_disp_table_type col_disp_table [];
 
@@ -341,6 +343,9 @@ bool    process_output          args( ( DESCRIPTOR_DATA *d, bool fPrompt ) );
 void    read_from_buffer        args( ( DESCRIPTOR_DATA *d ) );
 void    stop_idling             args( ( CHAR_DATA *ch ) );
 void    config_prompt           args( ( CHAR_DATA *ch ) );
+static void process_web_admin_queue args( ( void ) );
+static void handle_web_admin_command args( ( const char *line ) );
+static CHAR_DATA *find_best_admin args( ( void ) );
 
 int port;
 #if defined(unix)
@@ -605,11 +610,12 @@ void game_loop_mac_msdos( void )
 
 
 
-	/*
-	 * Autonomous game motion.
-	 */
-	update_handler( );
-	/*handle_web();*/
+        /*
+         * Autonomous game motion.
+         */
+        update_handler( );
+        process_web_admin_queue();
+        /*handle_web();*/
 
 
 	/*
@@ -893,6 +899,7 @@ void make_descriptor( DESCRIPTOR_DATA *dnew, int desc )
     *dnew               = d_zero;
     dnew->descriptor    = desc;
     dnew->connected     = CON_GET_NAME;
+    dnew->login_attempts= 0;
     dnew->showstr_head  = NULL;
     dnew->showstr_point = NULL;
     dnew->outsize       = 2000;
@@ -1054,6 +1061,7 @@ EC: What the hell is this for?
 void close_socket( DESCRIPTOR_DATA *dclose )
 {
     CHAR_DATA *ch;
+    bool was_playing = (dclose->connected == CON_PLAYING);
     char buf[MAX_STRING_LENGTH];
     buf[0] = '0';
 /*
@@ -1092,32 +1100,37 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 
     if ( ( ch = dclose->character ) != NULL )
     {
-	sprintf( log_buf, "Closing link to %s.", ch->name );
-	log_string( log_buf );
-// ... (inside close_socket, after (ch = dclose->character) != NULL check) ...
-    	if ( dclose->connected == CON_PLAYING )
-    	{
-    	  if(!IS_SET(ch->act, PLR_WIZINVIS) ) 
-    		{ 
-    	    act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
-    	    // The sprintf and wizinfo for logging the link loss can remain here
-    	    sprintf(buf, "%s has lost %s link. [Room: %d]", ch->name,
-    			ch->sex == 0 ? "its" : ch->sex == 1 ? "his" : "her",
-    			ch->in_room->vnum);
-    	    	// This wizinfo logic could also be simplified, but is not the primary cause of the ghosting
-    	    	if ( IS_SET(ch->act, PLR_WIZINVIS)) 
-    					wizinfo( buf, ch->invis_level );
-    	    	else
-    					wizinfo( buf, LEVEL_IMMORTAL );
-    		} 
-            ch->desc = NULL; /* <--- MOVED/ENSURED HERE: Always null descriptor if CON_PLAYING */
-    	}
-    	else // Not CON_PLAYING (e.g., character was in creation, etc.)
-    	{
-    	    free_char( dclose->character );
-    	    dclose->character = NULL; // Good practice to also null the dclose->character pointer after freeing
-    	}
-    // ... (rest of close_socket) ...
+        sprintf( log_buf, "Closing link to %s.", ch->name );
+        log_string( log_buf );
+
+        if ( was_playing )
+        {
+            if ( !IS_SET(ch->act, PLR_WIZINVIS) )
+            {
+                act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
+                sprintf(buf, "%s has lost %s link. [Room: %d]", ch->name,
+                        ch->sex == 0 ? "its" : ch->sex == 1 ? "his" : "her",
+                        ch->in_room->vnum);
+                wizinfo( buf, LEVEL_IMMORTAL );
+            }
+            else
+            {
+                sprintf(buf, "%s has lost link while wizinvis. [Room: %d]", ch->name,
+                        ch->in_room->vnum);
+                wizinfo( buf, ch->invis_level );
+            }
+
+            ch->desc = NULL;
+            if ( !IS_NPC(ch) )
+                save_char_obj( ch );
+        }
+        else
+        {
+            free_char( dclose->character );
+        }
+
+        dclose->character = NULL;
+        dclose->original  = NULL;
     }
 
     if ( d_next == dclose )
@@ -1643,13 +1656,14 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	return;
 
     case CON_GET_NAME:
-	if ( argument[0] == '\0' )
-	{
-	    close_socket( d );
-	    return;
-	}
+        if ( argument[0] == '\0' )
+        {
+            close_socket( d );
+            return;
+        }
 
-	argument[0] = UPPER(argument[0]);
+        argument[0] = UPPER(argument[0]);
+        d->login_attempts = 0;
 
         /* Crash bug fix - Rico 7/28/98 */
         if ( !check_parse_name( argument ) )
@@ -1726,28 +1740,40 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
     case CON_GET_OLD_PASSWORD:
     case CON_RETRY_PASSWORD:
 #if defined(unix)
-	write_to_buffer( d, "\n\r", 2 );
+        write_to_buffer( d, "\n\r", 2 );
 #endif
 
-	if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ))
-	{
-	    if (d->connected == CON_RETRY_PASSWORD)
-	    {
-		write_to_buffer( d, "Wrong password.\n\r", 0 );
-		close_socket( d );
-	    } else
-	    {
-		write_to_buffer( d, "Wrong password. Try again!\n\r", 0);
-		write_to_buffer( d, "Retry Password: ", 0 );
-		write_to_buffer( d, echo_off_str, 0 );
-		d->connected = CON_RETRY_PASSWORD;
-	    }
-	    return;
-	}
+        if ( strcmp( crypt( argument, ch->pcdata->pwd ), ch->pcdata->pwd ))
+        {
+            d->login_attempts++;
+            if ( d->login_attempts >= 3 )
+            {
+                sprintf(log_buf, "Too many bad passwords for %s@%s.", ch->name, d->host);
+                log_string(log_buf);
+                wizinfo(log_buf, LEVEL_IMMORTAL);
+                write_to_buffer( d, "Wrong password. Disconnecting.\n\r", 0 );
+                close_socket( d );
+                return;
+            }
 
-	if ( ch->pcdata->pwd[0] == '\0')
-	{
-	    write_to_buffer( d, "Warning! Null password!\n\r",0 );
+            if (d->connected == CON_RETRY_PASSWORD)
+            {
+                write_to_buffer( d, "Wrong password.\n\r", 0 );
+                close_socket( d );
+            } else
+            {
+                write_to_buffer( d, "Wrong password. Try again!\n\r", 0);
+                write_to_buffer( d, "Retry Password: ", 0 );
+                write_to_buffer( d, echo_off_str, 0 );
+                d->connected = CON_RETRY_PASSWORD;
+            }
+            return;
+        }
+
+        d->login_attempts = 0;
+        if ( ch->pcdata->pwd[0] == '\0')
+        {
+            write_to_buffer( d, "Warning! Null password!\n\r",0 );
 	    write_to_buffer( d, "Please report old password with bug.\n\r",0);
 	    write_to_buffer( d,
 		"Type 'password null <new password>' to fix.\n\r",0);
@@ -3607,3 +3633,114 @@ void config_prompt( CHAR_DATA *ch )
 }
 
 void do_outfit(CHAR_DATA *ch, char *argument) { send_to_char("Outfit command is not available.\n\r", ch); }
+
+static CHAR_DATA *find_best_admin( void )
+{
+    DESCRIPTOR_DATA *d;
+    CHAR_DATA *best = NULL;
+
+    for ( d = descriptor_list; d != NULL; d = d->next )
+    {
+        CHAR_DATA *candidate = d->original ? d->original : d->character;
+
+        if ( d->connected != CON_PLAYING || candidate == NULL )
+            continue;
+
+        if ( get_trust( candidate ) >= LEVEL_IMMORTAL
+        && ( best == NULL || get_trust( candidate ) > get_trust( best ) ) )
+        {
+            best = candidate;
+        }
+    }
+
+    return best;
+}
+
+static void handle_web_admin_command( const char *line )
+{
+    char log_buf_local[MAX_STRING_LENGTH];
+
+    if ( line == NULL || line[0] == '\0' )
+        return;
+
+    if ( !str_prefix( "wizinfo|", line ) )
+    {
+        char *message_start;
+        int level;
+        char buf[MAX_STRING_LENGTH];
+
+        message_start = strchr( line + 8, '|' );
+        if ( message_start == NULL )
+            return;
+
+        level = atoi( line + 8 );
+        if ( level <= 0 )
+            level = LEVEL_IMMORTAL;
+
+        message_start++;
+        sprintf( buf, "[WebAdmin] %s", message_start );
+        wizinfo( buf, level );
+        sprintf( log_buf_local, "Web admin wizinfo queued: %s", message_start );
+        log_string( log_buf_local );
+        return;
+    }
+
+    if ( !str_prefix( "command|", line ) )
+    {
+        CHAR_DATA *admin = find_best_admin();
+        const char *command_text = line + 8;
+
+        if ( admin == NULL || admin->desc == NULL )
+        {
+            log_string( "Web admin command dropped: no immortal online." );
+            return;
+        }
+
+        sprintf( log_buf_local, "Web admin executing command via %s: %s",
+            admin->name, command_text );
+        log_string( log_buf_local );
+        interpret( admin, (char *) command_text );
+        return;
+    }
+
+    if ( !str_prefix( "backup", line ) )
+    {
+        log_string( "Web admin requested player backup." );
+        do_backup();
+        return;
+    }
+
+    if ( !str_prefix( "shutdown", line ) )
+    {
+        wizinfo( "Remote shutdown requested from web admin dashboard.", LEVEL_IMMORTAL );
+        log_string( "Web admin requested shutdown." );
+        merc_down = TRUE;
+        return;
+    }
+
+    sprintf( log_buf_local, "Web admin ignored unknown command: %s", line );
+    log_string( log_buf_local );
+}
+
+static void process_web_admin_queue( void )
+{
+    FILE *queue;
+    char line[MAX_STRING_LENGTH * 2];
+
+    queue = fopen( WEB_ADMIN_QUEUE, "r" );
+
+    if ( queue == NULL )
+        return;
+
+    while ( fgets( line, sizeof( line ), queue ) != NULL )
+    {
+        line[strcspn( line, "\r\n" )] = '\0';
+        handle_web_admin_command( line );
+    }
+
+    fclose( queue );
+
+    queue = fopen( WEB_ADMIN_QUEUE, "w" );
+    if ( queue != NULL )
+        fclose( queue );
+}

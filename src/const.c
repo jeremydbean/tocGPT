@@ -2258,7 +2258,7 @@ const   struct  skill_type      skill_table     [MAX_SKILL]     =
 	{ 9, 9, 14, 14, 62, 62 },     { 1,  1,  2,  2, 2, 2},
 	spell_detect_hidden,    TAR_CHAR_DEFENSIVE,          POS_STANDING,
 	NULL,                   SLOT(44),        10,     12,
-	"",                     "You feel less aware of your suroundings."
+        "",                     "You feel less aware of your surroundings."
     },
 
     {

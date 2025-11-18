@@ -855,8 +855,8 @@ bool spec_executioner( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
 		    break;
  
 		case 13:
-		    sprintf(buf,"%s, don't make me turn this carrage around and go home?",
-			victim->name);
+                    sprintf(buf,"%s, don't make me turn this carriage around and go home?",
+                        victim->name);
 		    break;
  
 		case 14:
