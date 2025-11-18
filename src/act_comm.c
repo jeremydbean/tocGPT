@@ -2451,7 +2451,7 @@ void do_pose( CHAR_DATA *ch, char *argument )
     int pose;
 
     if ( IS_NPC(ch) )
-	return;
+        return;
 
     /*
      * Avoid signed/unsigned mix by storing the pose table length as a signed
