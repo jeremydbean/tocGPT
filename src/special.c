@@ -1457,11 +1457,11 @@ struct {
 	return TRUE;
     }
  
-    if (query_gold(ch) < cost)
+    if (!has_enough_gold(ch, cost))
     {
-	act("$n tells you 'You don't have enough money to join a guild.'",
-	    mob, NULL, ch, TO_VICT);
-	return TRUE;
+        act("$n tells you 'You don't have enough money to join a guild.'",
+            mob, NULL, ch, TO_VICT);
+        return TRUE;
     }
 
     add_money(ch,-1 * cost);
@@ -1565,11 +1565,11 @@ bool spec_pet_shop_owner( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd,
  
 	cost = 10 * pet->level * pet->level;
  
-	if ( query_gold(ch) < cost )
-	{
-	    send_to_char( "You can't afford it.\n\r", ch );
-	    return TRUE;
-	}
+        if (!has_enough_gold(ch, cost))
+        {
+            send_to_char( "You can't afford it.\n\r", ch );
+            return TRUE;
+        }
  
 	if ( ch->level < pet->level )
 	{
@@ -2091,10 +2091,10 @@ bool spec_club_clerk( CHAR_DATA *mob, CHAR_DATA *ch, DO_FUN *cmd, char *arg )
     if (IS_NPC(ch))
 	return TRUE;
  
-    if (query_gold(ch) < 10)
+    if (!has_enough_gold(ch, 10))
     {
-	act("$n wants to enter the club but $e is to broke.",
-		ch, NULL, ch, TO_ROOM);
+        act("$n wants to enter the club but $e is to broke.",
+                ch, NULL, ch, TO_ROOM);
 	send_to_char("The clerk tells you, 'You don't have the "
 			"10 coins for the cover charge.'\n\r",ch);
 	return TRUE;

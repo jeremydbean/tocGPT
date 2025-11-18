@@ -991,6 +991,12 @@ struct  kill_data
 #define TYPE_GOLD	2
 #define TYPE_PLATINUM	3
 
+#define COPPER_PER_SILVER    100L
+#define SILVER_PER_GOLD      100L
+#define GOLD_PER_PLATINUM    100L
+#define COPPER_PER_GOLD      (COPPER_PER_SILVER * SILVER_PER_GOLD)
+#define COPPER_PER_PLATINUM  (COPPER_PER_GOLD * GOLD_PER_PLATINUM)
+
 /*
  * Well known object virtual numbers.
  * Defined in #OBJECTS.
@@ -1678,6 +1684,8 @@ struct  pc_data
     sh_int              true_sex;
     int                 last_level;
     sh_int              psionic;              /* to determine if psi */
+    bool                psionic_grant_pending;
+    char *              psionic_grant_spec;
     sh_int              condition       [3];
     sh_int              learned         [MAX_SKILL];
     bool                group_known     [MAX_GROUP];
@@ -1686,6 +1694,8 @@ struct  pc_data
     sh_int              mounted;              /* for riding stuff */
     bool                confirm_delete;
     bool		confirm_pkill;
+    bool                has_saved;
+    bool                confirm_unsaved_quit;
     bool                on_quest;             /* questing state */
     int                 questor         [10]; /* quest items */
     long		quest_pause;	      /* halt quest for a week on quit*/
@@ -1694,7 +1704,7 @@ struct  pc_data
     sh_int		lmb_timer;	      /* Timer for Sanity Check */
     sh_int              col_table[32];        /* for those with color */
     bool                color;                /* set state of color */
-    int			bank;
+    long			bank;
     long		dcount;		     /* Prevents multi-killing */
     int			corpses;
     char *              ignore;
@@ -2423,6 +2433,8 @@ void    get_obj         args( ( CHAR_DATA *ch, OBJ_DATA *obj,
 void    do_bounce	args( (OBJ_DATA *obj) );
 void    add_money       args( (CHAR_DATA *ch, long amount) );
 long    query_gold      args( (CHAR_DATA *ch) );
+long    coins_to_copper args( (const CHAR_DATA *ch) );
+bool    has_enough_gold args( (const CHAR_DATA *ch, long gold_cost) );
 int     query_carry_weight args( ( CHAR_DATA *ch) );
 int     query_carry_coins  args( ( CHAR_DATA *ch, long amount) );
 void    add_gold        args( (CHAR_DATA *ch, long amount) );
@@ -2436,8 +2448,10 @@ void    add_platinum    args( (CHAR_DATA *ch, long amount) );
 void    show_string     args( ( struct descriptor_data *d, char *input) );
 void    close_socket    args( ( DESCRIPTOR_DATA *dclose ) );
 void    write_to_buffer args( ( DESCRIPTOR_DATA *d, const char *txt,
-			    int length ) );
+                            int length ) );
 void    do_check_psi    args( ( CHAR_DATA *ch, char *argument ) );
+void    grant_psionics  args( ( CHAR_DATA *ch, int chance, bool force_grant ) );
+bool    normalize_psionic_arguments args( ( const char *argument, char *output, size_t length, char *invalid ) );
 void    send_to_char    args( ( const char *txt, CHAR_DATA *ch ) );
 void    send_to_room    args( ( const char *txt, int vnum ) );
 void    page_to_char    args( ( const char *txt, CHAR_DATA *ch ) );

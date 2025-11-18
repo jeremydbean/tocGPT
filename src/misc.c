@@ -149,11 +149,11 @@ void do_heal(CHAR_DATA *ch, char *argument)
 	    return;
     }
 
-    if (cost > query_gold(ch))
+    if (!has_enough_gold(ch, cost))
     {
-	act("$N says 'You do not have enough gold for my services.'",
-	    ch,NULL,mob,TO_CHAR);
-	return;
+        act("$N says 'You do not have enough gold for my services.'",
+            ch,NULL,mob,TO_CHAR);
+        return;
     }
 
     WAIT_STATE(ch,PULSE_VIOLENCE);

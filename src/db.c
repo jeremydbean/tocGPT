@@ -2982,13 +2982,14 @@ void free_char( CHAR_DATA *ch )
         free_string( ch->pcdata->pwd            );
         free_string( ch->pcdata->bamfin         );
         free_string( ch->pcdata->bamfout        );
-	free_string( ch->pcdata->trans          );
-	free_string( ch->pcdata->arrive         );
-	free_string( ch->pcdata->depart         );
-	free_string( ch->pcdata->title          );
+        free_string( ch->pcdata->trans          );
+        free_string( ch->pcdata->arrive         );
+        free_string( ch->pcdata->depart         );
+        free_string( ch->pcdata->title          );
+        free_string( ch->pcdata->psionic_grant_spec );
       /*  free_string( ch->pcdata->ignore         );*/
-	ch->pcdata->next = pcdata_free;
-	pcdata_free      = ch->pcdata;
+        ch->pcdata->next = pcdata_free;
+        pcdata_free      = ch->pcdata;
     }
 
     free_string(ch->prompt);

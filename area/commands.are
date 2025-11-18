@@ -466,6 +466,20 @@ turned off, sitebans on name hosts will be ignored.
 
 ~
 
+70 GRANTPSI~
+Syntax: grantpsi <player> [now] [skill1,skill2,...]
+
+GRANTPSI is a level 70 tool to guarantee a player receives psionics. Without
+"now" it flags the target for a 100%% success at the level-based psionic check
+and optionally locks in a comma-separated list of psionic skills to award when
+the check fires (default behavior rolls normally). Using "now" grants psionics
+immediately, sends the unlock messaging, and applies the chosen skills right
+away. Valid picks include: psionic armor, psychic shield, mindbar, torment,
+ego whip, pyrotechnics, mindblast, clairvoyance, astral walk, shift, project,
+telekinesis, transfusion, and nightmare.
+
+~
+
 67 FSAVE~
 Syntax: fsave
 
