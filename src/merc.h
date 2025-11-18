@@ -991,6 +991,12 @@ struct  kill_data
 #define TYPE_GOLD	2
 #define TYPE_PLATINUM	3
 
+#define COPPER_PER_SILVER    100L
+#define SILVER_PER_GOLD      100L
+#define GOLD_PER_PLATINUM    100L
+#define COPPER_PER_GOLD      (COPPER_PER_SILVER * SILVER_PER_GOLD)
+#define COPPER_PER_PLATINUM  (COPPER_PER_GOLD * GOLD_PER_PLATINUM)
+
 /*
  * Well known object virtual numbers.
  * Defined in #OBJECTS.
@@ -1698,7 +1704,7 @@ struct  pc_data
     sh_int		lmb_timer;	      /* Timer for Sanity Check */
     sh_int              col_table[32];        /* for those with color */
     bool                color;                /* set state of color */
-    int			bank;
+    long			bank;
     long		dcount;		     /* Prevents multi-killing */
     int			corpses;
     char *              ignore;
