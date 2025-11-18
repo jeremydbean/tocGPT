@@ -1688,6 +1688,8 @@ struct  pc_data
     sh_int              mounted;              /* for riding stuff */
     bool                confirm_delete;
     bool		confirm_pkill;
+    bool                has_saved;
+    bool                confirm_unsaved_quit;
     bool                on_quest;             /* questing state */
     int                 questor         [10]; /* quest items */
     long		quest_pause;	      /* halt quest for a week on quit*/

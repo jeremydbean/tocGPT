@@ -245,10 +245,16 @@ void advance_level( CHAR_DATA *ch, bool is_advance )
 
 
     sprintf( buf, "the %s",
-	title_table [ch->class] [ch->level] [ch->sex == SEX_FEMALE ? 1 : 0] );
+        title_table [ch->class] [ch->level] [ch->sex == SEX_FEMALE ? 1 : 0] );
     set_title( ch, buf );
 
     guild = ch->pcdata->guild;
+
+    if (ch->level == 1)
+    {
+      send_to_char("\n\r*** Congratulations on reaching level 1! You can now SAVE your character with the 'save' command. ***\n\r", ch);
+      send_to_char("Type 'save' anytime to protect your progress (see 'help save' for details).\n\r\n\r", ch);
+    }
 
     if(ch->level == 5)
     {
@@ -1464,72 +1470,43 @@ void char_update( void )
 	}
 
 
-// --- PASTE THIS NEW BLOCK (e.g., around line 820 of your pasted code) ---
-if ( !IS_NPC(ch) )
-{
-    // Increment timer for Player Characters, unless they are wizinvisible Immortals.
-    if (ch->level < LEVEL_IMMORTAL || !IS_SET(ch->act, PLR_WIZINVIS))
-    {
-         ch->timer++;
-         sprintf(log_buf, "Update: Char %s, Level %d, Timer %d, Desc %s, Wizinvis %s",
-    ch->name, ch->level, ch->timer,
-    (ch->desc ? "Yes" : "No"),
-    (IS_SET(ch->act, PLR_WIZINVIS) ? "Yes" : "No") );
-log_string(log_buf);
-    }
-
-    if ( ch->desc == NULL ) // Character is LINK-DEAD
-    {
-        // Purge link-dead characters if they are NOT immortal and timer expires.
-        if ( ch->level < LEVEL_IMMORTAL )
+        if ( !IS_NPC(ch) )
         {
-            if ( ch->timer >= LINKDEAD_PURGE_TICKS )
+            if ( ch->desc == NULL )
             {
-                if (ch_quit == NULL) // Process one quit per char_update pass
+                ch->timer++;
+
+                if ( ch->level < LEVEL_IMMORTAL
+                &&   ch->timer >= LINKDEAD_PURGE_TICKS
+                &&   ch_quit == NULL )
                 {
                     ch_quit = ch;
                 }
             }
-        }
-        // Link-dead Immortals (ch->level >= LEVEL_IMMORTAL) are not auto-purged by this.
-        // Their timer might still increment if they were visible when they disconnected.
-    }
-    else // Character is CONNECTED (ch->desc != NULL)
-    {
-        // Idle to Limbo Logic: Only for non-Immortals
-        if ( ch->level < LEVEL_IMMORTAL )
-        {
-            if ( ch->timer >= LINKDEAD_PURGE_TICKS
-                 && ch->was_in_room == NULL              /* Avoids re-limboing if already processed by this logic */
-                 && ch->in_room != NULL                  
-                 && ch->in_room->vnum != ROOM_VNUM_LIMBO /* Not already in limbo */
-                 && !IS_SET(ch->in_room->room_flags, ROOM_JAIL) ) /* Not in jail */
+            else if ( ch->level < LEVEL_IMMORTAL )
             {
-                if ( ch->fighting != NULL )
-                    stop_fighting( ch, TRUE );
+                ch->timer++;
 
-                act( "$n disappears into the void.", ch, NULL, NULL, TO_ROOM );
-                send_to_char( "You disappear into the void.\n\r", ch );
+                if ( ch->timer >= LINKDEAD_PURGE_TICKS
+                &&   ch->was_in_room == NULL
+                &&   ch->in_room != NULL
+                &&   ch->in_room->vnum != ROOM_VNUM_LIMBO
+                &&   !IS_SET(ch->in_room->room_flags, ROOM_JAIL) )
+                {
+                    if ( ch->fighting != NULL )
+                        stop_fighting( ch, TRUE );
 
-                if (ch->level > 1) /* Don't save very new characters */
+                    act( "$n disappears into the void.", ch, NULL, NULL, TO_ROOM );
+                    send_to_char( "You disappear into the void.\n\r", ch );
                     save_char_obj( ch );
 
-                ch->was_in_room = ch->in_room; 
-                char_from_room( ch );
-                char_to_room( ch, get_room_index( ROOM_VNUM_LIMBO ) );
-                act( "$n falls in from above.", ch, NULL, NULL, TO_ROOM );
-                
-                ch->timer = 0; // Reset timer after moving to limbo
-                               // This allows them 5 more minutes in limbo IF they then go link-dead
-                               // or for any other limbo-specific timer to take effect.
-
-                // if (ch->pcdata->lmb_timer != 0) ch->pcdata->lmb_timer = 30; // If lmb_timer is a separate kick-from-limbo timer
+                    ch->was_in_room = ch->in_room;
+                    char_from_room( ch );
+                    char_to_room( ch, get_room_index( ROOM_VNUM_LIMBO ) );
+                    act( "$n falls in from above.", ch, NULL, NULL, TO_ROOM );
+                }
             }
         }
-        // Connected Immortals (ch->level >= LEVEL_IMMORTAL) are not sent to limbo by this idle timer.
-    }
-}
-// --- END OF PASTED BLOCK ---
 
 	for ( paf = ch->affected; paf != NULL; paf = paf_next )
 	{
@@ -1692,92 +1669,31 @@ log_string(log_buf);
      */
     for ( ch = char_list; ch != NULL; ch = ch_next )
     {
-	ch_next = ch->next;
+        ch_next = ch->next;
 
-	if (ch->desc != NULL && ch->desc->descriptor % 30 == save_number
-	    && ch->level >= 3)
-	    save_char_obj(ch);
+        if ( ch->desc != NULL
+        &&   !IS_NPC(ch)
+        &&   ch->level >= 1
+        &&   ch->desc->descriptor % 30 == save_number )
+            save_char_obj( ch );
 
-//	if ( ch == ch_quit && ch->in_room != get_room_index(9) )
-//	    do_quit( ch, "" );
+        if ( ch_quit != NULL && ch == ch_quit )
+        {
+            save_char_obj( ch );
+            do_quit( ch, "" );
+            ch_quit = NULL;
+        }
     }
 
-// Standard periodic auto-saving logic (this part is likely fine as is)
-for ( ch = char_list; ch != NULL; ch = ch_next )
-{
-    ch_next = ch->next;
-    if (ch->desc != NULL && ch->desc->descriptor % 30 == save_number
-        && ch->level >= 3)
+    if ( ch_quit != NULL )
     {
-        save_char_obj(ch);
+        save_char_obj( ch_quit );
+        do_quit( ch_quit, "" );
+        ch_quit = NULL;
     }
-}
-
-// Corrected logic for handling ch_quit (replaces any previous attempts for this)
-if (ch_quit != NULL)
-{
-if (ch_quit == NULL) {
-    ch_quit = ch;
-}
-    // Verify the character marked for quitting still exists and is indeed link-dead.
-    // This is a safety check; ch_quit should be valid if set correctly in the main loop.
-    bool still_exists_and_linkdead = FALSE;
-    CHAR_DATA *temp_ch_verify;
-    for (temp_ch_verify = char_list; temp_ch_verify != NULL; temp_ch_verify = temp_ch_verify->next) 
-    {
-        if (temp_ch_verify == ch_quit && temp_ch_verify->desc == NULL) 
-        {
-            still_exists_and_linkdead = TRUE;
-            break;
-        }
-    }
-
-    if (still_exists_and_linkdead)
-    {
-//        sprintf(log_buf, "%s (link-dead) is being removed from game after %d pulses of inactivity.",
-//            ch_quit->name, ch_quit->timer);
-//        log_string(log_buf);
-        sprintf(log_buf, "Update: %s (Lvl %d) MARKED FOR LINKDEAD QUIT. Timer: %d", 
-           ch_quit->name, ch_quit->level, ch_quit->timer);
-        log_string(log_buf);
-
-        // Send wizinfo. Exempt self-wizinfo for high level imms if desired,
-        // or always send to a general immortal log level.
-        if (IS_IMMORTAL(ch_quit))
-        {
-            // Avoid spam from immortal linkdead timeouts if they are high level
-            // Or, perhaps only log it without wizinfo, or wizinfo to their own level / GOD+
-            wizinfo(log_buf, get_trust(ch_quit)); // Example: wizinfo to their trust
-        }
-        else
-        {
-            wizinfo(log_buf, LEVEL_IMMORTAL); // Inform general immortals about mortals
-        }
-
-        // Save character before quitting (unless very low level)
-        if (ch_quit->level > 1) 
-        {
-            save_char_obj(ch_quit);
-        }
-
-        do_quit(ch_quit, ""); /* Force quit the character */
-           sprintf(log_buf, "Update: %s (Lvl %d) QUIT ATTEMPT DONE!  Timer: %d", 
-           ch_quit->name, ch_quit->level, ch_quit->timer);
-        log_string(log_buf);
-        
-        
-        /* ch_quit pointer is now invalid as do_quit calls extract_char */
-    }
-    // ch_quit is reset to NULL at the start of the next char_update() call.
-}
-// --- END OF MODIFIED FINAL SECTION ---
-
-return; // This is the final line of char_update()
 
     return;
 }
-
-
 
 
 /*

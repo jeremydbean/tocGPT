@@ -18,6 +18,9 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#if defined(unix) && defined(CHGRP_TO)
+#include <grp.h>
+#endif
 
 #if !defined(macintosh)
 extern  int     _filbuf         args( (FILE *) );
@@ -45,6 +48,34 @@ void	fread_char	args( ( CHAR_DATA *ch,  FILE *fp ) );
 void    fread_pet	args( ( CHAR_DATA *ch,  FILE *fp ) );
 void	fread_obj	args( ( CHAR_DATA *ch,  FILE *fp ) );
 
+#if defined(unix) && defined(CHGRP_TO)
+static bool can_chgrp      args( ( void ) );
+#endif
+
+
+#if defined(unix) && defined(CHGRP_TO)
+static bool can_chgrp( void )
+{
+    static int checked = 0;
+    static bool available = FALSE;
+
+    if (!checked)
+    {
+        checked = 1;
+        if (getgrnam(CHGRP_TO) != NULL)
+            available = TRUE;
+        else
+        {
+            sprintf(log_buf,
+                    "save_char_obj: configured CHGRP_TO group '%s' missing; skipping chgrp",
+                    CHGRP_TO);
+            log_string(log_buf);
+        }
+    }
+
+    return available;
+}
+#endif
 
 
 /*
@@ -65,7 +96,10 @@ void save_char_obj( CHAR_DATA *ch )
     ch->pcdata->ignore = str_dup(" ");
 
     if ( ch->desc != NULL && ch->desc->original != NULL )
-	ch = ch->desc->original;
+        ch = ch->desc->original;
+
+    ch->pcdata->has_saved = TRUE;
+    ch->pcdata->confirm_unsaved_quit = FALSE;
 
 #if defined(unix)
     /* create god log */
@@ -83,9 +117,12 @@ void save_char_obj( CHAR_DATA *ch )
             ch->level, get_trust(ch), ch->name, ch->pcdata->title);
 	fclose( fp );
 #ifdef CHGRP_TO
-        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-        if (system(buf) == -1)
-            bug("save_char_obj: system backup failed.", 0);
+        if (can_chgrp())
+        {
+            sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+            if (system(buf) == -1)
+                bug("save_char_obj: system backup failed.", 0);
+        }
 #endif
 	fpReserve = fopen( NULL_FILE, "r" );
     }
@@ -107,9 +144,12 @@ void save_char_obj( CHAR_DATA *ch )
             ch->level, get_trust(ch), ch->name, ch->pcdata->title);
         fclose( fp );
 #ifdef CHGRP_TO
-        sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-        if (system(buf) == -1)
-            bug("save_char_obj: player backup failed.", 0);
+        if (can_chgrp())
+        {
+            sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
+            if (system(buf) == -1)
+                bug("save_char_obj: player backup failed.", 0);
+        }
 #endif
         fpReserve = fopen( NULL_FILE, "r" );
     }
@@ -138,7 +178,10 @@ void save_char_obj( CHAR_DATA *ch )
     fclose( fp );
     /* move the file */
 #ifdef CHGRP_TO
-    sprintf(buf,"mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
+    if (can_chgrp())
+        sprintf(buf,"mv %s %s; chgrp %s %s",PLAYER_TEMP,strsave, CHGRP_TO, strsave);
+    else
+        sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
 #else
     sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
 #endif
@@ -211,6 +254,7 @@ void fwrite_char( CHAR_DATA *ch, FILE *fp )
 	fprintf( fp, "Dcount %ld\n",	ch->pcdata->dcount	);
     else
 	fprintf( fp, "Dcount %d\n", 0			);
+    fprintf( fp, "SavedOnce %d\n", ch->pcdata->has_saved ? 1 : 0 );
     fprintf( fp, "Corpses	%d\n",	ch->pcdata->corpses	);
     fprintf( fp, "PkRec %ld\n",ch->pcdata->pkills_received );
     fprintf( fp, "PkGiv %ld\n",ch->pcdata->pkills_given );
@@ -434,12 +478,13 @@ void fwrite_pet( CHAR_DATA *pet, FILE *fp)
     if (pet->act != pet->pIndexData->act)
 	fprintf(fp, "Act  %ld\n", pet->act);
     if (pet->affected_by != pet->pIndexData->affected_by)
-	fprintf(fp, "AfBy %d\n", pet->affected_by);
-     if (pet->affected_by != pet->pIndexData->affected_by2)
-	fprintf(fp, "AfBy %d\n", pet->affected_by2);
-   if (pet->comm != 0)
-	fprintf(fp, "Comm %ld\n", pet->comm);
-    fprintf(fp,"Pos  %d\n", pet->position = POS_FIGHTING ? POS_STANDING : pet->position);
+        fprintf(fp, "AfBy %d\n", pet->affected_by);
+    if (pet->affected_by2 != pet->pIndexData->affected_by2)
+        fprintf(fp, "AfBy2 %d\n", pet->affected_by2);
+    if (pet->comm != 0)
+        fprintf(fp, "Comm %ld\n", pet->comm);
+    fprintf(fp,"Pos  %d\n",
+            pet->position == POS_FIGHTING ? POS_STANDING : pet->position);
     if (pet->saving_throw != 0)
 	fprintf(fp, "Save %d\n", pet->saving_throw);
     if (pet->alignment != pet->pIndexData->alignment)
@@ -723,6 +768,8 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     ch->pcdata->last_level		= 0;
     ch->pcdata->condition[COND_THIRST]	= 48;
     ch->pcdata->condition[COND_FULL]	= 48;
+    ch->pcdata->has_saved		= FALSE;
+    ch->pcdata->confirm_unsaved_quit	= FALSE;
 
     for (i=0; i<MAX_ALIASES; i++)
     {
@@ -818,11 +865,14 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
 
     if (found && ch->version < 2)  /* need to add the new skills */
     {
-	group_add(ch,"rom basics",FALSE);
-	group_add(ch,class_table[ch->class].base_group,FALSE);
-	group_add(ch,class_table[ch->class].default_group,TRUE);
-	ch->pcdata->learned[gsn_recall] = 50;
+        group_add(ch,"rom basics",FALSE);
+        group_add(ch,class_table[ch->class].base_group,FALSE);
+        group_add(ch,class_table[ch->class].default_group,TRUE);
+        ch->pcdata->learned[gsn_recall] = 50;
     }
+
+    if (found && !ch->pcdata->has_saved)
+        ch->pcdata->has_saved = TRUE;
 
     return found;
 }
@@ -1174,6 +1224,7 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 	case 'S':
 	    KEY( "SavingThrow",	ch->saving_throw,	fread_number( fp ) );
 	    KEY( "Save",	ch->saving_throw,	fread_number( fp ) );
+	    KEY( "SavedOnce",	ch->pcdata->has_saved,	fread_number( fp ) );
 	    KEY( "Scro",	ch->lines,		fread_number( fp ) );
 	    KEY( "Sex",		ch->sex,		fread_number( fp ) );
 	    KEY( "ShortDescr",	ch->short_descr,	fread_string( fp ) );
