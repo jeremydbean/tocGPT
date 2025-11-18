@@ -75,29 +75,31 @@ Use Git to clone the repository into a working folder.
   ```
 
 ### 4) Build and run the Docker container
-Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` for `$(pwd)` when using PowerShell.
+Run these commands from inside the cloned `tocGPT` folder. Windows checkouts can inject `CRLF` endings into shell scripts, which makes Linux report `#!/bin/sh^M` and fail to exec the entrypoint. The Dockerfile now normalizes `docker-entrypoint.sh` to Linux `LF` endings during the build, but keep your editor in `LF` mode when editing shell scripts to avoid surprises.
 
 1. Build the image:
    ```bash
    docker build -t toc .
    ```
 2. Start the game server on the default port 9000 with host persistence (recommended):
-
-### MacOS / Linux
-   ```bash
-   docker run --rm -it \
-     -p 9000:9000 \
-     -v $(pwd)/player:/app/player \
-     -v $(pwd)/backups:/app/backups \
-     -v $(pwd)/log:/app/log \
-     toc
-   ```
-### Windows
-   ```bash
-  docker run --rm -it -p 9000:9000 -v "${PWD}\player:/app/player" -v "${PWD}\backups:/app/backups" -v "${PWD}\log:/app/log" toc
-  ```
-
-4. Change the port (optional) by setting `PORT`/`MUD_PORT` while keeping persistence:
+   - **macOS / Linux (bash/zsh):**
+     ```bash
+     docker run --rm -it \
+       -p 9000:9000 \
+       -v $(pwd)/player:/app/player \
+       -v $(pwd)/backups:/app/backups \
+       -v $(pwd)/log:/app/log \
+       toc
+     ```
+   - **Windows PowerShell:**
+     ```powershell
+     docker run --rm -it -p 9000:9000 `
+         -v "${PWD}\player:/app/player" `
+         -v "${PWD}\backups:/app/backups" `
+         -v "${PWD}\log:/app/log" `
+         toc
+     ```
+3. Change the port (optional) by setting `PORT`/`MUD_PORT` while keeping persistence:
    ```bash
    docker run --rm -it \
      -e PORT=4000 \
@@ -170,6 +172,15 @@ The container starts a lightweight FastAPI web dashboard alongside the game serv
 The web service appends newline-delimited actions to `/app/area/webadmin.queue`. On each game tick, the server reads and clears the queue, then executes requests in order—broadcasting WizInfo, running immortal commands, kicking off backups, or initiating shutdown. This means queued actions are only processed while the game is running. Restarting the container clears the queue file but preserves the log file if you mounted it from the host.
 
 > **Security note:** Expose the admin port only to trusted networks or behind a reverse proxy with authentication. The default deployment does not enforce login on the web dashboard.
+
+## Troubleshooting line endings on Windows
+- **Symptom:** The container exits with `exec /usr/local/bin/docker-entrypoint.sh: no such file or directory` even though the file exists in the image. Inside the script you may see a shebang rendered as `#!/bin/sh^M`.
+- **Cause:** Windows editors can introduce carriage returns (`^M`) via `CRLF` line endings, which confuse the Linux shell.
+- **Fix:** The Dockerfile now strips carriage returns from `docker-entrypoint.sh` during the build so the entrypoint runs reliably. If you want to double-check your checkout, run:
+  ```bash
+  cat -A docker-entrypoint.sh | head
+  ```
+  The output should **not** show `^M` characters; if it does, convert the file to `LF` endings before rebuilding.
 
 ## Publishing your changes to GitHub
 If you don't see updates on GitHub after working locally, verify that your commits are pushed to a remote. From the repository root:
