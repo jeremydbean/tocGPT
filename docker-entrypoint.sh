@@ -4,7 +4,7 @@ set -e
 cd /app/area
 
 DEFAULT_PORT="${PORT:-${MUD_PORT:-9000}}"
-WEB_ADMIN_PORT="${WEB_ADMIN_PORT:-8000}"
+WEB_ADMIN_PORT="${WEB_ADMIN_PORT:-9001}"
 WEB_ADMIN_HOST="${WEB_ADMIN_HOST:-127.0.0.1}"
 
 # Ensure expected data directories exist for writes

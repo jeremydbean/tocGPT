@@ -39,7 +39,27 @@ You can run the MUD inside a portable Docker container. The steps below start wi
   Log out/in or run `newgrp docker` so your user can run Docker without sudo.
 - **Other distributions:** Install the vendor Docker Engine package for your distro (for example, `dnf install docker` on Fedora) or download static binaries from <https://docs.docker.com/engine/install/>.
 
-### 2) Copy the code locally
+### 2) Install Git
+If Git is not already available, install it using the package manager for your platform.
+
+- **macOS (Homebrew):**
+  ```bash
+  brew install git
+  ```
+- **Windows:** Install via winget or the Git for Windows installer.
+  - **winget (PowerShell):**
+    ```powershell
+    winget install -e --id Git.Git
+    ```
+  - **Installer:** Download [Git for Windows](https://git-scm.com/download/win), then use the bundled Git Bash or enable "Git from the command line" during setup.
+- **Ubuntu / Debian:**
+  ```bash
+  sudo apt update
+  sudo apt install -y git
+  ```
+- **Other Linux distributions:** Install the `git` package via your distro's package manager (for example, `dnf install git` on Fedora).
+
+### 3) Copy the code locally
 Use Git to clone the repository into a working folder.
 
 - **macOS / Linux (bash/zsh):**
@@ -54,7 +74,7 @@ Use Git to clone the repository into a working folder.
   cd tocGPT
   ```
 
-### 3) Build and run the Docker container
+### 4) Build and run the Docker container
 Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` for `$(pwd)` when using PowerShell.
 
 1. Build the image:
@@ -80,11 +100,11 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
      -v $(pwd)/log:/app/log \
      toc
    ```
-4. Publish the web admin dashboard (port 8000) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
+4. Publish the web admin dashboard (port 9001) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
    ```bash
    docker run --rm -it \
      -p 9000:9000 \   # game
-     -p 8000:8000 \   # web admin
+     -p 9001:9001 \   # web admin
      -v $(pwd)/player:/app/player \
      -v $(pwd)/backups:/app/backups \
      -v $(pwd)/log:/app/log \
@@ -98,20 +118,20 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
 The container entrypoint accepts optional arguments if you need to pass flags directly to the `merc` binary (for example, `newlock` to block new players). If no arguments are provided, it automatically starts the server on the configured port.
 
 ## Web administration dashboard
-The container starts a lightweight FastAPI web dashboard alongside the game server. It provides a browser UI plus JSON endpoints so admins can queue in-game actions without logging in as an immortal. By default it listens on port `8000` inside the container and can be disabled with `WEB_ADMIN_ENABLED=0`.
+The container starts a lightweight FastAPI web dashboard alongside the game server. It provides a browser UI plus JSON endpoints so admins can queue in-game actions without logging in as an immortal. By default it listens on port `9001` inside the container and can be disabled with `WEB_ADMIN_ENABLED=0`.
 
 ### How to expose and open the dashboard
-1. Publish the admin port when launching the container (change host ports as desired). By default the service binds to `127.0.0.1:8000` inside the container; use `-e WEB_ADMIN_HOST=0.0.0.0` only if you must expose it outside the host:
+1. Publish the admin port when launching the container (change host ports as desired). By default the service binds to `127.0.0.1:9001` inside the container; use `-e WEB_ADMIN_HOST=0.0.0.0` only if you must expose it outside the host:
    ```bash
    docker run --rm -it \
      -p 9000:9000 \   # game
-     -p 8000:8000 \   # web admin
+     -p 9001:9001 \   # web admin
      -v $(pwd)/player:/app/player \
      -v $(pwd)/backups:/app/backups \
      -v $(pwd)/log:/app/log \
      toc
    ```
-2. Open <http://localhost:8000/> in your browser to use the UI.
+2. Open <http://localhost:9001/> in your browser to use the UI.
 
 ### Available actions (UI and API)
 - **WizInfo broadcast:** Sends a WizInfo message to connected players at the chosen minimum level (defaults to 62). Queued as `wizinfo|<level>|<message>` in `/app/area/webadmin.queue`.
@@ -133,7 +153,7 @@ The container starts a lightweight FastAPI web dashboard alongside the game serv
 | POST   | `/api/shutdown` | —                              | Queue shutdown request              |
 
 ### Configuration knobs
-- `WEB_ADMIN_PORT` (default `8000`): Port exposed inside the container.
+- `WEB_ADMIN_PORT` (default `9001`): Port exposed inside the container.
 - `WEB_ADMIN_HOST` (default `127.0.0.1`): Bind address for the FastAPI server (set to `0.0.0.0` only if you need remote access).
 - `WEB_ADMIN_ENABLED` (default `1`): Set to `0` to skip starting the service.
 - `WEB_ADMIN_QUEUE` (default `/app/area/webadmin.queue`): Where requests are queued for the game loop.
