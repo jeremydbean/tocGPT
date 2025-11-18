@@ -3,19 +3,26 @@
 
 
 -1 greeting~
-[38;5;196m████████╗ [38;5;202m███████╗ [38;5;208m█████╗  [38;5;220m ██████╗[0m
-[38;5;199m╚══██╔══╝ [38;5;203m██╔════╝[38;5;215m██╔══██╗[38;5;221m██╔════╝[0m
-[38;5;93m   ██║    [38;5;99m█████╗  [38;5;105m███████║[38;5;111m██║  ███╗[0m
-[38;5;39m   ██║    [38;5;44m██╔══╝  [38;5;45m██╔══██║[38;5;50m██║   ██║[0m
-[38;5;46m   ██║    [38;5;82m███████╗[38;5;118m██║  ██║[38;5;154m╚██████╔╝[0m
-[38;5;48m   ╚═╝    [38;5;47m╚══════╝[38;5;83m╚═╝  ╚═╝ [38;5;119m╚═════╝ [0m
-
-[1;38;5;213mTimes of Chaos (ToC) 2026[0m
-[38;5;159mA modern revival of the classic realms—new features, richer logs,[0m
-[38;5;123mlive moderation tools, and colorful adventures await.[0m
-
-[38;5;214mNEW? Type NEW to forge your legend. Returning? Enter your name to continue.[0m
-[38;5;111mTip: Enable ANSI colors in your client for the full spectrum experience.[0m
+[38;5;196m                         ___====-_  _-====___[0m
+[38;5;202m                   _--^^^#####//      \#####^^^--_[0m
+[38;5;208m                _-^##########// (    ) \\##########^-_[0m
+[38;5;214m               -############//  |\^^/|  \\############-[0m
+[38;5;220m             _/############//   (@::@)   \\############\_[0m
+[38;5;190m            /#############((     \//     ))#############\[0m
+[38;5;47m           -###############\    (oo)    //###############-[0m
+[38;5;51m          -#################\  / VV \  //#################-[0m
+[38;5;39m         -###################\/      \//###################-[0m
+[38;5;27m        _#/|##########/\######(   /\   )######/\##########|\#_[0m
+[38;5;93m        |/ |#/#/#/\/#  \#/\#/ /  \_/  \ \#/\#/  #/\#/#/#| \|[0m
+[38;5;129m        `  |/  V  V `   V  \\#\/ \_/\/  #/  V   '  V  V  \|  `[0m
+[38;5;201m           `   `  `      `   `  /   \  `   '      '  '   `[0m
+[38;5;207m                            (  |   |  )[0m
+[38;5;196m                            __\ | | /__[0m
+[38;5;202m                           (vvv(VVV)vvv)[0m
+[1;36mTimes of Chaos (ToC) 2026[0m - classic dragon, modern engine.
+[1;37mNew to ToC?[0m Type [1;33mNEW[0m to create a hero. Returning? Enter your name to continue.
+[1;32mTip:[0m enable ANSI colors in your client to enjoy the rainbow banner.
+Ports, logging, live moderation, and fresh tools are ready - welcome back to Chaos!
 ~
 
 -1 DIKU~
