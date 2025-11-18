@@ -3606,6 +3606,7 @@ void do_ban( CHAR_DATA *ch, char *argument )
     ban_list    = pban;
     snprintf(buf, sizeof(buf),"%s is now banned.\n\r",pban->name);
     send_to_char( buf, ch );
+    log_string(buf);
     ban_update( );
     return;
 }
@@ -3635,9 +3636,10 @@ void do_allow( CHAR_DATA *ch, char *argument )
 	    else
 		prev->next = curr->next;
 
-	    snprintf(buf, sizeof(buf),"%s is no longer banned.\n\r", curr->name);
-	    send_to_char( buf, ch );
-	    free_string( curr->name );
+            snprintf(buf, sizeof(buf),"%s is no longer banned.\n\r", curr->name);
+            send_to_char( buf, ch );
+            log_string(buf);
+            free_string( curr->name );
 	    curr->next  = ban_free;
 	    ban_free    = curr;
 	    ban_update( );
@@ -5110,16 +5112,38 @@ void do_undeny(CHAR_DATA *ch, char *argument)
 
 
 
+static const char *socket_state_name(int connected)
+{
+    switch (connected)
+    {
+        case CON_PLAYING: return "playing";
+        case CON_GET_NAME: return "get_name";
+        case CON_GET_OLD_PASSWORD: return "old_password";
+        case CON_CONFIRM_NEW_NAME: return "confirm_name";
+        case CON_GET_NEW_PASSWORD: return "new_password";
+        case CON_CONFIRM_NEW_PASSWORD: return "confirm_pass";
+        case CON_GET_NEW_RACE: return "choose_race";
+        case CON_GET_NEW_SEX: return "choose_sex";
+        case CON_GET_NEW_CLASS: return "choose_class";
+        case CON_GET_ALIGNMENT: return "choose_align";
+        case CON_DEFAULT_CHOICE: return "default_choice";
+        case CON_GEN_GROUPS: return "groups";
+        case CON_PICK_WEAPON: return "weapon";
+        case CON_READ_IMOTD: return "imotd";
+        case CON_READ_MOTD: return "motd";
+        default: return "connecting";
+    }
+}
+
 void do_sockets( CHAR_DATA *ch, char *argument )
 {
     char buf[2 * MAX_STRING_LENGTH];
     char buf2[MAX_STRING_LENGTH];
     char arg[MAX_INPUT_LENGTH];
     char arg2[MAX_INPUT_LENGTH];
-    char chhost[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
     int count;
-    int counts;
+    bool filter_ip;
 
     buf[0]      = '\0';
 
@@ -5127,89 +5151,69 @@ void do_sockets( CHAR_DATA *ch, char *argument )
     argument = one_argument( argument, arg2 );
 
     count = 0;
-    counts = 0;
+    filter_ip = (!str_cmp(arg, "ip") && arg2[0] != '\0');
 
-       /* Optional IP arguement coded by Ricochet so you can
-	  list everyone from a certain IP address 1/27/98 */
+    snprintf(buf, sizeof(buf), "%-5s %-14s %-18s %-18s %-6s %-6s %-8s %-5s\n\r",
+        "Desc", "State", "Account", "Host/IP", "Idle", "Level", "Pos", "Room");
 
-
-        if ( !str_cmp( arg, "ip" ))
-        {
-            counts = 1;
-
-                for ( d = descriptor_list; d != NULL; d = d->next )
-                {
-                     sprintf(chhost,"%s",d->host);
-
-                   if (d->character == NULL)
-                   {
-                     if (!str_infix(arg2,chhost))
-                     {
-                      count++;
-                      sprintf( buf + strlen(buf), "[%3d %2d] (none)@%s\n\r",
-                      d->descriptor,
-                      d->connected,
-                      d->host
-                      );
-                     }
-                   }
-
-                   if ( d->character != NULL && can_see( ch, d->character ))
-                   {
-                     if (!str_infix(arg2,chhost))
-                     {
-                     count++;
-                     sprintf( buf + strlen(buf), "[%3d %2d] %s@%s\n\r",
-                     d->descriptor,
-                     d->connected,
-                     d->original  ? d->original->name  :
-                     d->character ? d->character->name : "(none)",
-		     d->host
-                     );
-                     }
-                   }
-                }
-        }
-
-         if (counts == 0)
-  {
     for ( d = descriptor_list; d != NULL; d = d->next )
     {
-        if (d->character == NULL)
+        char host_display[MAX_INPUT_LENGTH];
+        char ipbuf[32];
+        const char *state = socket_state_name(d->connected);
+        const char *name = d->original  ? d->original->name  :
+                           d->character ? d->character->name : "(login)";
+        int idle = (d->connected == CON_PLAYING && d->character) ? d->character->timer : 0;
+        int level = (d->character) ? d->character->level : 0;
+        const char *position = "-";
+        if (d->character && d->connected == CON_PLAYING)
         {
-            count++;
-            sprintf( buf + strlen(buf), "[%3d %2d] (none)@%s\n\r",
-                d->descriptor,
-                d->connected,
-                d->host
-                );
+            if (d->character->fighting)
+                position = "fighting";
+            else if (d->character->position <= POS_SLEEPING)
+                position = "resting";
+            else
+                position = "active";
         }
+        bool matches = TRUE;
 
-	if ( d->character != NULL && can_see( ch, d->character )
-	&& (arg[0] == '\0' || is_name(arg,d->character->name)
-			   || (d->original && is_name(arg,d->original->name))))
-	{
-	    count++;
-	    sprintf( buf + strlen(buf), "[%3d %2d] %s@%s\n\r",
-		d->descriptor,
-		d->connected,
-		d->original  ? d->original->name  :
-		d->character ? d->character->name : "(none)",
-		d->host
-		);
-	}
+        sprintf(host_display, "%s", d->host ? d->host : "(unknown)");
+        if (d->ip != 0)
+            sprintf(ipbuf, "%d.%d.%d.%d", (d->ip >> 24) & 0xFF, (d->ip >> 16) & 0xFF,
+                (d->ip >> 8) & 0xFF, d->ip & 0xFF);
+        else
+            strcpy(ipbuf, "n/a");
+
+        if (filter_ip)
+            matches = (!str_infix(arg2, host_display) || !str_infix(arg2, ipbuf));
+        else if (arg[0] != '\0')
+            matches = (d->character && (is_name(arg, d->character->name) || (d->original && is_name(arg, d->original->name))));
+
+        if (!matches || (d->character && !can_see(ch, d->character)))
+            continue;
+
+        count++;
+        snprintf( buf + strlen(buf), sizeof(buf) - strlen(buf),
+            "[%3d] %-14s %-18s %-18s %-6d %-6d %-8s %-5d\n\r",
+            d->descriptor,
+            state,
+            name,
+            host_display[0] != '\0' ? host_display : ipbuf,
+            idle,
+            level,
+            position,
+            (d->character && d->character->in_room) ? d->character->in_room->vnum : 0);
     }
-  }
+
     if (count == 0)
     {
-	send_to_char("No one by that name is connected.\n\r",ch);
-	return;
+        send_to_char("No matching connections.\n\r",ch);
+        return;
     }
 
-    sprintf( buf2, "%d user%s\n\r", count, count == 1 ? "" : "s" );
-    strcat(buf,buf2);
+    snprintf( buf2, sizeof(buf2), "%d user%s\n\r", count, count == 1 ? "" : "s" );
+    strncat(buf, buf2, sizeof(buf) - strlen(buf) - 1);
     page_to_char( buf, ch );
-    return;
 }
 
 
