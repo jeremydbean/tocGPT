@@ -37,6 +37,11 @@ DECLARE_DO_FUN( do_say );
 #define QUEST_ITEM3 24
 #define QUEST_ITEM4 3081
 #define QUEST_ITEM5 29203
+#define QUEST_HERO_COST_BASE 7000
+#define QUEST_HERO_COST_REMORT 5000
+#define QUEST_ENDGAME_BOON_COST 750
+#define QUEST_ENDGAME_TROPHY_COST 600
+#define QUEST_ENDGAME_CACHE_COST 500
 
 /* Object vnums for object quest 'tokens'. In Moongate, the tokens are
    things like 'the Shield of Moongate', 'the Sceptre of Moongate'. These
@@ -221,8 +226,17 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
         "1-3 Practices:                 500qp\n\r"
         "Potion of Extra Heal           450qp\n\r"
         "Jug O' Moonshine               450qp\n\r"
-        "level 51 hero!                7000qp\n\r"
+        "level 51 hero! (non-remort)   7000qp\n\r"
+        "level 51 hero! (remort)       5000qp\n\r"
     "To buy an item, type 'AQUEST BUY <item>'.\n\r", ch);
+
+        if (ch->level >= MAX_LEVEL)
+        {
+            send_to_char("\n\rEnd-game rewards for maxed heroes:\n\r"
+                "Legendary boon (gold + pracs)       750qp\n\r"
+                "Keepsake trophy                     600qp\n\r"
+                "Surprise cache (potion bundle)      500qp\n\r", ch);
+        }
         return;
     }
 
@@ -235,24 +249,24 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 	}
         if (IS_NPC(ch))
            return;
-	if (is_name(arg2, "hero"))
-	{
-	    if( ch->level != 50 ) {
-		sprintf(buf,"Sorry %s you need to be level 50 to buy that.",ch->name);
-		do_say( questman,buf );
-	    }
-	    if (( ch->level == 50 && ch->questpoints >= 500) ||
-                ( (ch->level == 50) && (ch->questpoints >= 1000) && (ch->pcdata->num_remorts >= 1)))
-	    {
-                if (ch->pcdata->num_remorts >= 1)
-                  ch->questpoints -= 1000;
-		else
-                  ch->questpoints -= 500;
-		ch->level += 1;
+        if (is_name(arg2, "hero"))
+        {
+            int hero_cost = ch->pcdata->num_remorts >= 1 ? QUEST_HERO_COST_REMORT : QUEST_HERO_COST_BASE;
+
+            if( ch->level != 50 ) {
+                sprintf(buf,"Sorry %s you need to be level 50 to buy that.",ch->name);
+                do_say( questman,buf );
+                return;
+            }
+
+            if (ch->questpoints >= hero_cost)
+            {
+                ch->questpoints -= hero_cost;
+                ch->level += 1;
                 ch->exp = exp_per_level(ch,ch->pcdata->points) * ch->level;
-	        send_to_char("You raise a level!  ", ch );
-		advance_level(ch,FALSE);
-	    }
+                send_to_char("You raise a level!  ", ch );
+                advance_level(ch,FALSE);
+            }
 	    else
 	    {
 		sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
@@ -302,30 +316,135 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
 		return;
 	    }
 	}
-	else if (is_name(arg2, "practices pracs prac practice"))
-	{
-	    if (ch->questpoints >= 500)
-	    {
-		ch->questpoints -= 500;
-	        ch->practice += dice(1,2) + 1;
-    	        act( "$N gives some practices to $n.", ch, NULL, questman, TO_ROOM );
-    	        act( "$N gives you some practices.",   ch, NULL, questman, TO_CHAR );
-		sprintf(log_buf,"%s gained pracs from quest.",ch->name);
-		log_string(log_buf);
-	        return;
-	    }
-	    else
-	    {
-		sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
-		do_say(questman,buf);
-		return;
-	    }
-	}
-	else
-	{
-	    sprintf(buf, "I don't have that item, %s.",ch->name);
-	    do_say(questman, buf);
-	}
+        else if (is_name(arg2, "practices pracs prac practice"))
+        {
+            if (ch->questpoints >= 500)
+            {
+                ch->questpoints -= 500;
+                ch->practice += dice(1,2) + 1;
+                act( "$N gives some practices to $n.", ch, NULL, questman, TO_ROOM );
+                act( "$N gives you some practices.",   ch, NULL, questman, TO_CHAR );
+                sprintf(log_buf,"%s gained pracs from quest.",ch->name);
+                log_string(log_buf);
+                return;
+            }
+            else
+            {
+                sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+                do_say(questman,buf);
+                return;
+            }
+        }
+        else if (is_name(arg2, "boon"))
+        {
+            if (ch->level < MAX_LEVEL)
+            {
+                sprintf(buf, "That favor is reserved for maxed heroes, %s.", ch->name);
+                do_say(questman, buf);
+                return;
+            }
+
+            if (ch->questpoints >= QUEST_ENDGAME_BOON_COST)
+            {
+                int boon_pracs = number_range(2,4);
+                int boon_gold = number_range(8000,15000);
+
+                ch->questpoints -= QUEST_ENDGAME_BOON_COST;
+                ch->practice += boon_pracs;
+                add_money(ch, boon_gold);
+
+                sprintf(buf, "$N calls in favors and grants you %d practices and %d gold!", boon_pracs, boon_gold);
+                act(buf, ch, NULL, questman, TO_CHAR);
+                act("$N whispers ancient secrets to $n and hands over a hefty purse.", ch, NULL, questman, TO_ROOM);
+                return;
+            }
+
+            sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+            do_say(questman,buf);
+            return;
+        }
+        else if (is_name(arg2, "trophy"))
+        {
+            OBJ_INDEX_DATA *trophy_index;
+
+            if (ch->level < MAX_LEVEL)
+            {
+                sprintf(buf, "Keepsakes are only for legendary heroes, %s.", ch->name);
+                do_say(questman, buf);
+                return;
+            }
+
+            trophy_index = get_obj_index(QUEST_ITEM5);
+            if (trophy_index == NULL)
+            {
+                sprintf(buf, "I'm afraid we're out of trophies right now, %s.", ch->name);
+                do_say(questman, buf);
+                return;
+            }
+
+            if (ch->questpoints >= QUEST_ENDGAME_TROPHY_COST)
+            {
+                obj = create_object(trophy_index, ch->level);
+                ch->questpoints -= QUEST_ENDGAME_TROPHY_COST;
+            }
+            else
+            {
+                sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+                do_say(questman,buf);
+                return;
+            }
+        }
+        else if (is_name(arg2, "cache"))
+        {
+            if (ch->level < MAX_LEVEL)
+            {
+                sprintf(buf, "That cache is sealed to all but the greatest heroes, %s.", ch->name);
+                do_say(questman, buf);
+                return;
+            }
+
+            if (ch->questpoints >= QUEST_ENDGAME_CACHE_COST)
+            {
+                int reward_count = number_range(2,3);
+                int choice;
+
+                ch->questpoints -= QUEST_ENDGAME_CACHE_COST;
+
+                for (choice = 0; choice < reward_count; choice++)
+                {
+                    switch(number_range(0,2))
+                    {
+                        case 0:
+                            obj = create_object(get_obj_index(QUEST_ITEM2), ch->level);
+                            break;
+                        case 1:
+                            obj = create_object(get_obj_index(QUEST_ITEM3), ch->level);
+                            break;
+                        default:
+                            obj = create_object(get_obj_index(QUEST_ITEM4), ch->level);
+                            break;
+                    }
+
+                    if (obj != NULL)
+                    {
+                        act( "$N slides $p into your surprise cache.", ch, obj, questman, TO_CHAR );
+                        obj_to_char(obj, ch);
+                    }
+                }
+
+                act("$N seals a chest and hands it to $n with a knowing grin.", ch, NULL, questman, TO_ROOM);
+                return;
+            }
+
+            sprintf(buf, "Sorry, %s, but you don't have enough quest points for that.",ch->name);
+            do_say(questman,buf);
+            return;
+        }
+        else
+        {
+            sprintf(buf, "I don't have that item, %s.",ch->name);
+            do_say(questman, buf);
+        }
 	if (obj != NULL)
 	{
     	    act( "$N gives $p to $n.", ch, obj, questman, TO_ROOM );
@@ -491,10 +610,9 @@ To buy an item, type 'AQUEST BUY <item>'.\n\r");
             do_say(questman,buf);
             return;
         }
-
-	if( IS_SET(ch->act, PLR_QUESTOR) )
-	{
-	    sprintf(buf,"You are removed from your quest obligation %s.",ch->name );
+        if( IS_SET(ch->act, PLR_QUESTOR) )
+        {
+            sprintf(buf,"You are removed from your quest obligation %s.",ch->name );
 	    do_say(questman,buf);
 	    sprintf(buf,"Better luck next time!");
 	    do_say(questman,buf);
