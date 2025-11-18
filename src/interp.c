@@ -363,6 +363,7 @@ const	struct	cmd_type	cmd_table	[] =
     { "gwhere",         do_gwhere,      POS_DEAD,       L8,  LOG_ALWAYS, 1 },
     { "hero",           do_hero,        POS_DEAD,       HE,  LOG_NORMAL, 1 },
     { "holylight",      do_holylight,   POS_DEAD,      L10,  LOG_NORMAL, 1 },
+    { "grantpsi",       do_grantpsi, POS_DEAD,      ML,  LOG_ALWAYS, 1 },
     { "hpardon",        do_hpardon,     POS_DEAD,       L8,  LOG_NORMAL, 1 },
     { "immtalk",        do_immtalk,     POS_DEAD,       IM,  LOG_NORMAL, 1 },
     { "imotd",          do_imotd,       POS_DEAD,       IM,  LOG_NORMAL, 1 },

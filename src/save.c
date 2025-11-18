@@ -79,8 +79,8 @@ void save_char_obj( CHAR_DATA *ch )
 	    perror(strsave);
  	}
 
-	fprintf(fp,"Lev %2d Trust %2d  %s%s\n",
-	    ch->level, get_trust(ch), ch->name, ch->pcdata->title);
+        fprintf(fp,"Lev %2d Trust %2d  %s%s\n",
+            ch->level, get_trust(ch), ch->name, ch->pcdata->title);
 	fclose( fp );
 #ifdef CHGRP_TO
         sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
@@ -177,6 +177,8 @@ void fwrite_char( CHAR_DATA *ch, FILE *fp )
     fprintf( fp, "Cla  %d\n",	ch->class		);
     fprintf( fp, "Gui  %d\n",	ch->pcdata->guild	);
     fprintf( fp, "Psionic  %d\n", ch->pcdata->psionic );
+    fprintf( fp, "PsiGrant %d\n", ch->pcdata->psionic_grant_pending ? 1 : 0 );
+    fprintf( fp, "PsiSpec %s~\n", ch->pcdata->psionic_grant_spec );
     fprintf( fp, "Cast %s\n",	get_castlename( ch->pcdata->castle) );
     fprintf( fp, "Levl %d\n",	ch->level		);
     if (ch->trust != 0)
@@ -695,6 +697,7 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     ch->pcdata->confirm_pkill		= FALSE;
     ch->pcdata->guild			= GUILD_NONE;
     ch->pcdata->psionic                 = 0;
+    ch->pcdata->psionic_grant_pending   = FALSE;
     ch->pcdata->castle			= 0;
     ch->pcdata->bank			= 0;
     ch->pcdata->dcount			= 0;
@@ -708,6 +711,7 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     ch->pcdata->arrive			= str_dup( "" );
     ch->pcdata->depart			= str_dup( "" );
     ch->pcdata->title			= str_dup( "" );
+    ch->pcdata->psionic_grant_spec      = str_dup( "" );
     ch->pcdata->list_remorts            = str_dup( "" );
     ch->pcdata->num_remorts             = 0;
     for (stat =0; stat < MAX_STATS; stat++)
@@ -1124,6 +1128,8 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
             KEY( "Prompt",      ch->prompt,             fread_string( fp ) );
             KEY( "Prom",        ch->prompt,             fread_string( fp ) );
 	    KEY( "Psionic",     ch->pcdata->psionic,    fread_number( fp ) );
+            KEY( "PsiGrant",    ch->pcdata->psionic_grant_pending, fread_number( fp ) );
+            KEY( "PsiSpec",     ch->pcdata->psionic_grant_spec, fread_string( fp ) );
 	    break;
 
 	case 'Q':
