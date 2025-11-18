@@ -80,7 +80,7 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
      -v $(pwd)/log:/app/log \
      toc
    ```
-4. Publish the web admin dashboard (port 8000) alongside the game port (persistent storage):
+4. Publish the web admin dashboard (port 8000) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
    ```bash
    docker run --rm -it \
      -p 9000:9000 \   # game
@@ -101,7 +101,7 @@ The container entrypoint accepts optional arguments if you need to pass flags di
 The container starts a lightweight FastAPI web dashboard alongside the game server. It provides a browser UI plus JSON endpoints so admins can queue in-game actions without logging in as an immortal. By default it listens on port `8000` inside the container and can be disabled with `WEB_ADMIN_ENABLED=0`.
 
 ### How to expose and open the dashboard
-1. Publish the admin port when launching the container (change host ports as desired):
+1. Publish the admin port when launching the container (change host ports as desired). By default the service binds to `127.0.0.1:8000` inside the container; use `-e WEB_ADMIN_HOST=0.0.0.0` only if you must expose it outside the host:
    ```bash
    docker run --rm -it \
      -p 9000:9000 \   # game
@@ -134,7 +134,7 @@ The container starts a lightweight FastAPI web dashboard alongside the game serv
 
 ### Configuration knobs
 - `WEB_ADMIN_PORT` (default `8000`): Port exposed inside the container.
-- `WEB_ADMIN_HOST` (default `0.0.0.0`): Bind address for the FastAPI server.
+- `WEB_ADMIN_HOST` (default `127.0.0.1`): Bind address for the FastAPI server (set to `0.0.0.0` only if you need remote access).
 - `WEB_ADMIN_ENABLED` (default `1`): Set to `0` to skip starting the service.
 - `WEB_ADMIN_QUEUE` (default `/app/area/webadmin.queue`): Where requests are queued for the game loop.
 - `WEB_ADMIN_LOG_FILE` (default `/app/log/toc.log`): Log file used by `/api/logs`.

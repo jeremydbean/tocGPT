@@ -5,6 +5,7 @@ cd /app/area
 
 DEFAULT_PORT="${PORT:-${MUD_PORT:-9000}}"
 WEB_ADMIN_PORT="${WEB_ADMIN_PORT:-8000}"
+WEB_ADMIN_HOST="${WEB_ADMIN_HOST:-127.0.0.1}"
 
 # Ensure expected data directories exist for writes
 mkdir -p ../log ../player ../backups ../gods ../heroes ../corpse
@@ -12,7 +13,7 @@ touch webadmin.queue
 export PYTHONPATH="/app:${PYTHONPATH}"
 
 if [ "${WEB_ADMIN_ENABLED:-1}" != "0" ]; then
-  python3 -m webadmin.server --port "$WEB_ADMIN_PORT" --queue /app/area/webadmin.queue --log-file /app/log/toc.log &
+  python3 -m webadmin.server --host "$WEB_ADMIN_HOST" --port "$WEB_ADMIN_PORT" --queue /app/area/webadmin.queue --log-file /app/log/toc.log &
 fi
 
 if [ "$#" -eq 0 ]; then
