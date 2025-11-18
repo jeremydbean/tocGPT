@@ -3083,14 +3083,21 @@ ROOM_INDEX_DATA *get_room_index( int vnum )
  */
 char fread_letter( FILE *fp )
 {
+    int ci;
     char c;
- 
+
     do
     {
-	c = getc( fp );
+        ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_letter: EOF encountered", 0 );
+            return '\0';
+        }
+        c = (char) ci;
     }
     while ( isspace(c) );
- 
+
     return c;
 }
  
@@ -3103,16 +3110,23 @@ int fread_number( FILE *fp )
 {
     int number;
     bool sign;
+    int ci;
     char c;
- 
+
     do
     {
-	c = getc( fp );
+        ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_number: EOF encountered", 0 );
+            return 0;
+        }
+        c = (char) ci;
     }
     while ( isspace(c) );
- 
+
     number = 0;
- 
+
     sign   = FALSE;
     if ( c == '+' )
     {
@@ -3121,29 +3135,41 @@ int fread_number( FILE *fp )
     else if ( c == '-' )
     {
         sign = TRUE;
-        c = getc( fp );
+        ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_number: EOF after minus sign", 0 );
+            return 0 - number;
+        }
+        c = (char) ci;
     }
- 
+
     if ( !isdigit(c) )
     {
         bug( "Fread_number: bad format.", 0 );
-	exit( 1 );
+        exit( 1 );
     }
- 
+
     while ( isdigit(c) )
     {
         number = number * 10 + c - '0';
-        c      = getc( fp );
+        ci      = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_number: EOF mid-number", 0 );
+            return sign ? -number : number;
+        }
+        c = (char) ci;
     }
- 
+
     if ( sign )
         number = 0 - number;
- 
+
     if ( c == '|' )
         number += fread_number( fp );
     else if ( c != ' ' )
         ungetc( c, fp );
- 
+
     return number;
 }
 
@@ -3154,11 +3180,18 @@ long fread_long( FILE *fp )
 {
     long number;
     bool sign;
+    int ci;
     char c;
  
     do
     {
-	c = getc( fp );
+        ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_long: EOF encountered", 0 );
+            return 0;
+        }
+        c = (char) ci;
     }
     while ( isspace(c) );
  
@@ -3167,7 +3200,13 @@ long fread_long( FILE *fp )
     sign   = FALSE;
     if ( c == '+' )
     {
-        c = getc( fp );
+        ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_long: EOF mid-number", 0 );
+            return sign ? -number : number;
+        }
+        c = (char) ci;
     }
     else if ( c == '-' )
     {
@@ -3269,6 +3308,7 @@ long flag_convert(char letter )
 char *fread_string( FILE *fp )
 {
     char *plast;
+    int ci;
     char c;
  
     plast = top_string + sizeof(char *);
@@ -3284,7 +3324,13 @@ char *fread_string( FILE *fp )
      */
     do
     {
-        c = getc( fp );
+        ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_string: EOF encountered", 0 );
+            return &str_empty[0];
+        }
+        c = (char) ci;
     }
     while ( isspace(c) );
  
@@ -3374,6 +3420,7 @@ char *fread_string_eol( FILE *fp )
 {
     static bool char_special[256-EOF];
     char *plast;
+    int ci;
     char c;
  
     if ( char_special[EOF-EOF] != TRUE )
@@ -3396,7 +3443,13 @@ char *fread_string_eol( FILE *fp )
      */
     do
     {
-        c = getc( fp );
+        ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "fread_string_eol: EOF encountered", 0 );
+            return &str_empty[0];
+        }
+        c = (char) ci;
     }
     while ( isspace(c) );
  
@@ -3505,7 +3558,14 @@ char *fread_word( FILE *fp )
  
     do
     {
-        cEnd = getc( fp );
+        int ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "Fread_word: EOF encountered", 0 );
+            word[0] = '\0';
+            return word;
+        }
+        cEnd = (char) ci;
     }
     while ( isspace( cEnd ) );
  
@@ -3522,7 +3582,14 @@ char *fread_word( FILE *fp )
  
     for ( ; pword < word + MAX_INPUT_LENGTH; pword++ )
     {
-        *pword = getc( fp );
+        int ci = getc( fp );
+        if ( ci == EOF )
+        {
+            bug( "Fread_word: EOF inside word", 0 );
+            *pword = '\0';
+            return word;
+        }
+        *pword = (char) ci;
         if ( cEnd == ' ' ? isspace(*pword) : *pword == cEnd )
         {
             if ( cEnd == ' ' )

@@ -29,6 +29,7 @@ This file summarizes the repository layout and the purpose of key files so futur
 - `toc_build.sh`: Helper to build the server binary and prepare assets.
 - `startup.sh`, `docker-entrypoint.sh`: Start the server locally or inside Docker; set the port via `PORT`/`MUD_PORT`.
 - `install`, `cleanup`, `refresh`: OS-level setup/maintenance helpers (permissions, dependencies, cleanup).
+- `tests/parser_smoke.sh`, `tests/fuzz_parsers.sh`: Offline checks that boot areas and fuzz the area parser via `./merc --check-*` flags.
 
 ## C source map (`src/`)
 - Core headers
@@ -40,9 +41,10 @@ This file summarizes the repository layout and the purpose of key files so futur
   - `handler.c`: Core object/character manipulation helpers (affects, equipment, containers).
   - `db.c`: World loading (areas, resets, skills) and initialization sequences.
   - `save.c`: Persistence of player and object state to disk.
-  - `update.c`: Per-tick updates (regeneration, violence queue, weather); `update.c.bak` retains a backup.
-  - `maxload.c`: Tracks maximum loads of items/mobs; `maxload.h` declares interfaces.
-  - `nicedb.c`, `nicedb` (binary/helper scripts): Alternative database handling utilities.
+- `update.c`: Per-tick updates (regeneration, violence queue, weather); `update.c.bak` retains a backup.
+- `maxload.c`: Tracks maximum loads of items/mobs; `maxload.h` declares interfaces.
+- `nicedb.c`, `nicedb` (binary/helper scripts): Alternative database handling utilities.
+- `comm.c`: Server entrypoint and socket setup; accepts `--check-areas`, `--check-area <file>`, and `--check-save <name>` for offline validation.
 - Gameplay systems
   - `act_comm.c`: Communication commands (say, tell, channels, emotes).
   - `act_info.c`: Information commands (score, who, look, help).

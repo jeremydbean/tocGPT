@@ -41,6 +41,17 @@
 
 #include "merc.h"
 
+extern bool fBootDb;
+extern AREA_DATA *area_first;
+extern AREA_DATA *area_last;
+extern FILE *fpArea;
+
+static void check_mode_signal(int sig)
+{
+    fprintf(stderr, "Parser check aborted by signal %d\n", sig);
+    exit(3);
+}
+
 #define WNOHANG 1
 /* command procedures needed */
 DECLARE_DO_FUN(do_help          );
@@ -350,6 +361,9 @@ int port;
 int main( int argc, char **argv )
 {
     struct timeval now_time;
+    bool check_areas_only = FALSE;
+    const char *single_area = NULL;
+    const char *check_save = NULL;
 
     /*
      * Memory debugging if needed.
@@ -390,29 +404,86 @@ int main( int argc, char **argv )
     port = 9000;
     if ( argc > 1 )
     {
-	int i;
-	for (i=1; i<argc; i++)
-	{
-	    if ( !is_number( argv[i] ) )
-	    {
-		if (!strcmp(argv[i], "newlock"))
-		{
-		    fprintf(stderr,"Locking out new players\n");
-		    newlock = 1;
-		}
-		else
-		{
-		    fprintf(stderr,"Usage: %s [newlock] [port #]\n", argv[0] );
-		    exit( 1 );
-		}
-	    }
-	    else if ( ( port = atoi( argv[i] ) ) <= 1024 )
-	    {
-		fprintf( stderr, "Port number must be above 1024.\n" );
-		exit( 1 );
-	    }
+        int i;
+        for (i=1; i<argc; i++)
+        {
+            if ( !strcmp(argv[i], "--check-areas") )
+            {
+                check_areas_only = TRUE;
+            }
+            else if ( !strcmp(argv[i], "--check-area") && (i + 1) < argc )
+            {
+                single_area = argv[++i];
+            }
+            else if ( !strcmp(argv[i], "--check-save") && (i + 1) < argc )
+            {
+                check_save = argv[++i];
+            }
+            else if ( !strcmp(argv[i], "newlock") )
+            {
+                fprintf(stderr,"Locking out new players\n");
+                newlock = 1;
+            }
+            else if ( is_number( argv[i] ) )
+            {
+                if ( ( port = atoi( argv[i] ) ) <= 1024 )
+                {
+                    fprintf( stderr, "Port number must be above 1024.\n" );
+                    exit( 1 );
+                }
+            }
+            else
+            {
+                fprintf(stderr,
+                    "Usage: %s [newlock] [port #] [--check-areas] [--check-area <file>] [--check-save <name>]\n",
+                    argv[0] );
+                exit( 1 );
+            }
 
-	}
+        }
+    }
+
+    if ( check_areas_only || single_area != NULL || check_save != NULL )
+    {
+        signal( SIGSEGV, check_mode_signal );
+        signal( SIGABRT, check_mode_signal );
+
+        if ( single_area != NULL )
+        {
+            /* Load a single area for fuzzing and exit. */
+            fBootDb = TRUE;
+            area_first = area_last = NULL;
+            fpArea = NULL;
+            load_area_file( (char *) single_area );
+            fix_exits( );
+            area_update( );
+            log_string( "Single area load completed." );
+        }
+        else
+        {
+            boot_db();
+            log_string( "Area table sanity check complete." );
+        }
+
+        if ( check_save != NULL )
+        {
+            DESCRIPTOR_DATA d; 
+            memset(&d, 0, sizeof(d));
+            if (!load_char_obj(&d, (char *)check_save))
+            {
+                fprintf(stderr, "Unable to load save for %s\n", check_save);
+                exit( 2 );
+            }
+            log_string( "Save file validation completed." );
+        }
+
+        if ( fpReserve != NULL )
+        {
+            fclose( fpReserve );
+            fpReserve = NULL;
+        }
+
+        return 0;
     }
 
     /*
@@ -464,9 +535,17 @@ int init_socket( int port )
     if ( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR,
     (char *) &x, sizeof(x) ) < 0 )
     {
-	perror( "Init_socket: SO_REUSEADDR" );
-	close(fd);
-	exit( 1 );
+        perror( "Init_socket: SO_REUSEADDR" );
+        close(fd);
+        exit( 1 );
+    }
+
+    if ( setsockopt( fd, SOL_SOCKET, SO_KEEPALIVE,
+    (char *) &x, sizeof(x) ) < 0 )
+    {
+        perror( "Init_socket: SO_KEEPALIVE" );
+        close(fd);
+        exit( 1 );
     }
 
 #if defined(SO_DONTLINGER) && !defined(SYSV)

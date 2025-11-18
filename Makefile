@@ -10,9 +10,13 @@ SRCS     := $(wildcard $(SRC_DIR)/*.c) $(wildcard $(AREA_DIR)/*.c)
 OBJS := $(filter-out $(SRC_DIR)/nicedb.o $(AREA_DIR)/resolve.o $(SRC_DIR)/webserver.o, $(SRCS:.c=.o))
 TARGET   := merc
 
-.PHONY: all clean
+.PHONY: all clean test
 
 all: $(TARGET)
+
+test: $(TARGET)
+	./tests/parser_smoke.sh
+	./tests/fuzz_parsers.sh
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)

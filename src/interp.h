@@ -235,6 +235,8 @@ DECLARE_DO_FUN( do_listen       );
 DECLARE_DO_FUN( do_load		);
 DECLARE_DO_FUN(	do_lock		);
 DECLARE_DO_FUN(	do_log		);
+DECLARE_DO_FUN( do_login        );
+DECLARE_DO_FUN( do_logout       );
 DECLARE_DO_FUN(	do_look		);
 DECLARE_DO_FUN( do_lore         );
 DECLARE_DO_FUN( do_lst_maxload  );
