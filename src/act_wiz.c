@@ -5716,6 +5716,42 @@ void do_pstat( CHAR_DATA *ch, char *argument )
 }
 
 
+void do_grantpsionics( CHAR_DATA *ch, char *argument )
+{
+    CHAR_DATA *victim;
+    char arg[MAX_INPUT_LENGTH];
+
+    argument = one_argument( argument, arg );
+
+    if ( arg[0] == '\0' )
+    {
+        send_to_char( "Syntax: grantpsionics <player>\n\r", ch );
+        return;
+    }
+
+    if ( ( victim = get_char_world( ch, arg ) ) == NULL )
+    {
+        send_to_char( "They aren't here.\n\r", ch );
+        return;
+    }
+
+    if ( IS_NPC( victim ) )
+    {
+        send_to_char( "Not on NPC's.\n\r", ch );
+        return;
+    }
+
+    if ( victim->pcdata->psionic == 1 )
+    {
+        send_to_char( "They already have psionics.\n\r", ch );
+        return;
+    }
+
+    grant_psionics( victim, 100, TRUE );
+    send_to_char( "Psionics granted.\n\r", ch );
+}
+
+
 void do_gkick( CHAR_DATA *ch, char *argument )
 {
     char arg1[MAX_INPUT_LENGTH];

@@ -2438,6 +2438,7 @@ void    close_socket    args( ( DESCRIPTOR_DATA *dclose ) );
 void    write_to_buffer args( ( DESCRIPTOR_DATA *d, const char *txt,
 			    int length ) );
 void    do_check_psi    args( ( CHAR_DATA *ch, char *argument ) );
+void    grant_psionics  args( ( CHAR_DATA *ch, int chance, bool force_grant ) );
 void    send_to_char    args( ( const char *txt, CHAR_DATA *ch ) );
 void    send_to_room    args( ( const char *txt, int vnum ) );
 void    page_to_char    args( ( const char *txt, CHAR_DATA *ch ) );
