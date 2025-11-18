@@ -19,6 +19,7 @@
 #include <ctype.h>
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 extern void do_backup(void);
 

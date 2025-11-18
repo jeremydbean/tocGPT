@@ -17,6 +17,7 @@
 #include <string.h>
 #include <strings.h> /* for bzero() */
 #include "merc.h"
+#include "interp.h"
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_look		);
@@ -109,7 +110,7 @@ ROOM_INDEX_DATA *get_random_room(CHAR_DATA *ch)
 }
 
 /* Mob is type M - Haiku */
-void do_mob_action(CHAR_DATA *mobile, CHAR_DATA *vict)
+static void do_mob_action(CHAR_DATA *mobile, CHAR_DATA *vict)
 {
     MOB_ACTION_DATA *action;
 

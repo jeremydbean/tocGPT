@@ -40,6 +40,15 @@
 #include <sys/syscall.h>
 
 #include "merc.h"
+#include "interp.h"
+
+static void fix_sex(CHAR_DATA *ch);
+static void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
+              const void *arg2, int type, int min_pos );
+static char *swedish_speak( const char *str );
+static bool str_prefix_c( const char *astr, const char *bstr );
+static bool str_infix_c( const char *astr, const char *bstr );
+static char *str_replace_c( char *astr, char *bstr, char *cstr );
 
 #define WNOHANG 1
 #define WEB_ADMIN_QUEUE "../webadmin.queue"
@@ -2354,9 +2363,10 @@ case CON_GET_ALIGNMENT:
    just search for the word DNS in this file to find
    the rest of the code */
 
-void do_dns( CHAR_DATA *ch )
+void do_dns( CHAR_DATA *ch, char *argument )
 {
     extern bool dns;
+    UNUSED_PARAM(argument);
 
     if(IS_NPC(ch))
         return;
@@ -2898,7 +2908,7 @@ void show_string(struct descriptor_data *d, char *input)
 
 
 /* quick sex fixer */
-void fix_sex(CHAR_DATA *ch)
+static void __attribute__((unused)) fix_sex(CHAR_DATA *ch)
 {
     if (ch->sex < 0 || ch->sex > 2)
 	ch->sex = IS_NPC(ch) ? 0 : ch->pcdata->true_sex;
@@ -3049,8 +3059,8 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 }
 
 /* for use with public chat channels */
-void act_public( const char *format, CHAR_DATA *ch, const void *arg1,
-	      const void *arg2, int type, int min_pos)
+static void __attribute__((unused)) act_public( const char *format, CHAR_DATA *ch, const void *arg1,
+              const void *arg2, int type, int min_pos)
 {
     static char * const he_she  [] = { "it",  "he",  "she" };
     static char * const him_her [] = { "it",  "him", "her" };
@@ -3265,7 +3275,7 @@ char *drunk_speak( const char *str )
 
 
 
-char *swedish_speak( const char *str )
+static char *swedish_speak( const char *str )
 {
     static char buf[512];
     int iSyl;
@@ -3411,7 +3421,7 @@ int gettimeofday( struct timeval *tp, void *tzp )
 }
 #endif
 
-bool str_prefix_c( const char *astr, const char *bstr )
+static bool str_prefix_c( const char *astr, const char *bstr )
 {
     if ( astr == NULL ) {
         bug( "Strn_cmp: null astr.", 0 );
@@ -3432,7 +3442,7 @@ bool str_prefix_c( const char *astr, const char *bstr )
 }
 
 
-bool str_infix_c( const char *astr, const char *bstr )
+static bool str_infix_c( const char *astr, const char *bstr )
 {
     int sstr1;
     int sstr2;
@@ -3453,7 +3463,7 @@ bool str_infix_c( const char *astr, const char *bstr )
     return TRUE;
 }
 
-char *str_replace_c( char *astr, char *bstr, char *cstr )
+static char *str_replace_c( char *astr, char *bstr, char *cstr )
 {
     char newstr[MAX_STRING_LENGTH];
     char buf[MAX_STRING_LENGTH];

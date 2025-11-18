@@ -17,6 +17,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #include "magic.h"
 
 /* command procedures needed */

@@ -32,3 +32,7 @@
   previous entries.
 - Added explicit `UNUSED_PARAM` markers to remaining spell stubs and spec functions in `magic2.c`, `skills.c`, `special.c`,
   and `update.c` so the extended warning set builds cleanly without suppressing diagnostics.
+- Including `interp.h` in the command modules and providing missing prototypes for dispel helpers and wizlist routines
+  clears `-Wmissing-prototypes` diagnostics; system backup calls now check return codes instead of discarding results so
+  `-Wunused-result` stays quiet under `-Wall -Wextra -Wshadow -Wsign-compare -Wformat-overflow=2 -Wunused-parameter
+  -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes`.

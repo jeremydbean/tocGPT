@@ -246,7 +246,7 @@ char* special_name( SPEC_FUN *spec )
 /*
  * Core procedure for dragons.
  */
-bool dragon( CHAR_DATA *mob, char *spell_name )
+static bool dragon( CHAR_DATA *mob, char *spell_name )
 {
     CHAR_DATA *victim;
     CHAR_DATA *v_next;

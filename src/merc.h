@@ -10,15 +10,12 @@
  */
 /* Simplified for modern ANSI C */
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #define args(list) list
 #define DECLARE_DO_FUN(fun) DO_FUN fun
 #define DECLARE_SPEC_FUN(fun) SPEC_FUN fun
 #define DECLARE_SPELL_FUN(fun) SPELL_FUN fun
-
-
-/* system calls */
-int unlink();
-int system();
 
 
 
@@ -2431,7 +2428,7 @@ int     query_carry_coins  args( ( CHAR_DATA *ch, long amount) );
 void    add_gold        args( (CHAR_DATA *ch, long amount) );
 void    add_copper      args( (CHAR_DATA *ch, long amount) );
 void    add_silver      args( (CHAR_DATA *ch, long amount) );
-void    add_platinumi   args( (CHAR_DATA *ch, long amount) );
+void    add_platinum    args( (CHAR_DATA *ch, long amount) );
 
 /* act_wiz.c */
 
@@ -2510,6 +2507,7 @@ void	respawn_relic	args( ( int i ) );
 /* fight.c */
 bool    check_aggrostab  args( (CHAR_DATA *ch, CHAR_DATA *victim ) );
 void    aggrostab        args( (CHAR_DATA *ch, CHAR_DATA *victim ) );
+bool    check_hate       args( (CHAR_DATA *ch, CHAR_DATA *vict ) );
 bool    is_safe         args( (CHAR_DATA *ch, CHAR_DATA *victim ) );
 bool    is_safe_spell   args( (CHAR_DATA *ch, CHAR_DATA *victim, bool area ) );
 void    violence_update args( ( void ) );
@@ -2655,6 +2653,10 @@ char * first_arg	args( ( char *argument, char *arg_first, bool fCase ) );
 void update_pkills      args( ( CHAR_DATA *ch ) );
 void load_pkills        args( ( void ) );
 void save_pkills        args( ( void ) );
+
+/* wizlist.c */
+void load_wizlist      args( ( void ) );
+void save_wizlist      args( ( void ) );
 
 /* save.c */
 void    save_char_obj   args( ( CHAR_DATA *ch ) );

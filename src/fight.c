@@ -16,6 +16,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 
 #define MAX_DAMAGE_MESSAGE 32
 

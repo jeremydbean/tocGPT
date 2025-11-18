@@ -13,6 +13,7 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include "merc.h"
+#include "interp.h"
 #include "magic.h"
 
 /* command procedures needed */
@@ -501,7 +502,7 @@ void list_group_costs(CHAR_DATA *ch)
 }
 
 
-void list_group_chosen(CHAR_DATA *ch)
+static void list_group_chosen(CHAR_DATA *ch)
 {
     char buf[100];
     int gn,sn,col;

@@ -84,7 +84,8 @@ void save_char_obj( CHAR_DATA *ch )
 	fclose( fp );
 #ifdef CHGRP_TO
         sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-        system(buf);
+        if (system(buf) == -1)
+            bug("save_char_obj: system backup failed.", 0);
 #endif
 	fpReserve = fopen( NULL_FILE, "r" );
     }
@@ -107,7 +108,8 @@ void save_char_obj( CHAR_DATA *ch )
         fclose( fp );
 #ifdef CHGRP_TO
         sprintf(buf, "chgrp %s %s", CHGRP_TO, strsave);
-        system(buf);
+        if (system(buf) == -1)
+            bug("save_char_obj: player backup failed.", 0);
 #endif
         fpReserve = fopen( NULL_FILE, "r" );
     }
@@ -140,7 +142,8 @@ void save_char_obj( CHAR_DATA *ch )
 #else
     sprintf(buf,"mv %s %s",PLAYER_TEMP,strsave);
 #endif
-    system(buf);
+    if (system(buf) == -1)
+        bug("save_char_obj: mail backup failed.", 0);
     fpReserve = fopen( NULL_FILE, "r" );
     return;
 }
@@ -733,7 +736,8 @@ bool load_char_obj( DESCRIPTOR_DATA *d, char *name )
     {
 	fclose(fp);
 /*	sprintf(buf,"gzip -dfq %s",strsave); */
-	system(buf);
+        if (system(buf) == -1)
+            bug("load_char_obj: mail restore failed.", 0);
     }
     #endif
 

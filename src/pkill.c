@@ -19,13 +19,14 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include "merc.h"
+#include "interp.h"
 
 #define PKILLFILE     "../area/pkilldata.txt"
 
 PKILL_LIST_DATA *pkill_list;
 PKILL_LIST_DATA *free_pkill;
 
-void save_pkills( )
+void save_pkills(void)
 /* Save the pkill table.
  *
  */
@@ -189,7 +190,7 @@ void do_topten( CHAR_DATA *ch, char *argument )
   send_to_char("--------------------------------------------------\n\r",ch);
 }
 
-void load_pkills( )
+void load_pkills(void)
 /* Read in the pkill_file, specified in the variable
  * PKILLFILE
  *

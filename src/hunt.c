@@ -10,6 +10,7 @@
 #include <time.h>
 #include <signal.h>
 #include "merc.h"
+#include "interp.h"
 
 
 #define BFS_ERROR               -1

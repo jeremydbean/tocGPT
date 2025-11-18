@@ -18,11 +18,14 @@
 #include <time.h>
 #include <ctype.h>
 #include "merc.h"
+#include "interp.h"
 extern void do_backup(void);
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_quit  );
 DECLARE_DO_FUN(do_drop  );
+
+static bool is_immnote_to( CHAR_DATA *ch, NOTE_DATA *pnote );
 
 const struct col_table_type col_table[] =
 {
@@ -79,7 +82,7 @@ void    note_remove     args( ( CHAR_DATA *ch, NOTE_DATA *pnote ) );
 void    note_delete     args( ( NOTE_DATA *pnote ) );
 bool    check_parse_name        args( ( char *name ) );
 
-bool is_immnote_to( CHAR_DATA *ch, NOTE_DATA *pnote )
+static bool is_immnote_to( CHAR_DATA *ch, NOTE_DATA *pnote )
 {
     if ( IS_IMMORTAL(ch) && is_name( "immortal", pnote->to_list ) )
         return TRUE;

@@ -16,10 +16,14 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #include "magic.h"
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_look		);
+
+bool saves_dispel( int dis_level, int spell_level, int duration);
+bool check_dispel( int dis_level, CHAR_DATA *victim, int sn);
 
 /*
  * Local functions.

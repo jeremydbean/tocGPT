@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "merc.h"
+#include "interp.h"
 #pragma GCC diagnostic ignored "-Wcomment"
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 extern void component_update(void);
@@ -2718,7 +2719,7 @@ void do_return( CHAR_DATA *ch, char *argument )
 }
 
 /* trust levels for load and clone */
-bool obj_check (CHAR_DATA *ch, OBJ_DATA *obj)
+static bool obj_check (CHAR_DATA *ch, OBJ_DATA *obj)
 {
 	if (IS_TRUSTED(ch,DEMI)
 	|| (IS_TRUSTED(ch,ANGEL)   && obj->level <= 35 && obj->cost <= 25000)
@@ -2730,7 +2731,7 @@ bool obj_check (CHAR_DATA *ch, OBJ_DATA *obj)
 }
 
 /* for clone, to insure that cloning goes many levels deep */
-void recursive_clone(CHAR_DATA *ch, OBJ_DATA *obj, OBJ_DATA *clone)
+static void recursive_clone(CHAR_DATA *ch, OBJ_DATA *obj, OBJ_DATA *clone)
 {
     OBJ_DATA *c_obj, *t_obj;
 

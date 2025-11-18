@@ -28,6 +28,7 @@
 #include <strings.h> /* for bzero() */
 #include <stdlib.h>
 #include "merc.h"
+#include "interp.h"
 
 /* command procedures needed */
 DECLARE_DO_FUN(do_split		);

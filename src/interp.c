@@ -776,7 +776,7 @@ SOCIAL_LIST *social_list_elem;
   return -1;
 }
 
-void fill_comm_table_index() {
+void fill_comm_table_index(void) {
 CMD_SECOND_CHAR *cmd_sec_char = NULL;
 CMD_LIST        *cmd_list_elem = NULL;
 CMD_LIST        *free_spot = NULL;
@@ -868,7 +868,7 @@ char buf[1000];
 } /* FILL_COMM_TABLE_INDEX */
 
 
-void fill_social_table_index() {
+void fill_social_table_index(void) {
 SOCIAL_SECOND_CHAR *social_sec_char = NULL;
 SOCIAL_LIST        *social_list_elem = NULL;
 SOCIAL_LIST        *free_spot = NULL;

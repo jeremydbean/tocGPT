@@ -17,6 +17,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #pragma GCC diagnostic ignored "-Wmissing-braces"
 #pragma GCC diagnostic ignored "-Wmisleading-indentation"
 #pragma GCC diagnostic ignored "-Wdangling-else"
@@ -175,7 +176,8 @@ void do_backup( void )
     log_string("Automated backup complete.");
     backup = current_time + (60*60*4);
   /*  system("tar cfz ../backups/`date +%b.%d`.tar.gz ../player"); */
-    system("tar cfz ../backups/`date +%b.%d.%Y-%H.%M.%S`.tar.gz ../player");
+    if (system("tar cfz ../backups/`date +%b.%d.%Y-%H.%M.%S`.tar.gz ../player") == -1)
+        bug("do_backup: archive creation failed.", 0);
     return;
 
 }
@@ -188,7 +190,8 @@ void do_dailybackup( void )
     log_string("Daily backup complete.");
     dailybackup = current_time + (60*60*24);
   /*  system("tar cfz ../backups/`date +%b.%d`.tar.gz ../player"); */
-    system("tar cf ../backups/`date +%b.%d`.tar.gz ../player");
+    if (system("tar cf ../backups/`date +%b.%d`.tar.gz ../player") == -1)
+        bug("do_dailybackup: archive creation failed.", 0);
     return;
 
 }

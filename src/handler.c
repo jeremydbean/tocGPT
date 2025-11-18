@@ -16,6 +16,7 @@
 #include <strings.h> /* for bzero() */
 #include <time.h>
 #include "merc.h"
+#include "interp.h"
 #include <stdlib.h>
 #include <stdlib.h>
 
@@ -1472,7 +1473,7 @@ OBJ_DATA *get_eq_char( CHAR_DATA *ch, int iWear )
 }
 
 /* Check and do the obj_actions... -Graves */
-void do_obj_action(CHAR_DATA *ch, OBJ_DATA *obj)
+static void do_obj_action(CHAR_DATA *ch, OBJ_DATA *obj)
 {
     OBJ_ACTION_DATA *action;
 
