@@ -249,7 +249,7 @@ void fwrite_char( CHAR_DATA *ch, FILE *fp )
     fprintf( fp, "NewPlat %ld\n",	ch->new_platinum	);
     fprintf( fp, "NewCopp %ld\n",	ch->new_copper		);
     fprintf( fp, "NewSilv %ld\n",	ch->new_silver		);
-    fprintf( fp, "Bank %d\n",	        ch->pcdata->bank	);
+    fprintf( fp, "Bank %ld\n",	        ch->pcdata->bank	);
     if (ch->pcdata->dcount > 0)
 	fprintf( fp, "Dcount %ld\n",	ch->pcdata->dcount	);
     else
@@ -1008,7 +1008,7 @@ void fread_char( CHAR_DATA *ch, FILE *fp )
 	case 'B':
 	    KEY( "Bamfin",	ch->pcdata->bamfin,	fread_string( fp ) );
 	    KEY( "Bamfout",	ch->pcdata->bamfout,	fread_string( fp ) );
-	    KEY( "Bank",	ch->pcdata->bank,	fread_number( fp ) );
+	    KEY( "Bank",	ch->pcdata->bank,	fread_long( fp ) );
 	    KEY( "Bin",		ch->pcdata->bamfin,	fread_string( fp ) );
 	    KEY( "Bout",	ch->pcdata->bamfout,	fread_string( fp ) );
 	    break;

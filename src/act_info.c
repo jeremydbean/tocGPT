@@ -1224,7 +1224,7 @@ void do_score( CHAR_DATA *ch, char *argument )
             "Copper:",  ch->new_copper);
     send_to_char(buf, ch);
 
-    snprintf(buf, sizeof(buf), "| %-4s %2d (%2d) | %-5s %-5s  %-5s  | %-9s %11d |\n\r",
+    snprintf(buf, sizeof(buf), "| %-4s %2d (%2d) | %-5s %-5s  %-5s  | %-9s %11ld |\n\r",
             "Con:"  , ch->perm_stat[STAT_CON], get_curr_stat(ch,STAT_CON),
             " " , " ", " ",
             "Bank:",  (IS_NPC(ch) ? 0 : ch->pcdata->bank));
