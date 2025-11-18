@@ -107,7 +107,7 @@ Run these commands from inside the cloned `tocGPT` folder. Substitute `${PWD}` f
      -v $(pwd)/log:/app/log \
      toc
    ```
-5. Publish the web admin dashboard (port 9001) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
+4. Publish the web admin dashboard (port 9001) alongside the game port (persistent storage). The dashboard binds to `127.0.0.1` by default inside the container; change `WEB_ADMIN_HOST` to `0.0.0.0` only if you need to expose it beyond the host:
    ```bash
    docker run --rm -it \
      -p 9000:9000 \   # game
