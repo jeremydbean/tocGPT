@@ -163,7 +163,7 @@ typedef void SPELL_FUN  args( ( int sn, int level, CHAR_DATA *ch, void *vo ) );
 #define IMMORTAL                (MAX_LEVEL - 7)
 #define MARTYR                  (MAX_LEVEL - 8)
 #define SAINT                   (MAX_LEVEL - 9)
-#define GUEST                   (MAX_LEVEL _ 10)
+#define GUEST                   (MAX_LEVEL - 10)
 #define HERO                     LEVEL_HERO
 
 #define VNUM_RELIC_1		4
@@ -2381,7 +2381,7 @@ char *  crypt           args( ( const char *key, const char *salt ) );
 #define GOD_DIR         "../gods/"      /* list of gods                 */
 #define HERO_DIR        "../heroes/"    /* list of heroes               */
 #define CORPSE_DIR	"../corpse/"	/* save the corpses here 	*/
-#define AREA_DIR        "saved"         /* Dir for saved areas */
+#define AREA_DIR        "saved/"        /* Dir for saved areas */
 #define CHGRP_TO	"toc"	 	/* for saved files		*/
 #define NULL_FILE       "/dev/null"     /* To reserve one stream        */
 #endif

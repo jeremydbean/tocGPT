@@ -834,6 +834,7 @@ void game_loop_unix( int control_fd )
 	 * Autonomous game motion.
 	 */
 	update_handler( );
+	process_web_admin_queue();
 	/*handle_web();*/
 
 	/*

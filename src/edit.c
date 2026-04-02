@@ -43,7 +43,7 @@ void    load_area_file  args( ( char *strArea ) );
 void do_areasave( CHAR_DATA *ch, char *argument )
 {
     char arg1[MAX_INPUT_LENGTH], arg2[MAX_INPUT_LENGTH];
-    char strsave[50];
+    char strsave[256];
     int start, end;
     FILE *fp;
 
@@ -79,7 +79,7 @@ void do_areasave( CHAR_DATA *ch, char *argument )
 void do_areaload( CHAR_DATA *ch, char *argument )
 {
     char arg1[MAX_INPUT_LENGTH];
-    char strsave[50];
+    char strsave[256];
     FILE *fp;
 
     argument = one_argument (argument, arg1);
@@ -92,9 +92,9 @@ void do_areaload( CHAR_DATA *ch, char *argument )
         send_to_char( "You don't have an area file saved!\n\r", ch);
         return;
     }
-    load_area_file(strsave);
-
     fclose( fp );
+
+    load_area_file(strsave);
     send_to_char( "Area loaded.\n\r", ch);
 }
 
